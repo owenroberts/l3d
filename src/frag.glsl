@@ -5,6 +5,7 @@ uniform vec2 uResolution;
 varying vec2 vUv;
 uniform vec3 lineColor;
 uniform vec3 bgColor;
+uniform vec2 noiseOffset;
 
 
 // https://www.shadertoy.com/view/XdXGW8
@@ -46,7 +47,7 @@ float valueAtPoint(sampler2D image, vec2 coord, vec2 texel, vec2 point) {
 float diffuseValue(int x, int y) {
 	float cutoff = 40.0;
 	float offset = 0.5 / cutoff;
-	float noiseValue = clamp(texture(uTexture, vUv).r, 0.0, cutoff) / cutoff - offset;
+	float noiseValue = clamp(texture(uTexture, vUv).r, noiseOffset.x, cutoff) / cutoff - offset;
 
 	return valueAtPoint(tDiffuse, vUv + noiseValue, vec2(1.0 / uResolution.x, 1.0 / uResolution.y), vec2(x, y)) * 0.6;
 }
@@ -54,7 +55,7 @@ float diffuseValue(int x, int y) {
 float normalValue(int x, int y) {
 	float cutoff = 50.0;
 	float offset = 0.5 / cutoff;
-	float noiseValue = clamp(texture(uTexture, vUv).r, 0.0, cutoff) / cutoff - offset;
+	float noiseValue = clamp(texture(uTexture, vUv).r, noiseOffset.y, cutoff) / cutoff - offset;
 
 	return valueAtPoint(uNormals, vUv + noiseValue, vec2(1.0 / uResolution.x, 1.0 / uResolution.y), vec2(x, y)) * 0.3;
 }

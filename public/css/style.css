@@ -76,6 +76,10 @@ button:hover {
 	color: black;
 }
 
+button:active {
+	background-color: white;
+}
+
 .mobile #title {
 	font-size:  1.5em;
 }

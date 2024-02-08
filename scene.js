@@ -42,7 +42,6 @@ let uniforms = {
 	numLines: 5,
 };
 
-
 /* for testing */
 const light = new THREE.DirectionalLight(0xffffff, 0.5);
 light.castShadow = true;
@@ -69,7 +68,6 @@ const cc = {
 	goal:  new THREE.Object3D,
 };
 
-
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 const linesPass = new LinesPass({
@@ -81,7 +79,7 @@ const linesPass = new LinesPass({
 });
 composer.addPass(renderPass);
 composer.addPass(linesPass);
-
+console.log('lines pass', linesPass);
 
 function addTestCube(x, y, z, size=0.5) {
 	var box = new THREE.Mesh(
@@ -167,12 +165,11 @@ function treeBranch(position, normal, length) {
 	}
 }
 
-
 const indexedGlobe = BufferGeometryUtils.mergeVertices(globe.geometry);
 const globePosition = indexedGlobe.getAttribute('position');
 const globeNormal = indexedGlobe.getAttribute('normal');
-console.log('globe', globe);
-console.log('globe indexed', indexedGlobe);
+// console.log('globe', globe);
+// console.log('globe indexed', indexedGlobe);
 const segmentLength = worldRadius * 4 / Math.sqrt((10 + 2 * Math.sqrt(5)));
 // console.log('seg', segmentLength); 
 
@@ -250,6 +247,10 @@ loader.load("./models/cat_1.glb", gltf => {
 	console.log('cat', cat);
 });
 
+const noiseEffect = {
+	count: 0,
+	value: new THREE.Vector2(),
+};
 
 let previousTime = null;
 function animate(time) {
@@ -271,6 +272,27 @@ function animate(time) {
 		} else {
 			getNextWalkPosition();
 		}
+	}
+
+	// does this need to be optimized?
+	if (tracks[0] === 'play') {
+		cat.mixer.clipAction(cat.animations['Idle_1']).stop();
+		cat.mixer.clipAction(cat.animations['Walk1']).play();
+	} else {
+		cat.mixer.clipAction(cat.animations['Walk1']).stop();
+		cat.mixer.clipAction(cat.animations['Idle_1']).play();
+	}
+
+	// console.log(tracks[1])
+	if (tracks[1] === 'play') {
+		if (noiseEffect.count === 6) {
+			noiseEffect.value.x = (noiseEffect.value.x + Cool.random(-0.1, 0.1)).clamp(0, 2);
+			noiseEffect.value.y = (noiseEffect.value.y + Cool.random(-0.1, 0.1)).clamp(0, 2);
+			linesPass.material.uniforms.noiseOffset.value.x = noiseEffect.value.x;
+			linesPass.material.uniforms.noiseOffset.value.y = noiseEffect.value.y;
+			noiseEffect.count = 0;
+		}
+		noiseEffect.count++;
 	}
 
 	if (useControls) {
@@ -299,7 +321,6 @@ function onWindowResize() {
 	camera.updateProjectionMatrix();
 	renderer.setSize(w, h);
 }
-
 
 let doodoo, comp;
 let tracks = ['rest'];
@@ -330,7 +351,7 @@ function keyDown(ev) {
 	if (ev.code === 'KeyC') useControls = !useControls;
 }
 
-document.addEventListener("fullscreenchange", function () {
+document.addEventListener("fullscreenchange", () => {
  	onWindowResize();
 });
 
@@ -380,12 +401,8 @@ function startDoodoo() {
 			if (tracks[index] === undefined) tracks[index] = 'rest';
 			if (note === 'rest') {
 				tracks[index] = 'rest';
-				cat.mixer.clipAction(cat.animations['Walk1']).stop();
-				cat.mixer.clipAction(cat.animations['Idle_1']).play();
 			} else if (note !== null) {
 				tracks[index] = 'play';
-				cat.mixer.clipAction(cat.animations['Idle_1']).stop();
-				cat.mixer.clipAction(cat.animations['Walk1']).play();
 			}
 		}
 	});
