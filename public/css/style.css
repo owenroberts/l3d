@@ -1,4 +1,98 @@
 body {
 	margin: 0;
+	
+}
+
+/* make this style.scss if u wanna go crazy */
+
+* { 
+	margin: 0; 
+	padding: 0; 
+	box-sizing: border-box;
+}
+
+html { height: 100%; }
+
+body { 
+	margin: 0; 
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	background-color: black;
+}
+
+#inner {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#longies {
 	background-color: #C7C7C7;
+}
+
+#splash {
+	z-index: 1;
+	position: absolute;
+	width: 960px;
+/*	background: white;*/
+	display: flex;
+	align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.mobile #splash {
+	padding:  0.5em;
+}
+
+#title {
+	font-size: 2em;
+	margin-bottom: 1em;
+/*	display: none;*/
+/*	color: white;*/
+}
+
+#controls {
+	margin-top: 1em;
+}
+
+button {
+	font-size: 1.5em;
+	padding: 0.25em 0.5em;
+	border-style: solid;
+	border-radius: 0.25em;
+	background: transparent;
+	border-color: white;
+	color: white;
+}
+
+button:hover {
+	cursor: pointer;
+	background: white;
+	color: black;
+}
+
+.mobile #title {
+	font-size:  1.5em;
+}
+
+#splash * {
+	font-family: verdana;
+}
+
+.mobile #inner-splash {
+	text-align:  center;
+}
+
+/* debug remove */
+#log {
+	position: fixed;
+	top: 10px;
+	left: 10px;
+	font-family:  monaco, monospace;
+	font-size:  32px;
 }
