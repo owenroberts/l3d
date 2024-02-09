@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import fragmentShader from './frag.glsl'
 import vertexShader from './vert.glsl'
 
-
 export class LinesMaterial extends THREE.ShaderMaterial {
 	constructor(params) {
 		super({

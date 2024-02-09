@@ -16,15 +16,17 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
 
 import { LinesPass } from './src/LinesPass.js';
+import vertexShader from './src/vert.glsl';
+import blenderShader from './src/blend.glsl';
+
 import './doodoo/build/doodoo.min.js'; // holy shit what
 import './doodoo/build/lib/tone/build/Tone.js';
-// https://lea.verou.me/blog/2020/07/import-non-esm-libraries-in-es-modules-with-client-side-vanilla-js/
 import './doodoo/ui/lib/cool/cool.js'; // fuck off
+// https://lea.verou.me/blog/2020/07/import-non-esm-libraries-in-es-modules-with-client-side-vanilla-js/
 
 let w = 960, h = 540;
 const scene1 = new THREE.Scene();
 const scene2 = new THREE.Scene();
-// scene.background = new THREE.Color(0xC7C7C7);
 
 const stats = new Stats();
 const container = document.getElementById("longies");
@@ -32,7 +34,6 @@ container.appendChild(stats.dom);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(w, h);
-
 // renderer.shadowMap.enabled = true;
 // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 container.appendChild(renderer.domElement);
@@ -54,88 +55,74 @@ const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 camera.position.set(0, 10, 50);
 const controls = new OrbitControls(camera, renderer.domElement);
 let useControls = false; // debug
-
 /* looks better https://jsfiddle.net/Fyrestar/6519yedL/ nice! simple and only kind of dumb */
 const cc = {
 	temp: new THREE.Vector3,
 	goal:  new THREE.Object3D,
 };
 
+let composer, scene2Composer;
+let noScene2 = false;
+function post() {
 
-const renderPass1 = new RenderPass(scene1, camera);
-renderPass1.renderToScreen = false;
-// renderPass1.clear = false;
-
-const renderPass2 = new RenderPass(scene2, camera);
-renderPass2.renderToScreen = false;
-
-const linesPass1 = new LinesPass({
-	width: renderer.domElement.clientWidth,
-	height: renderer.domElement.clientHeight,
-	scene: scene1,
-	camera: camera,
-	uniforms: {
-		lineColor: { type: 'vec3', value: new THREE.Color(0x000000) },
-		bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
-		lineWidth: 1,
-		numLines: 5,
-	}
-});
-linesPass1.renderToScreen = false;
-// linesPass1.clear = false;
-
-const linesPass2 = new LinesPass({
-	width: renderer.domElement.clientWidth,
-	height: renderer.domElement.clientHeight,
-	scene: scene2,
-	camera: camera,
-	uniforms: {
-		lineColor: { type: 'vec3', value: new THREE.Color(0xFFFFFF) },
-		bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
-		lineWidth: 1,
-		numLines: 5,
-	}
-});
-
-// const clearPass = new ClearPass();
-const copyPass = new ShaderPass( CopyShader );
-const outputPass = new OutputPass();
-
-const scene1Composer = new EffectComposer(renderer);
-scene1Composer.renderToScreen = false;
-scene1Composer.addPass( renderPass1 );
-scene1Composer.addPass( linesPass1 );
-scene1Composer.addPass( outputPass ); 
-
-const scene2Composer = new EffectComposer(renderer);
-scene2Composer.renderToScreen = false;
-scene2Composer.addPass( renderPass2 );
-scene2Composer.addPass( linesPass2 );
-scene2Composer.addPass( outputPass ); 
-// https://codesandbox.io/p/devbox/preserve-depth-forked-738cmp?file=%2Fsrc%2Fswap-pass.ts%3A145%2C38
-
-const texture = new THREE.TextureLoader().load('./imgs/image-7.png'); 
-
-const mixPass = new ShaderPass(
-	new THREE.ShaderMaterial( {
+	const renderPass1 = new RenderPass(scene1, camera);
+	const linesPass1 = new LinesPass({
+		width: renderer.domElement.clientWidth,
+		height: renderer.domElement.clientHeight,
+		scene: scene1,
+		camera: camera,
 		uniforms: {
-			baseTexture: { value: null },
-			bloomTexture: { value: scene2Composer.renderTarget2.texture }
-		},
-		vertexShader: document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-		defines: {}
-	} ), 'baseTexture'
-);
-mixPass.needsSwap = true;
+			lineColor: { type: 'vec3', value: new THREE.Color(0x000000) },
+			bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
+			lineWidth: 1,
+			numLines: 5,
+		}
+	});
 
-const composer = new EffectComposer(renderer);
-composer.addPass( renderPass1 );
-composer.addPass( linesPass1 );
-composer.addPass( mixPass );
-// composer.addPass( outputPass );
-// composer.addPass( copyPass );
+	composer = new EffectComposer(renderer);
+	composer.addPass( renderPass1 );
+	composer.addPass( linesPass1 );
 
+	if (noScene2) return;
+	
+	const renderPass2 = new RenderPass(scene2, camera);
+	const linesPass2 = new LinesPass({
+		width: renderer.domElement.clientWidth,
+		height: renderer.domElement.clientHeight,
+		scene: scene2,
+		camera: camera,
+		uniforms: {
+			lineColor: { type: 'vec3', value: new THREE.Color(0xFFFFFF) },
+			bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
+			lineWidth: 1,
+			numLines: 5,
+		}
+	});
+
+	const outputPass = new OutputPass();
+	scene2Composer = new EffectComposer(renderer);
+	scene2Composer.renderToScreen = false;
+	scene2Composer.addPass(renderPass2);
+	scene2Composer.addPass(linesPass2);
+	scene2Composer.addPass(outputPass); 
+	// https://codesandbox.io/p/devbox/preserve-depth-forked-738cmp?file=%2Fsrc%2Fswap-pass.ts%3A145%2C38
+
+	const mixPass = new ShaderPass(
+		new THREE.ShaderMaterial( {
+			uniforms: {
+				baseTexture: { value: null },
+				blendTexture: { value: scene2Composer.renderTarget2.texture }
+			},
+			vertexShader: vertexShader,
+			fragmentShader: blenderShader,
+			defines: {}
+		} ), 'baseTexture'
+	);
+	mixPass.needsSwap = true;
+
+	composer.addPass( mixPass );
+}
+post();
 
 function addTestCube(x, y, z, size=0.5) {
 	var box = new THREE.Mesh(
@@ -163,7 +150,7 @@ const globe = new THREE.Mesh(
 	new THREE.MeshStandardMaterial({ color: 0x00ffff }),
 );
 scene1.add(globe);
-scene2.add(globe);
+scene2.add(globe.clone());
 
 let treeMaterial;
 function scenery() {
@@ -318,11 +305,7 @@ function animate(time) {
 	requestAnimationFrame(animate);
 
 	// renderer.render(scene1, camera);
-
-	// renderer.clear();
-	scene1Composer.render();
-	scene2Composer.render();
-	// renderer.clear();
+	if (scene2Composer) scene2Composer.render();
 	composer.render();
 	
 	if (cat.mixer) cat.mixer.update(timeElapsed / 1000);
