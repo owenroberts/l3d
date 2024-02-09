@@ -4,6 +4,9 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { TexturePass } from 'three/addons/postprocessing/TexturePass.js';
+import { CopyShader } from 'three/addons/shaders/CopyShader.js';
+import { ClearPass } from 'three/addons/postprocessing/ClearPass.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
@@ -29,7 +32,7 @@ container.appendChild(stats.dom);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(w, h);
-renderer.autoClear = false;
+// renderer.autoClear = false;
 // renderer.physicallyCorrectLights = true;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.CineonToneMapping;
@@ -64,8 +67,9 @@ const cc = {
 
 const composer = new EffectComposer(renderer);
 const renderPass1 = new RenderPass(scene1, camera);
-// renderPass1.renderToScreen = false;
-renderPass1.clear = false;
+renderPass1.renderToScreen = false;
+// renderPass1.clear = false;
+
 const renderPass2 = new RenderPass(scene2, camera);
 renderPass2.renderToScreen = false;
 
@@ -81,6 +85,8 @@ const linesPass1 = new LinesPass({
 		numLines: 5,
 	}
 });
+linesPass1.renderToScreen = false;
+// linesPass1.clear = false;
 
 const linesPass2 = new LinesPass({
 	width: renderer.domElement.clientWidth,
@@ -95,10 +101,15 @@ const linesPass2 = new LinesPass({
 	}
 });
 
-const scene1Composer = new EffectComposer(renderer);
+// const clearPass = new ClearPass();
+const copyPass = new ShaderPass( CopyShader );
+
+const scene1Composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { stencilBuffer: true, format: THREE.RGBAFormat }));
 scene1Composer.renderToScreen = false;
+// scene1Composer.clear = false;
 scene1Composer.addPass( renderPass1 );
 scene1Composer.addPass( linesPass1 );
+// scene1Composer.addPass( copyPass );
 
 const scene2Composer = new EffectComposer(renderer);
 scene2Composer.renderToScreen = false;
@@ -109,7 +120,7 @@ const mixPass = new ShaderPass(
 	new THREE.ShaderMaterial( {
 		uniforms: {
 			baseTexture: { value: null },
-			bloomTexture: { value: scene1Composer.renderTarget2.texture }
+			bloomTexture: { value: scene2Composer.renderTarget2.texture }
 		},
 		vertexShader: document.getElementById( 'vertexshader' ).textContent,
 		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
@@ -117,13 +128,17 @@ const mixPass = new ShaderPass(
 	} ), 'baseTexture'
 );
 mixPass.needsSwap = true;
-
+mixPass.renderToScreen = true;
 const outputPass = new OutputPass();
+
+composer.addPass(new TexturePass(scene1Composer.renderTarget2.texture));
+
 // const finalComposer = new EffectComposer( renderer );
-// composer.addPass( renderPass1 );
-// composer.addPass( linesPass1 );
+composer.addPass( renderPass1 );
+composer.addPass( linesPass1 );
 composer.addPass( mixPass );
 composer.addPass( outputPass );
+composer.addPass( copyPass );
 
 console.log(scene2Composer);
 
@@ -154,8 +169,9 @@ const worldRadius = 64;
 const globe = new THREE.Mesh(
 	// new THREE.SphereGeometry(worldRadius, 32, 16),
 	new THREE.IcosahedronGeometry(worldRadius, 3),
-	new THREE.MeshStandardMaterial(),
+	// new THREE.MeshStandardMaterial(),
 	// new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true }),
+	new THREE.MeshStandardMaterial({ color: 0x00ffff }),
 );
 scene1.add(globe);
 
@@ -310,10 +326,14 @@ function animate(time) {
 	stats.update();
 	const timeElapsed = time - previousTime;
 	requestAnimationFrame(animate);
-	// renderer.render(scene, camera);
 
-	scene1Composer.render();
-	// scene2Composer.render();
+	// renderer.render(scene1, camera);
+
+	renderer.clear();
+	// scene1Composer.render();
+	
+	scene2Composer.render();
+	renderer.clear();
 	composer.render();
 	
 	if (cat.mixer) cat.mixer.update(timeElapsed / 1000);

@@ -31,6 +31,8 @@ export class LinesPass extends Pass {
 		this.normalBuffer = normalBuffer;
 		this.normalMaterial = new THREE.MeshNormalMaterial();
 
+		// this.needsSwap = false;
+
 		const loader = new THREE.TextureLoader();
 		loader.load('./imgs/image-7.png', texture => {
 			this.material.uniforms.uTexture.value = texture;
@@ -47,6 +49,7 @@ export class LinesPass extends Pass {
 		
 		// this.material.uniforms['tDiffuse'].value = readBuffer.texture;
 		renderer.setRenderTarget(this.normalBuffer);
+
 		
 		const overrideMaterialValue = this.scene.overrideMaterial;
 		
@@ -59,7 +62,7 @@ export class LinesPass extends Pass {
 		
 		if (this.renderToScreen) {
 			renderer.setRenderTarget(null);
-			this.fsQuad.render(renderer)
+			this.fsQuad.render(renderer);
 		} else {
 			renderer.setRenderTarget(writeBuffer);
 			if (this.clear) renderer.clear();
