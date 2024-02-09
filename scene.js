@@ -3,65 +3,59 @@ import Stats from 'three/addons/libs/stats.module.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { LinesPass } from './src/LinesPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
-
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
 
+import { LinesPass } from './src/LinesPass.js';
 import './doodoo/build/doodoo.min.js'; // holy shit what
 import './doodoo/build/lib/tone/build/Tone.js';
 // https://lea.verou.me/blog/2020/07/import-non-esm-libraries-in-es-modules-with-client-side-vanilla-js/
 import './doodoo/ui/lib/cool/cool.js'; // fuck off
 
 let w = 960, h = 540;
-const scene = new THREE.Scene();
+const scene1 = new THREE.Scene();
+const scene2 = new THREE.Scene();
 // scene.background = new THREE.Color(0xC7C7C7);
 
 const stats = new Stats();
-document.getElementById("longies").appendChild(stats.dom);
+const container = document.getElementById("longies");
+container.appendChild(stats.dom);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(w, h);
+renderer.autoClear = false;
 // renderer.physicallyCorrectLights = true;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.CineonToneMapping;
 renderer.toneMappingExposure = 1.75;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.getElementById("longies").appendChild(renderer.domElement);
-
-let uniforms = {
-	lineColor: { type: 'vec3', value: new THREE.Color(0x000000) },
-	bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
-	lineWidth: 1,
-	numLines: 5,
-};
+container.appendChild(renderer.domElement);
 
 /* for testing */
-const light = new THREE.DirectionalLight(0xffffff, 0.5);
-light.castShadow = true;
-light.position.set(2, 2, 2);
-light.shadow.mapSize.width = 2048;
-light.shadow.mapSize.height = 2048;
-light.lookAt(new THREE.Vector3(0, 0, 0));
-scene.add(light);
-scene.add(new THREE.AmbientLight(0xeeefff, 0.1));
+function lights() {
+	const light = new THREE.DirectionalLight(0xffffff, 0.5);
+	light.castShadow = true;
+	light.position.set(2, 2, 2);
+	light.shadow.mapSize.width = 2048;
+	light.shadow.mapSize.height = 2048;
+	light.lookAt(new THREE.Vector3(0, 0, 0));
+	scene1.add(light);
+	scene1.add(new THREE.AmbientLight(0xeeefff, 0.1));
+}
+lights();
 
 const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 camera.position.set(0, 10, 50);
 const controls = new OrbitControls(camera, renderer.domElement);
-// console.log('controls', controls);
-// console.log('camera', camera);
 let useControls = false; // debug
-// controls.update();
 
-/* camera follow https://codepen.io/Fyrestar/pen/MWyQxNg */
-// no dead end
 /* looks better https://jsfiddle.net/Fyrestar/6519yedL/ nice! simple and only kind of dumb */
 const cc = {
 	temp: new THREE.Vector3,
@@ -69,17 +63,75 @@ const cc = {
 };
 
 const composer = new EffectComposer(renderer);
-const renderPass = new RenderPass(scene, camera);
-const linesPass = new LinesPass({
-  width: renderer.domElement.clientWidth,
-  height: renderer.domElement.clientHeight,
-  scene,
-  camera,
-  uniforms,
+const renderPass1 = new RenderPass(scene1, camera);
+// renderPass1.renderToScreen = false;
+renderPass1.clear = false;
+const renderPass2 = new RenderPass(scene2, camera);
+renderPass2.renderToScreen = false;
+
+const linesPass1 = new LinesPass({
+	width: renderer.domElement.clientWidth,
+	height: renderer.domElement.clientHeight,
+	scene: scene1,
+	camera: camera,
+	uniforms: {
+		lineColor: { type: 'vec3', value: new THREE.Color(0x000000) },
+		bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
+		lineWidth: 1,
+		numLines: 5,
+	}
 });
-composer.addPass(renderPass);
-composer.addPass(linesPass);
-console.log('lines pass', linesPass);
+
+const linesPass2 = new LinesPass({
+	width: renderer.domElement.clientWidth,
+	height: renderer.domElement.clientHeight,
+	scene: scene2,
+	camera: camera,
+	uniforms: {
+		lineColor: { type: 'vec3', value: new THREE.Color(0xFFFFFF) },
+		bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
+		lineWidth: 1,
+		numLines: 5,
+	}
+});
+
+const scene1Composer = new EffectComposer(renderer);
+scene1Composer.renderToScreen = false;
+scene1Composer.addPass( renderPass1 );
+scene1Composer.addPass( linesPass1 );
+
+const scene2Composer = new EffectComposer(renderer);
+scene2Composer.renderToScreen = false;
+scene2Composer.addPass( renderPass2 );
+scene2Composer.addPass( linesPass2 );
+
+const mixPass = new ShaderPass(
+	new THREE.ShaderMaterial( {
+		uniforms: {
+			baseTexture: { value: null },
+			bloomTexture: { value: scene1Composer.renderTarget2.texture }
+		},
+		vertexShader: document.getElementById( 'vertexshader' ).textContent,
+		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+		defines: {}
+	} ), 'baseTexture'
+);
+mixPass.needsSwap = true;
+
+const outputPass = new OutputPass();
+// const finalComposer = new EffectComposer( renderer );
+// composer.addPass( renderPass1 );
+// composer.addPass( linesPass1 );
+composer.addPass( mixPass );
+composer.addPass( outputPass );
+
+console.log(scene2Composer);
+
+// composer.addPass(renderPass1);
+// composer.addPass(linesPass1);
+// composer.addPass(renderPass2);
+// composer.addPass(linesPass2);
+
 
 function addTestCube(x, y, z, size=0.5) {
 	var box = new THREE.Mesh(
@@ -105,7 +157,7 @@ const globe = new THREE.Mesh(
 	new THREE.MeshStandardMaterial(),
 	// new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true }),
 );
-scene.add(globe);
+scene1.add(globe);
 
 let treeMaterial;
 function scenery() {
@@ -148,7 +200,7 @@ function treeBranch(position, normal, length) {
 	geometry.setPositions(points);
 	const line = new Line2(geometry, treeMaterial);
 	// console.log('lines', lines);
-	scene.add(line);
+	scene2.add(line);
 
 	if (length > 1) {
 		length--;
@@ -240,7 +292,7 @@ loader.load("./models/cat_1.glb", gltf => {
 	});
 	
 	cat.mixer.clipAction(cat.animations['Idle_1']).play();
-	scene.add(cat.model);
+	scene1.add(cat.model);
 
 	cat.model.add(cc.goal);
 	cc.goal.position.set(0, 4, -8);
@@ -259,7 +311,11 @@ function animate(time) {
 	const timeElapsed = time - previousTime;
 	requestAnimationFrame(animate);
 	// renderer.render(scene, camera);
+
+	scene1Composer.render();
+	// scene2Composer.render();
 	composer.render();
+	
 	if (cat.mixer) cat.mixer.update(timeElapsed / 1000);
 	previousTime = time;
 
@@ -288,8 +344,8 @@ function animate(time) {
 		if (noiseEffect.count === 6) {
 			noiseEffect.value.x = (noiseEffect.value.x + Cool.random(-0.1, 0.1)).clamp(0, 2);
 			noiseEffect.value.y = (noiseEffect.value.y + Cool.random(-0.1, 0.1)).clamp(0, 2);
-			linesPass.material.uniforms.noiseOffset.value.x = noiseEffect.value.x;
-			linesPass.material.uniforms.noiseOffset.value.y = noiseEffect.value.y;
+			linesPass1.material.uniforms.noiseOffset.value.x = noiseEffect.value.x;
+			linesPass1.material.uniforms.noiseOffset.value.y = noiseEffect.value.y;
 			noiseEffect.count = 0;
 		}
 		noiseEffect.count++;
@@ -361,11 +417,14 @@ function toggleFullScreen() {
 		// gme.renderer.setScale(2);
 		// scale three
 		controlsDiv.style.display = 'none';
+		container.style.cursor = 'none';
+
 	} else if (document.exitFullscreen) {
 		document.exitFullscreen();
 		// gme.renderer.setScale(1);
 		// scale three
 		controlsDiv.style.display = 'block';
+		container.style.cursor = 'inherit';
 	}
 }
 

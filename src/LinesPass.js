@@ -12,6 +12,12 @@ export class LinesPass extends Pass {
 		this.camera = camera;
 		
 		this.material = new LinesMaterial({ uniforms });
+		// this.material.blending = THREE.CustomBlending;
+		// this.material.blendEquation = THREE.AddEquation;
+		// this.material.blendAlpha = THREE.;
+		// this.material.blendSrc = THREE.ZeroFactor;
+		// this.material.blendDst = THREE.OneMinusSrcAlphaFactor;
+
 		this.fsQuad = new FullScreenQuad(this.material);
 		this.material.uniforms.uResolution.value = new THREE.Vector2(width, height);
 
@@ -36,7 +42,8 @@ export class LinesPass extends Pass {
 		this.fsQuad.dispose();
 	}
 
-	render(renderer, writeBuffer,readBuffer) {
+	render(renderer, writeBuffer, readBuffer) {
+		// console.log(readBuffer)
 		
 		// this.material.uniforms['tDiffuse'].value = readBuffer.texture;
 		renderer.setRenderTarget(this.normalBuffer);
