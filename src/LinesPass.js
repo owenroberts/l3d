@@ -14,8 +14,7 @@ export class LinesPass extends Pass {
 		this.material = new LinesMaterial({ uniforms });
 		// this.material.blending = THREE.CustomBlending;
 		// this.material.blendEquation = THREE.AddEquation;
-		// this.material.blendAlpha = THREE.;
-		// this.material.blendSrc = THREE.ZeroFactor;
+		// this.material.blendSrc = THREE.SrcColor;
 		// this.material.blendDst = THREE.OneMinusSrcAlphaFactor;
 
 		this.fsQuad = new FullScreenQuad(this.material);
@@ -49,7 +48,6 @@ export class LinesPass extends Pass {
 		
 		// this.material.uniforms['tDiffuse'].value = readBuffer.texture;
 		renderer.setRenderTarget(this.normalBuffer);
-
 		
 		const overrideMaterialValue = this.scene.overrideMaterial;
 		

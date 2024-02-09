@@ -32,13 +32,9 @@ container.appendChild(stats.dom);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(w, h);
-// renderer.autoClear = false;
-// renderer.physicallyCorrectLights = true;
-renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.CineonToneMapping;
-renderer.toneMappingExposure = 1.75;
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+// renderer.shadowMap.enabled = true;
+// renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 container.appendChild(renderer.domElement);
 
 /* for testing */
@@ -65,7 +61,7 @@ const cc = {
 	goal:  new THREE.Object3D,
 };
 
-const composer = new EffectComposer(renderer);
+
 const renderPass1 = new RenderPass(scene1, camera);
 renderPass1.renderToScreen = false;
 // renderPass1.clear = false;
@@ -103,18 +99,22 @@ const linesPass2 = new LinesPass({
 
 // const clearPass = new ClearPass();
 const copyPass = new ShaderPass( CopyShader );
+const outputPass = new OutputPass();
 
-const scene1Composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { stencilBuffer: true, format: THREE.RGBAFormat }));
+const scene1Composer = new EffectComposer(renderer);
 scene1Composer.renderToScreen = false;
-// scene1Composer.clear = false;
 scene1Composer.addPass( renderPass1 );
 scene1Composer.addPass( linesPass1 );
-// scene1Composer.addPass( copyPass );
+scene1Composer.addPass( outputPass ); 
 
 const scene2Composer = new EffectComposer(renderer);
 scene2Composer.renderToScreen = false;
 scene2Composer.addPass( renderPass2 );
 scene2Composer.addPass( linesPass2 );
+scene2Composer.addPass( outputPass ); 
+// https://codesandbox.io/p/devbox/preserve-depth-forked-738cmp?file=%2Fsrc%2Fswap-pass.ts%3A145%2C38
+
+const texture = new THREE.TextureLoader().load('./imgs/image-7.png'); 
 
 const mixPass = new ShaderPass(
 	new THREE.ShaderMaterial( {
@@ -128,24 +128,13 @@ const mixPass = new ShaderPass(
 	} ), 'baseTexture'
 );
 mixPass.needsSwap = true;
-mixPass.renderToScreen = true;
-const outputPass = new OutputPass();
 
-composer.addPass(new TexturePass(scene1Composer.renderTarget2.texture));
-
-// const finalComposer = new EffectComposer( renderer );
+const composer = new EffectComposer(renderer);
 composer.addPass( renderPass1 );
 composer.addPass( linesPass1 );
 composer.addPass( mixPass );
-composer.addPass( outputPass );
-composer.addPass( copyPass );
-
-console.log(scene2Composer);
-
-// composer.addPass(renderPass1);
-// composer.addPass(linesPass1);
-// composer.addPass(renderPass2);
-// composer.addPass(linesPass2);
+// composer.addPass( outputPass );
+// composer.addPass( copyPass );
 
 
 function addTestCube(x, y, z, size=0.5) {
@@ -174,6 +163,7 @@ const globe = new THREE.Mesh(
 	new THREE.MeshStandardMaterial({ color: 0x00ffff }),
 );
 scene1.add(globe);
+scene2.add(globe);
 
 let treeMaterial;
 function scenery() {
@@ -329,11 +319,10 @@ function animate(time) {
 
 	// renderer.render(scene1, camera);
 
-	renderer.clear();
-	// scene1Composer.render();
-	
+	// renderer.clear();
+	scene1Composer.render();
 	scene2Composer.render();
-	renderer.clear();
+	// renderer.clear();
 	composer.render();
 	
 	if (cat.mixer) cat.mixer.update(timeElapsed / 1000);
