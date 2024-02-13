@@ -95,50 +95,12 @@ function animate(time) {
 	// renderer.render(scene1, camera);
 	post.process();
 
-	if (!cat.isLoaded()) return;
-
-	cat.update(timeElapsed);
-
-	if (tracks[0] === 'play') {
-		cat.walk();
-		// const walkDistance = cat.model.position.distanceTo(cat.next.position);
-		// if (walkDistance > 0.1) {
-		// 	cat.model.translateZ(0.05);
-		// } else {
-		// 	getNextWalkPosition();
-		// }
-	}
-
-	// does this need to be optimized?
-	cat.updateAnimation(tracks[0] === 'play');
-	// if (tracks[0] === 'play') {
-	// 	cat.getMixer().clipAction(cat.getAnimations()['Idle_1']).stop();
-	// 	cat.getMixer().clipAction(cat.getAnimations()['Walk1']).play();
-	// } else {
-	// 	cat.getMixer().clipAction(cat.getAnimations()['Walk1']).stop();
-	// 	cat.getMixer().clipAction(cat.getAnimations()['Idle_1']).play();
-	// }
-
-	// console.log(tracks[1])
-	if (tracks[1] === 'play') {
-		noiseEffect.update();
-		post.update(noiseEffect.getValue());
-
-		// if (noiseEffect.count === 6) {
-		// 	noiseEffect.value.x = (noiseEffect.value.x + Cool.random(-0.1, 0.1)).clamp(0, 2);
-		// 	noiseEffect.value.y = (noiseEffect.value.y + Cool.random(-0.1, 0.1)).clamp(0, 2);
-		// 	linesPass1.material.uniforms.noiseOffset.value.x = noiseEffect.value.x;
-		// 	linesPass1.material.uniforms.noiseOffset.value.y = noiseEffect.value.y;
-		// 	noiseEffect.count = 0;
-		// }
-		// noiseEffect.count++;
-	}
+	cat.update(timeElapsed, tracks[0] === 'play');
 
 	if (useControls) {
 		controls.update();
-	} else {
+	} else if (cat.isLoaded()) {
 		cc.update();
-
 		// cc.temp.setFromMatrixPosition(cc.goal.matrixWorld);
 		// camera.position.lerp(cc.temp, 0.02);
 		catModel = cat.getModel();

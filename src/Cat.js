@@ -30,23 +30,11 @@ export default function Cat(params) {
 		isLoaded = true;
 	}
 
-	function update(timeElapsed) {
+	function update(timeElapsed, isWalking) {
+		if (!isLoaded) return;
+
 		mixer.update(timeElapsed / 1000);
-	}
 
-	function walk() {
-		const walkDistance = model.position.distanceTo(next.position);
-		if (walkDistance > 0.1) {
-			model.translateZ(0.05);
-		} else {
-			model.up.copy(next.normal);
-			next = globe.getNext(next.position);
-			model.lookAt(next.position);
-		}
-	}
-
-	function updateAnimation(isWalking) {
-		console.log('isWalking', isWalking);
 		if (isWalking) {
 			mixer.clipAction(animations['Idle_1']).stop();
 			mixer.clipAction(animations['Walk1']).play();
@@ -54,14 +42,22 @@ export default function Cat(params) {
 			mixer.clipAction(animations['Walk1']).stop();
 			mixer.clipAction(animations['Idle_1']).play();
 		}
+	
+		if (isWalking) {
+			const walkDistance = model.position.distanceTo(next.position);
+			if (walkDistance > 0.1) {
+				model.translateZ(0.05);
+			} else {
+				model.up.copy(next.normal);
+				next = globe.getNext(next.position);
+				model.lookAt(next.position);
+			}
+		}
 	}
 
 	return { 
-		loadModel, update, walk, updateAnimation,
+		loadModel, update,
 		isLoaded: () => { return isLoaded; },
 		getModel: () => { return model; },
-		getMixer: () => { return mixer; },
-		getAnimations: () => { return animations; },
-
 	};
 }

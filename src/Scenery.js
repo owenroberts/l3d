@@ -36,7 +36,7 @@ export default function Scenery(params) {
 	mat1.resolution.set(w, h);
 	mat2.resolution.set(w, h);
 	
-	const nTrees = Cool.randInt(globePosition.count * 0.33, globePosition.count * 0.66);
+	const nTrees = Cool.randInt(globePosition.count * 0.4, globePosition.count * 0.8);
 	for (let i = 0; i < nTrees; i++) {
 		const vertIndex = Cool.randInt(globePosition.count - 1);
 		if (usedPositions.includes(vertIndex)) continue;
@@ -99,135 +99,6 @@ export default function Scenery(params) {
 		}
 	}
 
-	function tallTreeBranch2(pos, pos2, length) {
-		// https://natureofcode.com/fractals/#trees -- sort of based on this
-		addLine(pos, pos2);
-
-		if (length > 1) {
-			
-			length--;
-
-			const b = Cool.randInt(1, 3);
-			for (let i = 0; i < b; i++) {
-
-				let n = new THREE.Vector3()
-					.subVectors(pos2, pos)
-					.normalize()
-				
-				const p = pos2.clone()
-					.addScaledVector(n, Cool.random(-1, 0))
-
-				n.applyAxisAngle(new THREE.Vector3(0, 0, 1), Cool.random(-0.5, 0.5));
-				n.applyAxisAngle(new THREE.Vector3(0, 1, 0), Cool.random(-0.5, 0.5));
-				n.applyAxisAngle(new THREE.Vector3(1, 0, 0), Cool.random(-0.5, 0.5));
-				
-				p.addScaledVector(n, length);
-				
-				tallTreeBranch(pos2, p, length);
-			}
-		}
-	}
-
-	function treeBranch(pos, pos2, length, type, branchAgain=true) {
-		
-		// const pos2 = position.clone().addScaledVector(normal, length);
-		const points = [
-			pos.x, pos.y, pos.z,
-			pos2.x, pos2.y, pos2.z,
-		];
-		
-		const geometry = new LineGeometry();
-		geometry.setPositions(points);
-		const line = new Line2(geometry, treeMaterial);
-		if (noScene2) scene1.add(line);
-		else scene2.add(line);
-
-		if (length > 1 && branchAgain) {
-			
-			if (!type) type = 2; // Cool.randInt(1, 3);
-			if (type === 1) {
-				length--;
-
-				const b = Cool.randInt(1, 3);
-				for (let i = 0; i < b; i++) {
-
-					let n = new THREE.Vector3()
-						.subVectors(pos2, pos)
-						.normalize()
-					
-					const p = pos2.clone()
-						.addScaledVector(n, Cool.random(-1, 0))
-
-					n.applyAxisAngle(new THREE.Vector3(0, 0, 1), Cool.random(-0.5, 0.5));
-					n.applyAxisAngle(new THREE.Vector3(0, 1, 0), Cool.random(-0.5, 0.5));
-					n.applyAxisAngle(new THREE.Vector3(1, 0, 0), Cool.random(-0.5, 0.5));
-					
-					p.addScaledVector(n, length);
-					
-					treeBranch(pos2, p, length, type);
-				}
-			}
-
-			if (type === 2) {
-				length--;
-
-				const b = Cool.randInt(2, 4);
-				for (let i = 0; i < b; i++) {
-
-					let n = new THREE.Vector3()
-						.subVectors(pos2, pos)
-						.normalize()
-					
-					const p = pos2.clone()
-						.addScaledVector(n, Cool.random(-1, 0))
-
-					const rn = Cool.random([[1, 0, 0], [0, 0, 1]]);
-					const axis = new THREE.Vector3(...rn);
-					const angle = Cool.random(2.5, 3) * Cool.random([-1, 1]);
-					n.applyAxisAngle(axis, angle);
-					p.addScaledVector(n, length + 1);
-
-					// fuck no
-
-					// n.applyAxisAngle(new THREE.Vector3(0, 1, 0), Cool.random(-0.5, 0.5));
-					// n.applyAxisAngle(new THREE.Vector3(1, 0, 0), Cool.random(-0.5, 0.5));
-					
-
-					n.applyAxisAngle(axis, -angle);
-					const p2 = p.clone()
-						p.addScaledVector(n, length);
-					
-					treeBranch(pos2, p, length, type, false);
-					treeBranch(p, p2, length - 1, type, true);
-				}
-			}
-
-			if (type === 3) {
-				// const n = normal.clone();
-				// const p = pos2.clone();
-				
-				let p = new THREE.Vector3()
-					.subVectors(position, pos2)
-					.multiplyScalar(-1)
-					.add(position);
-  
-				let n = new THREE.Vector3()
-					.subVectors(position, pos2)
-					.applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI * 0.5)
-					.normalize();
-
-				// length -= 2;
-				const p1 = p.clone().addScaledVector(n, -length);
-				treeBranch(p1, n, length * 2, type, false);
-
-				for (let i = 0; i < 5; i++) {
-					const np = p.clone().addScaledVector(n, (i - 2) * length / 2);
-					treeBranch(np, normal, length, type, false);
-				}
-			}
-		}
-	}
-
 	function anglyBush(position, normal, length) {
 
 		const z_angle = Cool.random(Math.PI * 2);
@@ -256,7 +127,7 @@ export default function Scenery(params) {
 	}
 
 	function forkTree(position, normal) {
-		const length = Cool.random(3, 6);
+		const length = Cool.random(2, 4);
 
 		const o = new THREE.Object3D();
 		o.position.copy(position);
