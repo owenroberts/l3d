@@ -69,7 +69,6 @@ const globe = new Globe({ worldRadius });
 scene1.add(globe.getGlobe());
 if (!noScene2) scene2.add(globe.clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
-console.log('post scenery', scene1);
 const cc = new CameraControls({ camera });
 const cat = new Cat({ globe });
 
@@ -98,7 +97,7 @@ function animate(time) {
 
 	if (!cat.isLoaded()) return;
 
-	cat.update(timeElapsed / 1000);
+	cat.update(timeElapsed);
 
 	if (tracks[0] === 'play') {
 		cat.walk();
@@ -111,14 +110,14 @@ function animate(time) {
 	}
 
 	// does this need to be optimized?
-	// cat.updateAnimation(tracks[0] === 'play');
-	if (tracks[0] === 'play') {
-		cat.getMixer().clipAction(cat.getAnimations()['Idle_1']).stop();
-		cat.getMixer().clipAction(cat.getAnimations()['Walk1']).play();
-	} else {
-		cat.getMixer().clipAction(cat.getAnimations()['Walk1']).stop();
-		cat.getMixer().clipAction(cat.getAnimations()['Idle_1']).play();
-	}
+	cat.updateAnimation(tracks[0] === 'play');
+	// if (tracks[0] === 'play') {
+	// 	cat.getMixer().clipAction(cat.getAnimations()['Idle_1']).stop();
+	// 	cat.getMixer().clipAction(cat.getAnimations()['Walk1']).play();
+	// } else {
+	// 	cat.getMixer().clipAction(cat.getAnimations()['Walk1']).stop();
+	// 	cat.getMixer().clipAction(cat.getAnimations()['Idle_1']).play();
+	// }
 
 	// console.log(tracks[1])
 	if (tracks[1] === 'play') {

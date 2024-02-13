@@ -17,6 +17,7 @@ export default function Cat(params) {
 		gltf.animations.forEach(a => {
 			animations[a.name] = a;
 		});
+		console.log(animations);
 		mixer.clipAction(animations['Idle_1']).play();
 
 		const vertIndex = globe.getRandomVertex();
@@ -26,9 +27,7 @@ export default function Cat(params) {
 		model.up.copy(start.normal);
 		model.lookAt(next.position);
 		
-
 		isLoaded = true;
-
 	}
 
 	function update(timeElapsed) {
