@@ -47,7 +47,7 @@ camera.position.set(0, 10, 50);
 const controls = new OrbitControls(camera, renderer.domElement);
 let useControls = false; // debug
 
-let noScene2 = true;
+let noScene2 = false;
 const post = new PostProcessing({ scene1, scene2, noScene2, renderer, camera });
 
 function addTestCube(x, y, z, size=0.5) {
@@ -67,7 +67,7 @@ function addHelper(pos) {
 const worldRadius = 128;
 const globe = new Globe({ worldRadius });
 scene1.add(globe.getGlobe());
-if (!noScene2) scene2.add(globe.clone());
+if (!noScene2) scene2.add(globe.getGlobe().clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
 const cc = new CameraControls({ camera });
 const cat = new Cat({ globe });
@@ -96,6 +96,10 @@ function animate(time) {
 	post.process();
 
 	cat.update(timeElapsed, tracks[0] === 'play');
+	if (tracks[0] === 'play') {
+		noiseEffect.update();
+		post.update(noiseEffect.getValue());
+	}
 
 	if (useControls) {
 		controls.update();

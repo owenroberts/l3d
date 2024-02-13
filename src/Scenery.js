@@ -14,6 +14,13 @@ export default function Scenery(params) {
 	const X_AXIS = new THREE.Vector3(1, 0, 0);
 	const Y_AXIS = new THREE.Vector3(0, 1, 0);
 	const Z_AXIS = new THREE.Vector3(0, 0, 1);
+	let scene = scene1;
+
+	const mat1 = new LineMaterial( { color: 0xff00ff, linewidth: 3 } );
+	const mat2 = new LineMaterial( { color: 0xff00ff, linewidth: 1 } );
+
+	mat1.resolution.set(w, h);
+	mat2.resolution.set(w, h);
 
 	// inner globe is a way to generate some pionts and normals for addings trees ... 
 	const innerGlobe = new THREE.Mesh(
@@ -24,49 +31,57 @@ export default function Scenery(params) {
 	);
 	innerGlobe.rotation.set(Cool.random(Math.PI), Cool.random(Math.PI), Cool.random(Math.PI));
 	// scene1.add(innerGlobe);
+	setup(innerGlobe);
 
-	const indexedGlobe = BufferGeometryUtils.mergeVertices(innerGlobe.geometry);
-	const globePosition = indexedGlobe.getAttribute('position');
-	const globeNormal = indexedGlobe.getAttribute('normal');
-	const usedPositions = [];
-	
-	const mat1 = new LineMaterial( { color: 0xff00ff, linewidth: 3 } );
-	const mat2 = new LineMaterial( { color: 0xff00ff, linewidth: 1 } );
+	function setup(globe, isInverse=false) {
+		const indexedGlobe = BufferGeometryUtils.mergeVertices(globe.geometry);
+		const globePosition = indexedGlobe.getAttribute('position');
+		const globeNormal = indexedGlobe.getAttribute('normal');
+		const usedPositions = [];
 
-	mat1.resolution.set(w, h);
-	mat2.resolution.set(w, h);
-	
-	const nTrees = Cool.randInt(globePosition.count * 0.4, globePosition.count * 0.8);
-	for (let i = 0; i < nTrees; i++) {
-		const vertIndex = Cool.randInt(globePosition.count - 1);
-		if (usedPositions.includes(vertIndex)) continue;
-		usedPositions.push(vertIndex);
+		const n = Cool.randInt(globePosition.count * 0.4, globePosition.count * 0.8);
+		for (let i = 0; i < n; i++) {
+			const vertIndex = Cool.randInt(globePosition.count - 1);
+			if (usedPositions.includes(vertIndex)) continue;
+			usedPositions.push(vertIndex);
 
+			const position = new THREE.Vector3().fromBufferAttribute(globePosition, vertIndex);
+			const normal = new THREE.Vector3().fromBufferAttribute(globeNormal, vertIndex);
+			if (isInverse) normal.negate();
+			
+			const type = Cool.random([1, 1, 2, 3, 4]);
 
-		const position = new THREE.Vector3().fromBufferAttribute(globePosition, vertIndex);
-		const normal = new THREE.Vector3().fromBufferAttribute(globeNormal, vertIndex);
-		const pos2 = position.clone().addScaledVector(normal, 5);
-		
-		const type = Cool.randInt(1, 4);
+			if (type === 1) {
+				tallTreeBranch(position, normal, 5);
+			}
 
-		if (type === 1) {
-			tallTreeBranch(position, normal, 5);
-		}
+			if (type === 2) {
+				const b = Cool.randInt(2, 4);
+				for (let j = 0; j < b; j++) {
+					anglyBush(position, normal, 5);
+				}
+			}
 
-		if (type === 2) {
-			const b = Cool.randInt(2, 4);
-			for (let i = 0; i < b; i++) {
-				anglyBush(position, normal, 5);
+			if (type === 3) {
+				forkTree(position, normal);
+			}
+
+			if (type === 4) {
+				clouds(position, normal);
 			}
 		}
+	}
 
-		if (type === 3) {
-			forkTree(position, normal);
-		}
-
-		if (type === 4) {
-			clouds(position, normal);
-		}
+	/* setup inverse world */
+	if (!noScene2) {
+		const inverseGlobe = new THREE.Mesh(
+			new THREE.IcosahedronGeometry(worldRadius * 1.5, 3), 
+			new THREE.MeshStandardMaterial({ side: THREE.BackSide }),
+			// new THREE.MeshStandardMaterial({ color: 0xffffff, wireframe: true }),
+		);
+		scene2.add(inverseGlobe);
+		scene = scene2;
+		setup(inverseGlobe, true);
 	}
 
 	function addLine(pos, pos2, mat=mat1) {
@@ -76,8 +91,7 @@ export default function Scenery(params) {
 			pos2.x, pos2.y, pos2.z,
 		]);
 		const line = new Line2(geometry, mat);
-		if (noScene2) scene1.add(line);
-		else scene2.add(line);
+		scene.add(line);
 	}
 
 	function tallTreeBranch(position, normal, length) {

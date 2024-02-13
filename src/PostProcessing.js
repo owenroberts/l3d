@@ -32,10 +32,12 @@ export default function PostProcessing(params) {
 	composer.addPass( renderPass1 );
 	composer.addPass( linesPass1 );
 
+	let scene2Composer, linesPass2;
+
 	if (!noScene2) {
 	
 		const renderPass2 = new RenderPass(scene2, camera);
-		const linesPass2 = new LinesPass({
+		linesPass2 = new LinesPass({
 			width: renderer.domElement.clientWidth,
 			height: renderer.domElement.clientHeight,
 			scene: scene2,
@@ -49,7 +51,7 @@ export default function PostProcessing(params) {
 		});
 
 		const outputPass = new OutputPass();
-		const scene2Composer = new EffectComposer(renderer);
+		scene2Composer = new EffectComposer(renderer);
 		scene2Composer.renderToScreen = false;
 		scene2Composer.addPass(renderPass2);
 		scene2Composer.addPass(linesPass2);
@@ -75,6 +77,11 @@ export default function PostProcessing(params) {
 	function update(value) {
 		linesPass1.material.uniforms.noiseOffset.value.x = value.x;
 		linesPass1.material.uniforms.noiseOffset.value.y = value.y;
+
+		if (!linesPass2) return;
+		
+		linesPass2.material.uniforms.noiseOffset.value.x = value.x;
+		linesPass2.material.uniforms.noiseOffset.value.y = value.y;
 	}
 
 	function process() {
