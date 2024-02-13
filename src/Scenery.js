@@ -16,8 +16,8 @@ export default function Scenery(params) {
 	const Z_AXIS = new THREE.Vector3(0, 0, 1);
 	let scene = scene1;
 
-	const mat1 = new LineMaterial( { color: 0xff00ff, linewidth: 3 } );
-	const mat2 = new LineMaterial( { color: 0xff00ff, linewidth: 1 } );
+	const mat1 = new LineMaterial( { color: 0xffffff, linewidth: 3 } );
+	const mat2 = new LineMaterial( { color: 0xffffff, linewidth: 1 } );
 
 	mat1.resolution.set(w, h);
 	mat2.resolution.set(w, h);

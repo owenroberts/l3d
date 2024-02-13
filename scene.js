@@ -9,6 +9,8 @@ import CameraControls from './src/CameraControls.js';
 import PostProcessing from './src/PostProcessing.js';
 import Cat from './src/Cat.js';
 import Scenery from './src/Scenery.js';
+import Particles from './src/Particles.js';
+
 
 import './doodoo/build/doodoo.min.js'; // holy shit what
 import './doodoo/build/lib/tone/build/Tone.js';
@@ -47,7 +49,7 @@ camera.position.set(0, 10, 50);
 const controls = new OrbitControls(camera, renderer.domElement);
 let useControls = false; // debug
 
-let noScene2 = false;
+let noScene2 = true;
 const post = new PostProcessing({ scene1, scene2, noScene2, renderer, camera });
 
 function addTestCube(x, y, z, size=0.5) {
@@ -71,6 +73,7 @@ if (!noScene2) scene2.add(globe.getGlobe().clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
 const cc = new CameraControls({ camera });
 const cat = new Cat({ globe });
+const particles = new Particles({ scene: scene1, worldRadius });
 
 /* load models */
 const loadingManager = new THREE.LoadingManager();
@@ -80,6 +83,7 @@ loader.load("./models/cat_1.glb", gltf => {
 	scene1.add(cat.getModel());
 	cat.getModel().add(cc.getGoal()); // parents camera goal to the cat
 	cc.getGoal().position.set(0, 4, -8);
+	cat.getModel().add(particles.get()); // parent particles to the camera
 });
 
 const noiseEffect = new NoiseEffect();
@@ -92,8 +96,10 @@ function animate(time) {
 	requestAnimationFrame(animate);
 	previousTime = time;
 
-	// renderer.render(scene1, camera);
+	renderer.render(scene1, camera);
 	post.process();
+
+	particles.update();
 
 	cat.update(timeElapsed, tracks[0] === 'play');
 	if (tracks[0] === 'play') {
