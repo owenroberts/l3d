@@ -30,8 +30,11 @@ export default function Scenery(params) {
 	const globeNormal = indexedGlobe.getAttribute('normal');
 	const usedPositions = [];
 	
-	const treeMaterial = new LineMaterial( { color: 0xff00ff, linewidth: 3 } );
-	treeMaterial.resolution.set(w, h);
+	const mat1 = new LineMaterial( { color: 0xff00ff, linewidth: 3 } );
+	const mat2 = new LineMaterial( { color: 0xff00ff, linewidth: 1 } );
+
+	mat1.resolution.set(w, h);
+	mat2.resolution.set(w, h);
 	
 	const nTrees = Cool.randInt(globePosition.count * 0.33, globePosition.count * 0.66);
 	for (let i = 0; i < nTrees; i++) {
@@ -44,29 +47,35 @@ export default function Scenery(params) {
 		const normal = new THREE.Vector3().fromBufferAttribute(globeNormal, vertIndex);
 		const pos2 = position.clone().addScaledVector(normal, 5);
 		
-		const type = 2; // Cool.randInt(1, 3);
+		const type = Cool.randInt(1, 4);
 
 		if (type === 1) {
-			// tallTreeBranch(position, pos2, 5);
 			tallTreeBranch(position, normal, 5);
 		}
 
 		if (type === 2) {
-			// make angly bush
 			const b = Cool.randInt(2, 4);
 			for (let i = 0; i < b; i++) {
 				anglyBush(position, normal, 5);
 			}
 		}
+
+		if (type === 3) {
+			forkTree(position, normal);
+		}
+
+		if (type === 4) {
+			clouds(position, normal);
+		}
 	}
 
-	function addLine(pos, pos2) {
+	function addLine(pos, pos2, mat=mat1) {
 		const geometry = new LineGeometry();
 		geometry.setPositions([
 			pos.x, pos.y, pos.z,
 			pos2.x, pos2.y, pos2.z,
 		]);
-		const line = new Line2(geometry, treeMaterial);
+		const line = new Line2(geometry, mat);
 		if (noScene2) scene1.add(line);
 		else scene2.add(line);
 	}
@@ -244,7 +253,66 @@ export default function Scenery(params) {
 		if (length > 1) {
 			anglyBush(o2.position, normal, length);
 		}
+	}
 
+	function forkTree(position, normal) {
+		const length = Cool.random(3, 6);
+
+		const o = new THREE.Object3D();
+		o.position.copy(position);
+		o.lookAt(position.clone().add(normal));
+		o.rotateOnAxis(Z_AXIS, Cool.random(Math.PI * 2));
+		o.rotateOnAxis(X_AXIS, Cool.random(0.2, 0.6));
+		o.translateZ(length / 2);
+		addLine(position, o.position);
+
+		const oo = o.clone();
+		oo.lookAt(o.position.clone().add(normal));
+		oo.translateZ(length / 2);
+		addLine(o.position, oo.position);
+
+		const len2 = length * Cool.random(0.25, 1.5);
+		const no = oo.clone();
+		no.translateX(len2);
+		const o2 = oo.clone();
+		o2.translateX(-len2);
+
+		addLine(no.position, o2.position);
+		
+		for (let i = 0; i < 5; i++) {
+			const o3 = no.clone();
+			o3.translateX(i * -len2 / 2);
+			const o4 = o3.clone();
+			o4.translateZ(Cool.random(2, 6));
+			addLine(o3.position, o4.position);
+		}
+	}
+
+	function clouds(position, normal) {
+		const n = Cool.randInt(10, 30);
+		const d = Cool.randInt(20, 40);
+		const p = position.clone().addScaledVector(normal, d);
+		for (let i = 0; i < n; i++) {
+
+			const o = new THREE.Object3D();
+			o.position.copy(p);
+			o.lookAt(p.clone().add(normal));
+			const o2 = o.clone();
+			
+			const xs = Cool.random(2, 20); // x spread
+			const ys = Cool.random(2, 20); // y spread
+			const zs = Cool.random(2, 4); // z spread
+
+			o.translateX(Cool.random(-1, 1) * xs);
+			o.translateY(Cool.random(-1, 1) * ys);
+			o.translateZ(Cool.random(-1, 1) * zs);
+
+			o2.translateX(Cool.random(-1, 1) * xs);
+			o2.translateY(Cool.random(-1, 1) * ys);
+			o2.translateZ(Cool.random(-1, 1) * zs);
+
+			addLine(o.position, o2.position, mat2);
+		}
 	}
 }
 

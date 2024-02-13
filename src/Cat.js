@@ -47,6 +47,7 @@ export default function Cat(params) {
 	}
 
 	function updateAnimation(isWalking) {
+		console.log('isWalking', isWalking);
 		if (isWalking) {
 			mixer.clipAction(animations['Idle_1']).stop();
 			mixer.clipAction(animations['Walk1']).play();
@@ -60,6 +61,8 @@ export default function Cat(params) {
 		loadModel, update, walk, updateAnimation,
 		isLoaded: () => { return isLoaded; },
 		getModel: () => { return model; },
+		getMixer: () => { return mixer; },
+		getAnimations: () => { return animations; },
 
 	};
 }
