@@ -9,7 +9,7 @@ import CameraControls from './src/CameraControls.js';
 import PostProcessing from './src/PostProcessing.js';
 import Cat from './src/Cat.js';
 import Scenery from './src/Scenery.js';
-import Particles from './src/Particles.js';
+import Particles from './src/DumbParticles.js';
 
 
 import './doodoo/build/doodoo.min.js'; // holy shit what
@@ -83,7 +83,7 @@ loader.load("./models/cat_1.glb", gltf => {
 	scene1.add(cat.getModel());
 	cat.getModel().add(cc.getGoal()); // parents camera goal to the cat
 	cc.getGoal().position.set(0, 4, -8);
-	cat.getModel().add(particles.get()); // parent particles to the camera
+	// cat.getModel().add(particles.get()); // parent particles to the camera
 });
 
 const noiseEffect = new NoiseEffect();

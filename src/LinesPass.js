@@ -1,3 +1,4 @@
+// https://tympanus.net/codrops/2022/11/29/sketchy-pencil-effect-with-three-js-post-processing/
 import { Pass, FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { CopyShader } from 'three/addons/shaders/CopyShader.js';
 import { LinesMaterial } from './LinesMaterial.js';
@@ -22,7 +23,10 @@ export class LinesPass extends Pass {
 
 		const normalBuffer = new THREE.WebGLRenderTarget(width, height);
 		normalBuffer.texture.format = THREE.RGBAFormat;
-		normalBuffer.texture.type = THREE.HalfFloatType;
+		// normalBuffer.texture.type = THREE.HalfFloatType;
+		// normalBuffer.texture.type = THREE.UnsignedShort4444Type;
+		// this breaks the particles but idk what it does ... 
+
 		normalBuffer.texture.minFilter = THREE.NearestFilter;
 		normalBuffer.texture.magFilter = THREE.NearestFilter;
 		normalBuffer.texture.generateMipmaps = false;

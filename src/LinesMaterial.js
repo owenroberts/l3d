@@ -1,3 +1,4 @@
+// https://tympanus.net/codrops/2022/11/29/sketchy-pencil-effect-with-three-js-post-processing/
 import * as THREE from 'three';
 import fragmentShader from './frag.glsl'
 import vertexShader from './vert.glsl'
