@@ -7,6 +7,7 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
 
+
 export default function Scenery(params) {
 
 	const { scene1, scene2, worldRadius, w, h, noScene2 } = params;
@@ -86,15 +87,19 @@ export default function Scenery(params) {
 
 	function addLine(pos, pos2, mat=mat1) {
 
+
 		const point =  {
 			start: pos.clone(),
 			end: pos2.clone(),
 		}
 		const line = new THREE.LineCurve3(point.start, point.end);
-		const mesh = new THREE.Mesh(new THREE.TubeGeometry(line, 1, 0.09, 3));
+		// tube(curve, segments, radius, radialSegments)
+		const tube = new THREE.TubeGeometry(line, 1, 0.09, 3);
+		const mesh = new THREE.Mesh(tube);;
 		mesh.castShadow = true;
 		scene.add(mesh);
 
+		// line
 		// const geometry = new LineGeometry();
 		// geometry.setPositions([
 		// 	pos.x, pos.y, pos.z,
@@ -103,6 +108,18 @@ export default function Scenery(params) {
 		// const line = new Line2(geometry, mat);
 		// line.castShadow = true;
 		// scene.add(line);
+		
+		// cyl
+		// const height = pos.clone().distanceTo(pos2);
+		// // cylider (top radius, bottom radius, height, segments)
+		// const size = 0.1;
+		// const cyl = new THREE.CylinderGeometry(size, size, height, 3); 
+		// const mesh = new THREE.Mesh(cyl);
+		// mesh.position.copy(pos);
+		// mesh.lookAt(pos2);
+		// mesh.translateZ(height / 2);
+		// mesh.rotateX(Math.PI / 2);
+		// scene.add(mesh);
 	}
 
 	function tallTreeBranch(position, normal, length) {
