@@ -23,7 +23,7 @@ export class LinesPass extends Pass {
 
 		const normalBuffer = new THREE.WebGLRenderTarget(width, height);
 		normalBuffer.texture.format = THREE.RGBAFormat;
-		// normalBuffer.texture.type = THREE.HalfFloatType;
+		normalBuffer.texture.type = THREE.HalfFloatType;
 		// normalBuffer.texture.type = THREE.UnsignedShort4444Type;
 		// this breaks the particles but idk what it does ... 
 

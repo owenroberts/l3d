@@ -10,6 +10,7 @@ import PostProcessing from './src/PostProcessing.js';
 import Cat from './src/Cat.js';
 import Scenery from './src/Scenery.js';
 import Particles from './src/DumbParticles.js';
+import Lighting from './src/Lighting.js';
 
 
 import './doodoo/build/doodoo.min.js'; // holy shit what
@@ -17,6 +18,7 @@ import './doodoo/build/lib/tone/build/Tone.js';
 import './doodoo/ui/lib/cool/cool.js'; // fuck off
 // https://lea.verou.me/blog/2020/07/import-non-esm-libraries-in-es-modules-with-client-side-vanilla-js/
 
+const worldRadius = 128;
 let w = 960, h = 540;
 const scene1 = new THREE.Scene();
 const scene2 = new THREE.Scene();
@@ -25,31 +27,20 @@ const stats = new Stats();
 const container = document.getElementById("longies");
 container.appendChild(stats.dom);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h);
-// renderer.shadowMap.enabled = true;
-// renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// renderer.autoClear = false;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 container.appendChild(renderer.domElement);
 
-/* for testing */
-function lights() {
-	const light = new THREE.DirectionalLight(0xffffff, 0.5);
-	light.castShadow = true;
-	light.position.set(2, 2, 2);
-	light.shadow.mapSize.width = 2048;
-	light.shadow.mapSize.height = 2048;
-	light.lookAt(new THREE.Vector3(0, 0, 0));
-	scene1.add(light);
-	scene1.add(new THREE.AmbientLight(0xeeefff, 0.1));
-}
-lights();
-
+const lights = new Lighting({ scene: scene1, debugRender: true });
 const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 camera.position.set(0, 10, 50);
 const controls = new OrbitControls(camera, renderer.domElement);
 let useControls = false; // debug
 
-let noScene2 = true;
+let noScene2 = false;
 const post = new PostProcessing({ scene1, scene2, noScene2, renderer, camera });
 
 function addTestCube(x, y, z, size=0.5) {
@@ -66,7 +57,6 @@ function addHelper(pos) {
 	scene1.add(new THREE.ArrowHelper(pos.normal, pos.position, 1, 0xff00ff));
 }
 
-const worldRadius = 128;
 const globe = new Globe({ worldRadius });
 scene1.add(globe.getGlobe());
 if (!noScene2) scene2.add(globe.getGlobe().clone());
@@ -83,12 +73,13 @@ loader.load("./models/cat_1.glb", gltf => {
 	scene1.add(cat.getModel());
 	cat.getModel().add(cc.getGoal()); // parents camera goal to the cat
 	cc.getGoal().position.set(0, 4, -8);
-	// cat.getModel().add(particles.get()); // parent particles to the camera
+	lights.setPosition(cat.getModel());
 });
 
 const noiseEffect = new NoiseEffect();
 let previousTime = null;
 let catModel;
+
 function animate(time) {
 	if (!previousTime) previousTime = time;
 	stats.update();
@@ -96,13 +87,14 @@ function animate(time) {
 	requestAnimationFrame(animate);
 	previousTime = time;
 
-	renderer.render(scene1, camera);
+	// renderer.clear();
+	// renderer.render(scene1, camera);
 	post.process();
 
 	particles.update();
 
 	cat.update(timeElapsed, tracks[0] === 'play');
-	if (tracks[0] === 'play') {
+	if (tracks[1] === 'play') {
 		noiseEffect.update();
 		post.update(noiseEffect.getValue());
 	}

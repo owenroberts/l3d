@@ -13,11 +13,15 @@ export default function Cat(params) {
 
 	function loadModel(gltf) {
 		model = clone(gltf.scene);
+		model.traverse(obj => {
+			if (obj.isMesh) {
+				obj.castShadow = true;
+			}
+		});
 		mixer = new THREE.AnimationMixer(model);
 		gltf.animations.forEach(a => {
 			animations[a.name] = a;
 		});
-		console.log(animations);
 		mixer.clipAction(animations['Idle_1']).play();
 
 		const vertIndex = globe.getRandomVertex();

@@ -14,6 +14,7 @@ export default function Particles(params) {
 	const geo = new THREE.PlaneGeometry(size, size);
 	const mat = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide });
 	const mesh = new THREE.InstancedMesh(geo, mat, count);
+	mesh.castShadow = false;
 	scene.add(mesh);
 
 	const dumby = new THREE.Object3D();

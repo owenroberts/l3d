@@ -31,15 +31,7 @@ export default function Particles(params) {
 	const particleMaterial = new THREE.PointsMaterial({
 		color: 0xffffff,
 		size: 0.1,
-		sizeAttenuation: true,
-		// depthWrite: true,
-		// depthTest: false,
-		// map: texture,
-		// side: THREE.DoubleSide,
-		// alphaTest: 0.5, 
-		// transparent: true,
-		// blending: THREE.AdditiveBlending,
-		// depthWrite: false // instead of sortParticles
+		// sizeAttenuation: true,
 	});
 
 	const particleSystem = new THREE.Points(particles, particleMaterial);

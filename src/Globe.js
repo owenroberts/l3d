@@ -13,8 +13,14 @@ export default function Globe(params) {
 		new THREE.IcosahedronGeometry(worldRadius, 3),
 		// new THREE.MeshStandardMaterial(),
 		// new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true }),
-		new THREE.MeshStandardMaterial({ color: 0x00ffff, side: THREE.DoubleSide }),
+		new THREE.MeshStandardMaterial({
+			color: 0x00ffff,
+			// side: THREE.DoubleSide
+		}),
 	);
+
+	globe.castShadow = false;
+	globe.receiveShadow = true;
 
 	const indexedGlobe = BufferGeometryUtils.mergeVertices(globe.geometry);
 	const globePosition = indexedGlobe.getAttribute('position');
@@ -41,14 +47,6 @@ export default function Globe(params) {
 			index: index,
 		};
 	}
-
-	// function getNextWalkPosition() {
-	// 	const prev = cat.next;
-	// 	const next = getNext(prev.position);
-	// 	cat.next = next;
-	// 	cat.model.up.copy(prev.normal);
-	// 	cat.model.lookAt(next.position);
-	// }
 
 	function getRandomVertex() {
 		return Cool.randInt(globePosition.count - 1);

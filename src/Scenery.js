@@ -16,8 +16,8 @@ export default function Scenery(params) {
 	const Z_AXIS = new THREE.Vector3(0, 0, 1);
 	let scene = scene1;
 
-	const mat1 = new LineMaterial( { color: 0xffffff, linewidth: 3 } );
-	const mat2 = new LineMaterial( { color: 0xffffff, linewidth: 1 } );
+	const mat1 = new LineMaterial({ color: 0xffffff, linewidth: 3 });
+	const mat2 = new LineMaterial({ color: 0xffffff, linewidth: 1 });
 
 	mat1.resolution.set(w, h);
 	mat2.resolution.set(w, h);
@@ -85,13 +85,24 @@ export default function Scenery(params) {
 	}
 
 	function addLine(pos, pos2, mat=mat1) {
-		const geometry = new LineGeometry();
-		geometry.setPositions([
-			pos.x, pos.y, pos.z,
-			pos2.x, pos2.y, pos2.z,
-		]);
-		const line = new Line2(geometry, mat);
-		scene.add(line);
+
+		const point =  {
+			start: pos.clone(),
+			end: pos2.clone(),
+		}
+		const line = new THREE.LineCurve3(point.start, point.end);
+		const mesh = new THREE.Mesh(new THREE.TubeGeometry(line, 1, 0.09, 3));
+		mesh.castShadow = true;
+		scene.add(mesh);
+
+		// const geometry = new LineGeometry();
+		// geometry.setPositions([
+		// 	pos.x, pos.y, pos.z,
+		// 	pos2.x, pos2.y, pos2.z,
+		// ]);
+		// const line = new Line2(geometry, mat);
+		// line.castShadow = true;
+		// scene.add(line);
 	}
 
 	function tallTreeBranch(position, normal, length) {
