@@ -76,7 +76,7 @@ export default function Scenery(params) {
 	/* setup inverse world */
 	if (!noScene2) {
 		const inverseGlobe = new THREE.Mesh(
-			new THREE.IcosahedronGeometry(worldRadius * 1.5, 3), 
+			new THREE.IcosahedronGeometry(worldRadius * 1.25, 3), 
 			new THREE.MeshStandardMaterial({ side: THREE.BackSide }),
 			// new THREE.MeshStandardMaterial({ color: 0xffffff, wireframe: true }),
 		);

@@ -12,7 +12,6 @@ import Scenery from './src/Scenery.js';
 import Particles from './src/DumbParticles.js';
 import Lighting from './src/Lighting.js';
 
-
 import './doodoo/build/doodoo.min.js'; // holy shit what
 import './doodoo/build/lib/tone/build/Tone.js';
 import './doodoo/ui/lib/cool/cool.js'; // fuck off
@@ -20,6 +19,7 @@ import './doodoo/ui/lib/cool/cool.js'; // fuck off
 
 const worldRadius = 128;
 let w = 960, h = 540;
+// let w = window.innerWidth, h = window.innerHeight;
 const scene1 = new THREE.Scene();
 const scene2 = new THREE.Scene();
 
@@ -34,7 +34,9 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 container.appendChild(renderer.domElement);
 
-const lights = new Lighting({ scene: scene1, debugRender: true });
+let debugRender = true;
+debugRender = false;
+const lights = new Lighting({ scene: scene1, debugRender });
 const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 camera.position.set(0, 10, 50);
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -57,7 +59,7 @@ function addHelper(pos) {
 	scene1.add(new THREE.ArrowHelper(pos.normal, pos.position, 1, 0xff00ff));
 }
 
-const globe = new Globe({ worldRadius });
+const globe = new Globe({ scene: scene1, worldRadius });
 scene1.add(globe.getGlobe());
 if (!noScene2) scene2.add(globe.getGlobe().clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
@@ -88,8 +90,8 @@ function animate(time) {
 	previousTime = time;
 
 	// renderer.clear();
-	// renderer.render(scene1, camera);
-	post.process();
+	if (debugRender) renderer.render(scene1, camera);
+	else post.process();
 
 	particles.update();
 
@@ -113,6 +115,7 @@ function animate(time) {
 requestAnimationFrame(animate);
 
 function onWindowResize() {
+	console.trace();
 	if (w === 960) {
 		w = window.innerWidth;
 		h = window.innerHeight;
@@ -121,9 +124,11 @@ function onWindowResize() {
 		w = 960;
 		h = 540;
 	}
+	console.log('resize', w, h);
 	camera.aspect = w / h;
 	camera.updateProjectionMatrix();
 	renderer.setSize(w, h);
+	post.setSize(w, h);
 }
 
 let doodoo, comp;
@@ -135,6 +140,7 @@ startButton.addEventListener('click', start);
 const fullScreenButton = document.getElementById('fullscreen');
 fullScreenButton.addEventListener('click', toggleFullScreen);
 document.addEventListener('keydown', keyDown);
+document.addEventListener("fullscreenchange", onWindowResize);
 
 function keyDown(ev) {
 
@@ -148,16 +154,10 @@ function keyDown(ev) {
 	/* key commands */
 	if (ev.code === 'Space') start();
 	if (ev.code === 'Enter') doodoo.stop();
-	if (ev.code === 'KeyF') {
-		toggleFullScreen();
-		// onWindowResize();
-	}
+	if (ev.code === 'KeyF') toggleFullScreen();
 	if (ev.code === 'KeyC') useControls = !useControls;
+	if (ev.code === 'KeyD') debugRender = !debugRender;
 }
-
-document.addEventListener("fullscreenchange", () => {
- 	onWindowResize();
-});
 
 function toggleFullScreen() {
 	if (!document.fullscreenElement) {

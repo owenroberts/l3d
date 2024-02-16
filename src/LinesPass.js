@@ -11,13 +11,10 @@ export class LinesPass extends Pass {
 
 		this.scene = scene;
 		this.camera = camera;
+		this.uniforms = uniforms;
+		console.log(this.uniforms)
 		
-		this.material = new LinesMaterial({ uniforms });
-		// this.material.blending = THREE.CustomBlending;
-		// this.material.blendEquation = THREE.AddEquation;
-		// this.material.blendSrc = THREE.SrcColor;
-		// this.material.blendDst = THREE.OneMinusSrcAlphaFactor;
-
+		this.material = new LinesMaterial({ uniforms: this.uniforms });
 		this.fsQuad = new FullScreenQuad(this.material);
 		this.material.uniforms.uResolution.value = new THREE.Vector2(width, height);
 

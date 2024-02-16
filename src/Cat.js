@@ -9,7 +9,7 @@ export default function Cat(params) {
 	const { globe } = params;
 	let model, mixer, start, next;
 	const animations = {};
-	let speed = 0.005;
+	let speed = 0.01;
 	let isLoaded = false;
 
 	function loadModel(gltf) {

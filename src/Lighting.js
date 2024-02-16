@@ -7,7 +7,7 @@ export default function Lighting(params) {
 
 	const { scene, debugRender } = params;
 
-	// if (debugRender) scene.add(new THREE.AmbientLight(0xeeefff, 0.1));
+	if (debugRender) scene.add(new THREE.AmbientLight(0xeeefff, 0.1));
 
 	const spotLight = new THREE.SpotLight( 0xffffff, 1000 );
 	spotLight.name = 'Spot Light';
