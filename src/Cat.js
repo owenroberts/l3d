@@ -9,6 +9,7 @@ export default function Cat(params) {
 	const { globe } = params;
 	let model, mixer, start, next;
 	const animations = {};
+	let speed = 0.005;
 	let isLoaded = false;
 
 	function loadModel(gltf) {
@@ -50,7 +51,7 @@ export default function Cat(params) {
 		if (isWalking) {
 			const walkDistance = model.position.distanceTo(next.position);
 			if (walkDistance > 0.1) {
-				model.translateZ(0.05);
+				model.translateZ(speed * timeElapsed);
 			} else {
 				model.up.copy(next.normal);
 				next = globe.getNext(next.position);

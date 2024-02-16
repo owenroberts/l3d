@@ -50,7 +50,7 @@ export default function Scenery(params) {
 			const normal = new THREE.Vector3().fromBufferAttribute(globeNormal, vertIndex);
 			if (isInverse) normal.negate();
 			
-			const type = Cool.random([1, 1, 2, 3, 4]);
+			const type = Cool.random([1, 1, 1, 2, 3, 3, 4]);
 
 			if (type === 1) {
 				tallTreeBranch(position, normal, 5);
@@ -87,27 +87,26 @@ export default function Scenery(params) {
 
 	function addLine(pos, pos2, mat=mat1) {
 
+		// seems like mix hurts performance but inconsistent ... 
+		// or maybe its double shadows .. 
+		const style = Cool.random(['line', 'tube']);
 
-		const point =  {
-			start: pos.clone(),
-			end: pos2.clone(),
+		if (style == 'tube') {
+			const line = new THREE.LineCurve3(pos, pos2);
+			const tube = new THREE.TubeGeometry(line, 1, 0.09, 3);
+			const mesh = new THREE.Mesh(tube);;
+			mesh.castShadow = true;
+			scene.add(mesh);
+		} else {
+			const geometry = new LineGeometry();
+			geometry.setPositions([
+				pos.x, pos.y, pos.z,
+				pos2.x, pos2.y, pos2.z,
+			]);
+			const line = new Line2(geometry, mat);
+			line.castShadow = true;
+			scene.add(line);
 		}
-		const line = new THREE.LineCurve3(point.start, point.end);
-		// tube(curve, segments, radius, radialSegments)
-		const tube = new THREE.TubeGeometry(line, 1, 0.09, 3);
-		const mesh = new THREE.Mesh(tube);;
-		mesh.castShadow = true;
-		scene.add(mesh);
-
-		// line
-		// const geometry = new LineGeometry();
-		// geometry.setPositions([
-		// 	pos.x, pos.y, pos.z,
-		// 	pos2.x, pos2.y, pos2.z,
-		// ]);
-		// const line = new Line2(geometry, mat);
-		// line.castShadow = true;
-		// scene.add(line);
 		
 		// cyl
 		// const height = pos.clone().distanceTo(pos2);
