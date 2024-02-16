@@ -19,7 +19,6 @@ import './doodoo/ui/lib/cool/cool.js'; // fuck off
 
 const worldRadius = 128;
 let w = 960, h = 540;
-// let w = window.innerWidth, h = window.innerHeight;
 const scene1 = new THREE.Scene();
 const scene2 = new THREE.Scene();
 

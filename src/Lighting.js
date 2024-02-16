@@ -25,6 +25,7 @@ export default function Lighting(params) {
 	const numLights = 12;
 
 	function setPosition(catModel) {
+		
 		const lightGoal = new THREE.Object3D();
 		lightGoal.position.copy(catModel.position);
 		lightGoal.rotation.copy(catModel.rotation);
@@ -38,27 +39,27 @@ export default function Lighting(params) {
 
 		spotLight.position.copy(lightGoal.position);
 		spotLight.target.position.copy(new THREE.Vector3(0, 0, 0));
-
 		spotLight.target.updateMatrixWorld();
 
-		const dist = lightGoal.position.clone().distanceTo(new THREE.Vector3(0, 0, 0));
 		const pos = lightGoal.position.clone();
+		const dist = pos.distanceTo(new THREE.Vector3(0, 0, 0));
 
 		// good enough for now
 		// add some more lights ... 
-		for (let i = 1; i < numLights + 1; i++) {
+		for (let i = 1; i < numLights; i++) {
 			const a = i / numLights * Math.PI * 2;
-			const light = spotLight.clone();
 			const goal = new THREE.Object3D();
-			goal.rotation.x = Math.sin(a) * dist * Cool.random(2, 4);
-			goal.rotation.y = Math.cos(a) * dist * Cool.random(2, 4);
-			goal.rotation.z = Math.cos(a) * Math.sin(a) * dist;
-			goal.translateOnAxis(pos.normalize(), dist);
-
+			goal.lookAt(spotLight.position);
+			goal.rotateX(a);
+			goal.rotateY(Cool.random(-0.5, 0.5));
+			goal.translateZ(dist);
+			
 			// const axesHelper = new THREE.AxesHelper( 5 );
 			// axesHelper.position.copy(goal.position);
-			// scene.add( axesHelper );
-			
+			// axesHelper.rotation.copy(goal.rotation);
+			// scene.add(axesHelper);
+
+			const light = spotLight.clone();
 			light.position.copy(goal.position);
 			light.target.position.copy(new THREE.Vector3(0, 0, 0));
 			light.target.updateMatrixWorld();
