@@ -91,7 +91,7 @@ export default function PostProcessing(params) {
 
 	function setSize(w, h) {
 		composer.setSize(w, h);
-		scene2Composer.setSize(w, h);
+		if (scene2Composer) scene2Composer.setSize(w, h);
 	}
 
 	return { process, update, setSize };

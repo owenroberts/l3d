@@ -9,11 +9,12 @@ export default function Cat(params) {
 	const { globe } = params;
 	let model, mixer, start, next;
 	const animations = {};
-	let speed = 0.01;
+	let speed = 0.005; // default 0.005
 	let isLoaded = false;
 
 	function loadModel(gltf) {
 		model = clone(gltf.scene);
+		console.log('cat model', model);
 		model.traverse(obj => {
 			if (obj.isMesh) {
 				obj.castShadow = true;
@@ -42,9 +43,9 @@ export default function Cat(params) {
 
 		if (isWalking) {
 			mixer.clipAction(animations['Idle_1']).stop();
-			mixer.clipAction(animations['Walk1']).play();
+			mixer.clipAction(animations['Walk_1']).play();
 		} else {
-			mixer.clipAction(animations['Walk1']).stop();
+			mixer.clipAction(animations['Walk_1']).stop();
 			mixer.clipAction(animations['Idle_1']).play();
 		}
 	

@@ -40,7 +40,7 @@ export default function Scenery(params) {
 		const globeNormal = indexedGlobe.getAttribute('normal');
 		const usedPositions = [];
 
-		const n = Cool.randInt(globePosition.count * 0.4, globePosition.count * 0.8);
+		const n = Cool.randInt(globePosition.count * 0.6, globePosition.count * 0.8);
 		for (let i = 0; i < n; i++) {
 			const vertIndex = Cool.randInt(globePosition.count - 1);
 			if (usedPositions.includes(vertIndex)) continue;
@@ -50,7 +50,7 @@ export default function Scenery(params) {
 			const normal = new THREE.Vector3().fromBufferAttribute(globeNormal, vertIndex);
 			if (isInverse) normal.negate();
 			
-			const type = Cool.random([1, 1, 1, 2, 3, 3, 4]);
+			const type = Cool.random([1, 1, 1, 1, 2, 3, 4]);
 
 			if (type === 1) {
 				tallTreeBranch(position, normal, 5);
@@ -64,7 +64,8 @@ export default function Scenery(params) {
 			}
 
 			if (type === 3) {
-				forkTree(position, normal);
+				// forkTree(position, normal);
+				justFork(position, normal);
 			}
 
 			if (type === 4) {
@@ -94,7 +95,7 @@ export default function Scenery(params) {
 		if (style == 'tube') {
 			const line = new THREE.LineCurve3(pos, pos2);
 			const tube = new THREE.TubeGeometry(line, 1, 0.09, 3);
-			const mesh = new THREE.Mesh(tube);;
+			const mesh = new THREE.Mesh(tube);
 			mesh.castShadow = true;
 			scene.add(mesh);
 		} else {
@@ -200,8 +201,39 @@ export default function Scenery(params) {
 		}
 	}
 
+	function justFork(position, normal) {
+		const length = Cool.random(2, 4);
+
+		const o = new THREE.Object3D();
+		o.position.copy(position);
+		o.lookAt(position.clone().add(normal));
+		o.rotateOnAxis(Z_AXIS, Cool.random(Math.PI * 2));
+		o.rotateOnAxis(X_AXIS, Cool.random(0.2, 0.6));
+
+		// const oo = o.clone();
+		// oo.lookAt(o.position.clone().add(normal));
+		// oo.translateZ(length / 2);
+		// addLine(o.position, oo.position);
+
+		const len2 = length * Cool.random(0.25, 1.5);
+		// const no = oo.clone();
+		// no.translateX(len2);
+		// const o2 = oo.clone();
+		// o2.translateX(-len2);
+
+		// addLine(no.position, o2.position);
+		
+		for (let i = 0; i < 5; i++) {
+			const o1 = o.clone();
+			o1.translateX(i * -len2 / 2);
+			const o2 = o1.clone();
+			o2.translateZ(Cool.random(2, 6));
+			addLine(o1.position, o2.position);
+		}
+	}
+
 	function clouds(position, normal) {
-		const n = Cool.randInt(10, 30);
+		const n = Cool.randInt(4, 8);
 		const d = Cool.randInt(20, 40);
 		const p = position.clone().addScaledVector(normal, d);
 		for (let i = 0; i < n; i++) {

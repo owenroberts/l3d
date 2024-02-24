@@ -11,6 +11,7 @@ import Cat from './src/Cat.js';
 import Scenery from './src/Scenery.js';
 import Particles from './src/DumbParticles.js';
 import Lighting from './src/Lighting.js';
+import Flock from './src/Flock.js';
 
 import './doodoo/build/doodoo.min.js'; // holy shit what
 import './doodoo/build/lib/tone/build/Tone.js';
@@ -42,6 +43,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 let useControls = false; // debug
 
 let noScene2 = false;
+noScene2 = true;
 const post = new PostProcessing({ scene1, scene2, noScene2, renderer, camera });
 
 function addTestCube(x, y, z, size=0.5) {
@@ -65,11 +67,15 @@ const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
 const cc = new CameraControls({ camera });
 const cat = new Cat({ globe });
 const particles = new Particles({ scene: scene1, worldRadius });
+const flocks = [];
+for (let i = 0; i < 4; i++) {
+	flocks.push(new Flock({ scene: scene1, globe }));
+}
 
 /* load models */
 const loadingManager = new THREE.LoadingManager();
 const loader = new GLTFLoader(loadingManager);
-loader.load("./models/cat_1.glb", gltf => {
+loader.load("./models/cat bool.glb", gltf => {
 	cat.loadModel(gltf);
 	scene1.add(cat.getModel());
 	cat.getModel().add(cc.getGoal()); // parents camera goal to the cat
@@ -84,8 +90,8 @@ let catModel;
 function animate(time) {
 	if (!previousTime) previousTime = time;
 	stats.update();
-	const timeElapsed = time - previousTime;
 	requestAnimationFrame(animate);
+	const timeElapsed = time - previousTime;
 	previousTime = time;
 
 	// renderer.clear();
@@ -93,12 +99,15 @@ function animate(time) {
 	else post.process();
 
 	particles.update();
+	for (let i = 0; i < 4; i++) {
+		flocks[i].update(time, timeElapsed);
+	}
 
 	cat.update(timeElapsed, tracks[0] === 'play');
-	if (tracks[1] === 'play') {
-		noiseEffect.update();
-		post.update(noiseEffect.getValue());
-	}
+	// if (tracks[1] === 'play') {
+		// noiseEffect.update();
+		// post.update(noiseEffect.getValue());
+	// }
 
 	if (useControls) {
 		controls.update();
@@ -114,16 +123,13 @@ function animate(time) {
 requestAnimationFrame(animate);
 
 function onWindowResize() {
-	console.trace();
 	if (w === 960) {
 		w = window.innerWidth;
 		h = window.innerHeight;
-		console.log(w, h);
 	} else {
 		w = 960;
 		h = 540;
 	}
-	console.log('resize', w, h);
 	camera.aspect = w / h;
 	camera.updateProjectionMatrix();
 	renderer.setSize(w, h);
@@ -136,11 +142,7 @@ const controlsDiv = document.getElementById('controls');
 const startButton = document.getElementById('start');
 startButton.addEventListener('click', start);
 
-const fullScreenButton = document.getElementById('fullscreen');
-fullScreenButton.addEventListener('click', toggleFullScreen);
 document.addEventListener('keydown', keyDown);
-document.addEventListener("fullscreenchange", onWindowResize);
-
 function keyDown(ev) {
 
 	/* debugging */
@@ -157,6 +159,11 @@ function keyDown(ev) {
 	if (ev.code === 'KeyC') useControls = !useControls;
 	if (ev.code === 'KeyD') debugRender = !debugRender;
 }
+
+const fullScreenButton = document.getElementById('fullscreen');
+fullScreenButton.addEventListener('click', toggleFullScreen);
+document.addEventListener("fullscreenchange", onWindowResize);
+
 
 function toggleFullScreen() {
 	if (!document.fullscreenElement) {
@@ -180,7 +187,7 @@ function start() {
 		doodoo.stop();
 		startDoodoo();
 	} else {
-		fetch('./doodoo/compositions/longy_1.json')
+		fetch('./doodoo/compositions/l3d_theme_15.json')
 			.then(res => res.json())
 			.then(json => {
 				comp = json;
