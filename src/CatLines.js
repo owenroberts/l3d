@@ -9,9 +9,6 @@ export default function CatLines(params) {
 
 	const { scene } = params;
 
-	let state = 'walking'; // idling
-
-	
 	const model = new THREE.Object3D();
 	const mat = new THREE.MeshStandardMaterial({ 
 		color: 0x3d3d3d,
@@ -19,7 +16,8 @@ export default function CatLines(params) {
 		// wireframe: true,
 	});
 
-	const s = 1;
+	let state = 'idling'; // idling
+	const s = 1; // size
 
 	const body = new Joint();
 	body.add(new THREE.Mesh(
@@ -47,17 +45,15 @@ export default function CatLines(params) {
 	);
 	const earLeft = new Joint();
 	earLeft.add(earMesh);
-	earLeft.copy(head.getPosition());
 	earLeft.addPosition(s * -1, s * 1.5, 0);
 	earLeft.randomRotation();
-	model.add(earLeft.get());
+	head.add(earLeft.get());
 
 	const earRight = new Joint();
 	earRight.add(earMesh.clone());
-	earRight.copy(head.getPosition());
 	earRight.addPosition(s * 1, s * 1.5, 0);
 	earRight.randomRotation();
-	model.add(earRight.get());
+	head.add(earRight.get());
 
 	function addHelper(position) {
 		const a = new THREE.AxesHelper(5);
@@ -75,7 +71,7 @@ export default function CatLines(params) {
 		return mesh;
 	}
 
-	const tailRotateSpeed = 1, legRotateSpeed = 10;	
+	const tailRotateSpeed = 1, legRotateSpeed = 20;	
 	const tailSegNum = 7;
 	const tail = [];
 	for (let i = 0; i < tailSegNum; i++) {
@@ -129,55 +125,70 @@ export default function CatLines(params) {
 	legs[1].joints[0].addPosition(-ls, 0, ls);
 	legs[3].joints[0].addPosition(-ls, 0, -ls);
 
+	function walk(timeInSeconds, timeElapsedInSeconds) {
+		let p = Math.cos(timeInSeconds * 2);
+		let a = Cool.map(p, -1, 1, 0.3, 0.6);
+		
+		for (let i = 1; i < tail.length; i++) {
+			tail[i].setTargetRotation(a, 0, 0);
+			tail[i].rotate(timeElapsedInSeconds);
+			a += 0.01;
+		}
+
+		for (let i = 0; i < legs.length; i++) {
+			const phase = timeInSeconds * 2 + legs[i].phase;
+			const p1 = Math.sin((timeInSeconds + legs[i].phase) * 2);
+			const p2 = Math.sin((timeInSeconds + legs[i].phase) * 3);
+			const a1 = Cool.map(p1, -1, 1, -2, 2);
+			const a2 = Cool.map(p2, -1, 1, 2, -2);
+			legs[i].joints[0].setTargetRotation(a1, 0, 0);
+			legs[i].joints[0].rotate(timeElapsedInSeconds);
+			legs[i].joints[1].setTargetRotation(a2, 0, 0);
+			legs[i].joints[1].rotate(timeElapsedInSeconds);
+		}
+
+		const c = Cool.map(p, -1, 1, 0, 1);
+		body.setTargetPosition(0, s * 3 + c, 0);
+		body.lerp(timeElapsedInSeconds);
+	}
+
+	function reset(timeElapsedInSeconds) {
+		for (let i = 1; i < tail.length; i++) {
+			tail[i].unrotate(timeElapsedInSeconds);
+		}
+
+		for (let i = 0; i < legs.length; i++) {
+			legs[i].joints[0].unrotate(timeElapsedInSeconds);
+			legs[i].joints[1].unrotate(timeElapsedInSeconds);
+		}
+
+		body.unlerp(timeElapsedInSeconds);
+	}
+
+	function idle(timeInSeconds, timeElapsedInSeconds) {
+		let p = Math.cos(timeInSeconds * 2);
+		const ha = Cool.map(p, -1, 1, -1, 1);
+		head.setTargetRotation(-ha, ha, 0);
+		head.rotate(timeElapsedInSeconds);
+
+		p = Math.cos(timeInSeconds);
+		let ta = Cool.map(p, -1, 1, -1, 1);
+		for (let i = 1; i < tail.length; i++) {
+			tail[i].setTargetRotation(0, 0, ta);
+			tail[i].rotate(timeElapsedInSeconds);
+			ta += 0.01;
+		}
+	}
+
 	function update(time, timeElapsed) {
 
 		if (isNaN(timeElapsed)) return;
 		let timeInSeconds = time / 1000;
 		let timeElapsedInSeconds = timeElapsed / 1000;
 
-		if (state === 'walking') {
-			let p = Math.cos(timeInSeconds * 2);
-			let a = Cool.map(p, -1, 1, 0.3, 0.6);
-			
-			for (let i = 1; i < tail.length; i++) {
-				tail[i].setTargetRotation(a, 0, 0);
-				tail[i].rotate(timeElapsedInSeconds);
-				a += 0.01;
-			}
-
-			for (let i = 0; i < legs.length; i++) {
-				const phase = timeInSeconds * 2 + legs[i].phase;
-				const p1 = Math.sin((timeInSeconds + legs[i].phase) * 2);
-				const p2 = Math.sin((timeInSeconds + legs[i].phase) * 3);
-				const a1 = Cool.map(p1, -1, 1, -2, 2);
-				const a2 = Cool.map(p2, -1, 1, 2, -2);
-				legs[i].joints[0].setTargetRotation(a1, 0, 0);
-				legs[i].joints[0].rotate(timeElapsedInSeconds);
-				legs[i].joints[1].setTargetRotation(a2, 0, 0);
-				legs[i].joints[1].rotate(timeElapsedInSeconds);
-			}
-
-			const c = Cool.map(p, -1, 1, 0, 1);
-			body.setTargetPosition(0, s * 3 + c, 0);
-			body.lerp(timeElapsedInSeconds);
-
-		} else if (state === 'idling' && !body.isAtOrigin()) {
-
-			for (let i = 1; i < tail.length; i++) {
-				tail[i].unrotate(timeElapsedInSeconds);
-			}
-
-			for (let i = 0; i < legs.length; i++) {
-				legs[i].joints[0].unrotate(timeElapsedInSeconds);
-				legs[i].joints[1].unrotate(timeElapsedInSeconds);
-			}
-
-			body.unlerp(timeElapsedInSeconds);
-		} else {
-			
-		}
-
-
+		if (state === 'walking') walk(timeInSeconds, timeElapsedInSeconds);
+		else if (state === 'idling' && !body.isAtOrigin()) reset(timeElapsedInSeconds);
+		else idle(timeInSeconds, timeElapsedInSeconds);
 	}
 
 	/* key commands */

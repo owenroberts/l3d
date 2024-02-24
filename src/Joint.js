@@ -54,7 +54,7 @@ export default function Joint() {
 			oP.copy(obj.position);
 		},
 		isAtOrigin: () => {
-			if (obj.position.distanceTo(oP) < 0.1) {
+			if (obj.position.distanceTo(oP) < 0.01) {
 				obj.position.copy(oP);
 			}
 			return obj.position.equals(oP) && obj.quaternion.equals(oQ);
@@ -65,16 +65,20 @@ export default function Joint() {
 		addPosition: (x, y, z) => {
 			obj.position.add(new THREE.Vector3(x, y, z));
 		},
-		rotateX: angle => { obj.rotateX(angle); },
-		rotateY: angle => { obj.rotateY(angle); },
-		rotateZ: angle => { obj.rotateZ(angle); },
+		rotateX: a => { obj.rotateX(a); },
+		rotateY: a => { obj.rotateY(a); },
+		rotateZ: a => { obj.rotateZ(a); },
 		randomRotation: () => {
-			const rr = new THREE.Euler(
-				Cool.random(0, Math.PI * 2),
-				Cool.random(0, Math.PI * 2),
-				Cool.random(0, Math.PI * 2),
-			);
-			obj.quaternion.setFromEuler(rr);
+			for (let i = 0; i < obj.children.length; i++) {
+				if (obj.children[i].isMesh) {
+					const r = new THREE.Euler(
+						Cool.random(0, Math.PI * 2),
+						Cool.random(0, Math.PI * 2),
+						Cool.random(0, Math.PI * 2),
+					);
+					obj.children[i].quaternion.setFromEuler(r);
+				}
+			}
 		}
 	};
 
