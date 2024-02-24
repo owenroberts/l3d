@@ -13,30 +13,51 @@ export default function Joint() {
 	const oP = new THREE.Vector3(); // original position
 	const tP = new THREE.Vector3(); // target position
 
-	const rotateSpeed = 0.01;
+	let rotateSpeed = 1;
+	let lerpSpeed = 1;
 
 	return {
 		get: () => { return obj; },
+		getPosition: () => { return obj.position; },
 		add: child => { 
 			if (child.isMesh || child.isObject3D) obj.add(child); 
 			else obj.add(child.get());
 		},
 		copy: o => {
-			if (o.isVector3)  obj.position.copy(o);
+			if (o.isVector3) obj.position.copy(o);
 			if (o.isQuaternion) obj.quaternion.copy(o);
 		},
+		setRotateSpeed: value => { rotateSpeed = value; },
 		setTargetRotation: (x, y, z) => {
 			tQ.setFromEuler(new THREE.Euler(x, y, z));
 		},
-		rotate: () => {
-			obj.quaternion.rotateTowards(tQ, rotateSpeed);
+		rotate: timeElapsed => {
+			if (obj.quaternion.equals(tQ)) return;
+			// console.log('rotate', rotateSpeed * timeElapsed);
+			obj.quaternion.rotateTowards(tQ, rotateSpeed * timeElapsed);
 		},
-		unrotate: () => {
-			obj.quaternion.rotateTowards(oQ, rotateSpeed);
+		unrotate: timeElapsed => {
+			if (obj.quaternion.equals(oQ)) return;
+			// console.log('unrotate', rotateSpeed * timeElapsed);
+			obj.quaternion.rotateTowards(oQ, rotateSpeed * timeElapsed);
+		},
+		setLerpSpeed: value => { lerpSpeed = value; },
+		setTargetPosition: (x, y, z) => { tP.set(x, y, z); },
+		lerp: timeElapsed => {
+			obj.position.lerp(tP, lerpSpeed * timeElapsed);
+		},
+		unlerp: timeElapsed => {
+			obj.position.lerp(oP, lerpSpeed * timeElapsed);
 		},
 		setOrigins: () => {
 			oQ.copy(obj.quaternion);
 			oP.copy(obj.position);
+		},
+		isAtOrigin: () => {
+			if (obj.position.distanceTo(oP) < 0.1) {
+				obj.position.copy(oP);
+			}
+			return obj.position.equals(oP) && obj.quaternion.equals(oQ);
 		},
 		setPosition: (x, y, z) => {
 			obj.position.set(x, y, z);
@@ -47,7 +68,14 @@ export default function Joint() {
 		rotateX: angle => { obj.rotateX(angle); },
 		rotateY: angle => { obj.rotateY(angle); },
 		rotateZ: angle => { obj.rotateZ(angle); },
-
+		randomRotation: () => {
+			const rr = new THREE.Euler(
+				Cool.random(0, Math.PI * 2),
+				Cool.random(0, Math.PI * 2),
+				Cool.random(0, Math.PI * 2),
+			);
+			obj.quaternion.setFromEuler(rr);
+		}
 	};
 
 }
