@@ -67,7 +67,7 @@ scene1.add(globe.getGlobe());
 if (!noScene2) scene2.add(globe.getGlobe().clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
 const cc = new CameraControls({ camera });
-const cat = new Cat({ globe });
+// const cat = new Cat({ globe });
 const cat1 = new CatLines({ globe, scene: scene1 });
 scene1.add(cat1.getModel());
 const particles = new Particles({ scene: scene1, worldRadius });
@@ -88,8 +88,8 @@ loader.load("./models/cat bool.glb", gltf => {
 	// lights.setPosition(cat.getModel());
 	
 	cat1.getModel().add(cc.getGoal()); // parents camera goal to the cat
-	cc.getGoal().position.set(0, 4, -8);
-	// lights.setPosition(cat1.getModel());
+	cc.getGoal().position.set(3, 4, -8);
+	lights.setPosition(cat1.getModel());
 
 
 	// cat1.getModel().position.copy(cat.getModel().position);

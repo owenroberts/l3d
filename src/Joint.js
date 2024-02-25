@@ -17,19 +17,12 @@ export default function Joint() {
 	let rotateSpeed = 1;
 	let lerpSpeed = 1;
 
-	/* 
-		weirdly rotate speed doesn't seem to do anything? 
-		its relationship between time and speed, 
-		if the speed is too slow to make it to the end of phase it doesn't matter
-		so maybe it should be an angle that's just update by time ... 
-		or are we overusing timeElapsed ... 
-		i think step doesn't matter unless its lower than target rotation
-		obvi, if target rotation is less than step, its already there ..
-	*/
-
 	return {
 		get: () => { return obj; },
 		getPosition: () => { return obj.position; },
+		setRotateSpeed: value => { rotateSpeed = value; },
+		setLerpSpeed: value => { lerpSpeed = value; },
+		setPosition: (x, y, z) => { obj.position.set(x, y, z); },
 		add: child => { 
 			if (child.isMesh || child.isObject3D) obj.add(child); 
 			else obj.add(child.get());
@@ -38,22 +31,24 @@ export default function Joint() {
 			if (o.isVector3) obj.position.copy(o);
 			if (o.isQuaternion) obj.quaternion.copy(o);
 		},
-		setRotateSpeed: value => { rotateSpeed = value; },
 		setTargetRotation: (x, y, z) => {
 			tE.set(x, y, z);
 			tQ.setFromEuler(tE);
 		},
-		rotate: () => {
+		rotate: timeElapsed => {
 			if (obj.quaternion.equals(tQ)) return;
-			obj.quaternion.rotateTowards(tQ, 1); 
+			obj.quaternion.rotateTowards(tQ, timeElapsed * rotateSpeed); 
 		},
 		unrotate: timeElapsed => {
 			if (obj.quaternion.equals(oQ)) return;
 			obj.quaternion.rotateTowards(oQ, timeElapsed * rotateSpeed);
 		},
-		setLerpSpeed: value => { lerpSpeed = value; },
-		setTargetPosition: (x, y, z) => { tP.set(x, y, z); },
-		lerp: () => { obj.position.lerp(tP, 1); },
+		setTargetPosition: (x, y, z) => { 
+			tP.set(x, y, z); 
+		},
+		lerp: timeElapsed => { 
+			obj.position.lerp(tP, timeElapsed * lerpSpeed); 
+		},
 		unlerp: timeElapsed => {
 			obj.position.lerp(oP, timeElapsed * lerpSpeed);
 		},
@@ -66,9 +61,6 @@ export default function Joint() {
 				obj.position.copy(oP);
 			}
 			return obj.position.equals(oP) && obj.quaternion.equals(oQ);
-		},
-		setPosition: (x, y, z) => {
-			obj.position.set(x, y, z);
 		},
 		addPosition: (x, y, z) => {
 			obj.position.add(new THREE.Vector3(x, y, z));

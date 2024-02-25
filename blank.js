@@ -8,7 +8,7 @@ let w = 960, h = 540;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 const camera = new THREE.PerspectiveCamera( 75, w / h, 0.1, 1000 );
-camera.position.set(8, 8, 8);
+camera.position.set(4, 4, 4);
 camera.lookAt(new THREE.Vector3(0, 0, 0));
 scene.add(new THREE.AxesHelper(5));
 
@@ -17,10 +17,11 @@ renderer.setSize( w, h );
 document.body.appendChild( renderer.domElement );
 const controls = new OrbitControls(camera, renderer.domElement);
 
+const showCube = false;
 const geometry = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
 const material = new THREE.MeshStandardMaterial( { color: 0xaaaaaa } );
 const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+if (showCube) scene.add( cube );
 
 function lights() {
 	const light = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -52,8 +53,8 @@ function animate(time) {
 
 	cat.update(timeElapsed);
 
-	cube.rotation.x += 0.01;
-	cube.rotation.y += 0.01;
+	if (showCube) cube.rotation.x += 0.01;
+	if (showCube) cube.rotation.y += 0.01;
 }
 animate();
 
