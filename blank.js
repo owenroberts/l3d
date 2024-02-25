@@ -50,7 +50,7 @@ function animate(time) {
 
 	renderer.render( scene, camera );
 
-	cat.update(time, timeElapsed);
+	cat.update(timeElapsed);
 
 	cube.rotation.x += 0.01;
 	cube.rotation.y += 0.01;

@@ -14,7 +14,7 @@ export default function Cat(params) {
 
 	function loadModel(gltf) {
 		model = clone(gltf.scene);
-		console.log('cat model', model);
+		// console.log('cat model', model);
 		model.traverse(obj => {
 			if (obj.isMesh) {
 				obj.castShadow = true;
