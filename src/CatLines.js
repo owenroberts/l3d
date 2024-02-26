@@ -30,7 +30,7 @@ export default function CatLines(params) {
 		model.lookAt(next.position);
 	}
 
-	let state = 'idling'; // walking, idling
+	let state = 'walking'; // walking, idling
 	let speed = 0.005; // default 0.005
 	const s = 0.5; // size
 
@@ -65,6 +65,7 @@ export default function CatLines(params) {
 		head.add(headMesh);
 		head.setPosition(0, headHeight, s * 2);
 		head.randomRotation();
+		head.setOrigins();
 		model.add(head.get());
 
 		const earGeo = new THREE.ConeGeometry(s * 1, s * 1, 3);
@@ -208,7 +209,9 @@ export default function CatLines(params) {
 
 		const tailRotation = animators.walk.tail.update(timeElapsedInSeconds);
 		for (let i = 1; i < tail.length; i++) {
-			tail[i].setTargetRotation(tailRotation + i * 0.05, 0, 0);
+			// tail[i].setTargetRotation(tailRotation + i * 0.05, 0, 0);
+			tail[i].setTargetRotation({ x: tailRotation + i * 0.05 });
+
 			tail[i].rotate(timeElapsedInSeconds);
 		}
 
@@ -220,17 +223,18 @@ export default function CatLines(params) {
 			const a1 = Cool.map(Math.sin(legs[i].phase + legRotation), -1, 1, -2, 2);
 			const a2 = Cool.map(Math.sin(legs[i].phase + legRotation * 2), -1, 1, 1.25, -1.25);
 
-			legs[i].joints[0].setTargetRotation(a1, i < 2 ? fa : ba, 0);
+			// legs[i].joints[0].setTargetRotation(a1, i < 2 ? fa : ba, 0);
+			legs[i].joints[0].setTargetRotation({ x: a1 });
 			legs[i].joints[0].rotate(timeElapsedInSeconds);
-			legs[i].joints[1].setTargetRotation(a2, 0, 0);
+			legs[i].joints[1].setTargetRotation({ x: a2 });
 			legs[i].joints[1].rotate(timeElapsedInSeconds);
 		}
 
 		const bodyPosition = animators.walk.body.update(timeElapsedInSeconds);
-		body.setTargetPosition(0, bodyHeight + bodyPosition, 0);
+		body.setTargetPosition({ y: bodyHeight + bodyPosition });
 		body.lerp(timeElapsedInSeconds);
 
-		head.setTargetPosition(0, headHeight - bodyPosition, s * 2);
+		head.setTargetPosition({ y: headHeight - bodyPosition });
 		head.lerp(timeElapsedInSeconds);
 	}
 
@@ -250,12 +254,12 @@ export default function CatLines(params) {
 	function idle(timeElapsedInSeconds) {
 
 		const headRotation = animators.idle.head.update(timeElapsedInSeconds);
-		head.setTargetRotation(0, headRotation, 0);
+		head.setTargetRotation({ y: headRotation });
 		head.rotate(timeElapsedInSeconds);
 
 		const tailRotation = animators.idle.tail.update(timeElapsedInSeconds);
 		for (let i = 1; i < tail.length; i++) {
-			tail[i].setTargetRotation(0, 0, tailRotation + i * 0.05 * Math.sign(tailRotation));
+			tail[i].setTargetRotation({ z: tailRotation + i * 0.05 * Math.sign(tailRotation) });
 			tail[i].rotate(timeElapsedInSeconds);
 		}
 	}

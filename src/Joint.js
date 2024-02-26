@@ -14,6 +14,10 @@ export default function Joint() {
 	const oP = new THREE.Vector3(); // original position
 	const tP = new THREE.Vector3(); // target position
 
+	// save original value for easy math
+	let xR = 0, yR = 0, zR = 0;
+	let xP = 0, yP = 0, zP = 0;
+
 	let rotateSpeed = 1;
 	let lerpSpeed = 1;
 
@@ -31,8 +35,13 @@ export default function Joint() {
 			if (o.isVector3) obj.position.copy(o);
 			if (o.isQuaternion) obj.quaternion.copy(o);
 		},
-		setTargetRotation: (x, y, z) => {
-			tE.set(x, y, z);
+		setTargetRotation: params => {
+			// console.log(params); // idk abt performance here .. 
+			// tE.setFromQuaternion(oQ);
+			tE.x = params.x !== undefined ? params.x : xR;
+			tE.y = params.y !== undefined ? params.y : yR;
+			tE.z = params.z !== undefined ? params.z : zR;
+			// tE.set(x, y, z);
 			tQ.setFromEuler(tE);
 		},
 		rotate: timeElapsed => {
@@ -43,8 +52,11 @@ export default function Joint() {
 			if (obj.quaternion.equals(oQ)) return;
 			obj.quaternion.rotateTowards(oQ, timeElapsed * rotateSpeed);
 		},
-		setTargetPosition: (x, y, z) => { 
-			tP.set(x, y, z); 
+		setTargetPosition: params => {
+			tP.x = params.x !== undefined ? params.x : xP;
+			tP.y = params.y !== undefined ? params.y : yP;
+			tP.z = params.z !== undefined ? params.z : zP;
+			// tP.set(x, y, z);
 		},
 		lerp: timeElapsed => { 
 			obj.position.lerp(tP, timeElapsed * lerpSpeed); 
@@ -55,6 +67,15 @@ export default function Joint() {
 		setOrigins: () => {
 			oQ.copy(obj.quaternion);
 			oP.copy(obj.position);
+
+			const oE = new THREE.Euler().setFromQuaternion(oQ);
+			xR = oE.x;
+			yR = oE.y;
+			zR = oE.z;
+
+			xP = oP.x;
+			yP = oP.y;
+			zP = oP.z;
 		},
 		isAtOrigin: () => {
 			if (obj.position.distanceTo(oP) < 0.01) {
