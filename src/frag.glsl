@@ -6,6 +6,9 @@ varying vec2 vUv;
 uniform vec3 lineColor;
 uniform vec3 bgColor;
 uniform vec2 noiseOffset;
+uniform float diffuseCutoff;
+uniform float normalCutoff;
+uniform float noiseMultiplier;
 
 
 // https://www.shadertoy.com/view/XdXGW8
@@ -45,7 +48,7 @@ float valueAtPoint(sampler2D image, vec2 coord, vec2 texel, vec2 point) {
 }
 
 float diffuseValue(int x, int y) {
-	float cutoff = 40.0;
+	float cutoff = diffuseCutoff;
 	float offset = 0.5 / cutoff;
 	float noiseValue = clamp(texture(uTexture, vUv).r, noiseOffset.x, cutoff) / cutoff - offset;
 
@@ -53,7 +56,7 @@ float diffuseValue(int x, int y) {
 }
 
 float normalValue(int x, int y) {
-	float cutoff = 50.0;
+	float cutoff = normalCutoff;
 	float offset = 0.5 / cutoff;
 	float noiseValue = clamp(texture(uTexture, vUv).r, noiseOffset.y, cutoff) / cutoff - offset;
 
@@ -63,7 +66,7 @@ float normalValue(int x, int y) {
 float getValue(int x, int y) {
 	float noiseValue = noise(gl_FragCoord.xy);
 	noiseValue = noiseValue * 2.0 - 1.0;
-	noiseValue *= 10.0;
+	noiseValue *= noiseMultiplier;
 	return diffuseValue(x, y) + normalValue(x, y) * noiseValue;
 }
 

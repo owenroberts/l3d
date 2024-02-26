@@ -5,11 +5,9 @@ import * as THREE from 'three';
 import Joint from './Joint.js';
 import Animator from './Animator.js';
 import '../doodoo/ui/lib/cool/cool.js'; // fuck off
-// import '../doodoo/src/Property.js';
-// import '../doodoo/src/Modulator.js';
 
 
-export default function CatLines(params) {
+export default function Cat(params) {
 
 	const { globe, scene } = params;
 	let start, next;
@@ -30,7 +28,7 @@ export default function CatLines(params) {
 		model.lookAt(next.position);
 	}
 
-	let state = 'walking'; // walking, idling
+	let state = 'idling'; // walking, idling
 	let speed = 0.005; // default 0.005
 	const s = 0.5; // size
 
@@ -38,12 +36,12 @@ export default function CatLines(params) {
 	const head = new Joint();
 	const tail = [];
 	const legs = [];
-	const tailRotateSpeed = 3, legRotateSpeed = 4;	
-	const tailSegNum = 7;
 	const fa = 0.6; // front leg angle
 	const ba = 0.3; // back leg angle, def better way to do this ... 
 	const bodyHeight = s * 2.2;
 	const headHeight = s * 5;
+	const tailRotateSpeed = 3, legRotateSpeed = 4;	
+	const tailSegNum = 7;
 	
 	function createModel() {
 
@@ -264,25 +262,32 @@ export default function CatLines(params) {
 		}
 	}
 
-	function update(timeElapsed) {
+	function update(timeElapsed, isWalking) {
 
 		if (isNaN(timeElapsed)) return;
 		let timeElapsedInSeconds = timeElapsed / 1000;
-
-		// if (state === 'walking' && isWalking) {
-		if (state === 'walking') {
+		
+		// console.log(state, isWalking, body.isAtOrigin());
+		
+		if (state === 'walking' && isWalking) {
+			
 			walk(timeElapsedInSeconds);
 
-			// const walkDistance = model.position.distanceTo(next.position);
-			// if (walkDistance > 0.1) {
-			// 	model.translateZ(speed * timeElapsed);
-			// } else {
-			// 	model.up.copy(next.normal);
-			// 	next = globe.getNext(next.position);
-			// 	model.lookAt(next.position);
-			// }
+			const walkDistance = model.position.distanceTo(next.position);
+			if (walkDistance > 0.1) {
+				model.translateZ(speed * timeElapsed);
+			} else {
+				model.up.copy(next.normal);
+				next = globe.getNext(next.position);
+				model.lookAt(next.position);
+			}
+
+		} else if (state === 'walking' && !isWalking) {
+			state = 'idling';
 		} else if (state === 'idling' && !body.isAtOrigin()) {
 			reset(timeElapsedInSeconds);
+		} else if (state === 'idling' && isWalking) {
+			state = 'walking';
 		} else {
 			idle(timeElapsedInSeconds);
 		}
@@ -300,6 +305,7 @@ export default function CatLines(params) {
 
 	return {
 		update, globeSetup,
+		getStart: () => { return start; },
 		isLoaded: () => { return true; }, // remove if using this one
 		getModel: () => { return model; },
 	};

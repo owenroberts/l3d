@@ -7,8 +7,7 @@ import Globe from './src/Globe.js';
 import NoiseEffect from './src/NoiseEffect.js';
 import CameraControls from './src/CameraControls.js';
 import PostProcessing from './src/PostProcessing.js';
-import Cat from './src/Cat.js';
-import CatLines from './src/CatLines.js';
+import Cat from './src/CatLines.js';
 
 import Scenery from './src/Scenery.js';
 import Particles from './src/DumbParticles.js';
@@ -67,35 +66,20 @@ scene1.add(globe.getGlobe());
 if (!noScene2) scene2.add(globe.getGlobe().clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
 const cc = new CameraControls({ camera });
-// const cat = new Cat({ globe });
-const cat1 = new CatLines({ globe, scene: scene1 });
-scene1.add(cat1.getModel());
+const cat = new Cat({ globe, scene: scene1 });
 const particles = new Particles({ scene: scene1, worldRadius });
 const flocks = [];
 for (let i = 0; i < 4; i++) {
 	flocks.push(new Flock({ scene: scene1, globe }));
 }
 
-/* load models */
-const loadingManager = new THREE.LoadingManager();
-const loader = new GLTFLoader(loadingManager);
-loader.load("./models/cat bool.glb", gltf => {
-	cat.loadModel(gltf);
-	scene1.add(cat.getModel());
-
-	// cat.getModel().add(cc.getGoal()); // parents camera goal to the cat
-	// cc.getGoal().position.set(0, 4, -8);
-	// lights.setPosition(cat.getModel());
-	
-	cat1.getModel().add(cc.getGoal()); // parents camera goal to the cat
-	cc.getGoal().position.set(3, 4, -8);
-	lights.setPosition(cat1.getModel());
-
-
-	// cat1.getModel().position.copy(cat.getModel().position);
-	// cat1.getModel().quaternion.copy(cat.getModel().quaternion);
-
-});
+cat.globeSetup();
+const catStart = cat.getStart();
+camera.position.copy(catStart.position).addScaledVector(catStart.normal, 10); // 1000 for final
+scene1.add(cat.getModel());
+cat.getModel().add(cc.getGoal()); // parents camera goal to the cat
+cc.getGoal().position.set(4, 4, -8);
+lights.setPosition(cat.getModel());
 
 const noiseEffect = new NoiseEffect();
 let previousTime = null;
@@ -112,26 +96,26 @@ function animate(time) {
 	if (debugRender) renderer.render(scene1, camera);
 	else post.process();
 
+	cat.update(timeElapsed, tracks[0] === 'play');
+
 	particles.update();
 	for (let i = 0; i < 4; i++) {
 		flocks[i].update(time, timeElapsed);
 	}
 
-	// cat.update(timeElapsed, tracks[0] === 'play');
-	cat1.update(timeElapsed, tracks[0] === 'play');
-
-	// if (tracks[1] === 'play') {
+	if (tracks[1] === 'play') {
 		// noiseEffect.update();
 		// post.update(noiseEffect.getValue());
-	// }
+		post.update();
+	}
 
 	if (useControls) {
 		controls.update();
-	} else if (cat1.isLoaded()) {
+	} else if (cat.isLoaded()) {
 		cc.update();
 		// cc.temp.setFromMatrixPosition(cc.goal.matrixWorld);
 		// camera.position.lerp(cc.temp, 0.02);
-		catModel = cat1.getModel();
+		catModel = cat.getModel();
 		camera.up.copy(catModel.up);
 		camera.lookAt(catModel.position.clone().addScaledVector(catModel.up, 4));
 	}

@@ -9,6 +9,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { LinesPass } from './LinesPass.js';
 import vertexShader from './vert.glsl';
 import blenderShader from './blend.glsl';
+import Animator from './Animator.js';
+
 
 export default function PostProcessing(params) {
 
@@ -25,6 +27,9 @@ export default function PostProcessing(params) {
 			bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
 			lineWidth: 1,
 			numLines: 5,
+			diffuseCutoff: { type: 'float', value: 40 },
+			normalCutoff: { type: 'float', value: 50 },
+			noiseMultiplier: { type: 'float', value: 10 },
 		}
 	});
 
@@ -33,6 +38,33 @@ export default function PostProcessing(params) {
 	composer.addPass( linesPass1 );
 
 	let scene2Composer, linesPass2;
+
+	const animators = {
+		diffuse: new Animator({
+			value: 40,
+			valueClamp: [30, 60],
+			increment: 1,
+			randomRange: [-1, 1],
+			clampRange: [-3, 2],
+			count: 24,
+		}),
+		normal: new Animator({
+			value: 50,
+			valueClamp: [10, 100],
+			increment: 1,
+			randomRange: [-1, 1],
+			clampRange: [-3, 2],
+			count: 24,
+		}),
+		noise: new Animator({
+			value: 10,
+			valueClamp: [1, 20],
+			increment: 1,
+			randomRange: [-1, 1],
+			clampRange: [-3, 2],
+			count: 24,
+		}),
+	};
 
 	if (!noScene2) {
 	
@@ -75,8 +107,17 @@ export default function PostProcessing(params) {
 	}
 
 	function update(value) {
-		linesPass1.material.uniforms.noiseOffset.value.x = value.x;
-		linesPass1.material.uniforms.noiseOffset.value.y = value.y;
+
+		// animators.diffuse.update();
+		// animators.normal.update();
+
+
+		linesPass1.material.uniforms.diffuseCutoff.value = animators.diffuse.update()
+		linesPass1.material.uniforms.normalCutoff.value = animators.normal.update();
+		linesPass1.material.uniforms.noiseMultiplier.value = animators.noise.update();
+
+		// linesPass1.material.uniforms.noiseOffset.value.x = value.x;
+		// linesPass1.material.uniforms.noiseOffset.value.y = value.y;
 
 		if (!linesPass2) return;
 		

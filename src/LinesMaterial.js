@@ -9,6 +9,9 @@ export class LinesMaterial extends THREE.ShaderMaterial {
 			uniforms: {
 				lineColor: params.uniforms.lineColor,
 				bgColor: params.uniforms.bgColor,
+				diffuseCutoff: params.uniforms.diffuseCutoff,
+ 				normalCutoff: params.uniforms.normalCutoff,
+ 				noiseMultiplier: params.uniforms.noiseMultiplier,
 				tDiffuse: { value: null },
 				uNormals: { value: null },
 				uTexture: { value: null },
