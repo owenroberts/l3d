@@ -25,7 +25,8 @@ export default function Animator(params) {
 
 	// console.log(value, increment, randomize, range, min, max);
 
-	function update(timeElapsedInSeconds=1) {
+	function update(timeElapsedInSeconds=1, params={}) {
+		// console.log(counter, count, value, increment);
 		if (counter === count) {
 			value += increment * timeElapsedInSeconds;
 			if (randomize) {
@@ -40,8 +41,8 @@ export default function Animator(params) {
 		// console.log(value.clamp(...params.valueClamp));
 			value = value.clamp(...params.valueClamp);
 		}
-
-		return func(value);
+		// console.log(counter, count, value, increment);
+		return func(value, params);
 	}
 
 	return { update };

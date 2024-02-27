@@ -2,8 +2,8 @@
 	bird obj for flock
 */
 import * as THREE from 'three';
-
-
+import Joint from './Joint.js';
+import Animator from './Animator.js';
 
 export default function Bird(params) {
 
@@ -24,7 +24,7 @@ export default function Bird(params) {
 		radius: 20,
 		align: 2,
 		center: 1,
-		separation: 3,
+		separation: 1,
 	};
 
 	const model = new THREE.Object3D();
@@ -60,34 +60,31 @@ export default function Bird(params) {
 	}
 
 	const s = Cool.random(0.5, 2);
-	const lines = { left: [], right: [], }
+	const lines = { left: [], right: [], };
+	const joints = [];
 	for (let i = 0; i < 3; i++) {
-		const p1 = new THREE.Vector3(0, 0, s * 1/3 * i * -1);
-		const p2 = new THREE.Vector3(-s / 2, 0, (s + s * 1/3 * i) * -1);
-		const p3 = new THREE.Vector3(s / 2, 0, (s + s * 1/3 * i) * -1);
-		lines.left.push(addLine(p1, p2));
-		lines.right.push(addLine(p1, p3));
+		const p1 = new THREE.Vector3(0, 0, 0);
+		const p2 = new THREE.Vector3(-s / 2, 0, -s);
+		const p3 = new THREE.Vector3(s / 2, 0, -s);
+		// lines.left.push(addLine(p1, p2));
+		// lines.right.push(addLine(p1, p3));
+
+		const joint = new Joint();
+		joint.addPosition(0, 0, s * 1/3 * i * -1);
+		joint.add(addLine(p1, p2));
+		joint.add(addLine(p1, p3));
+		joint.setRotateSpeed(2);
+		joint.setOrigins();
+		model.add(joint.get());
+		joints.push(joint);
 	}
 
-	function loadModel(gltf) {
-		model = clone(gltf.scene);
-		// model.add(new THREE.AxesHelper(10));
-		model.position.set(
-			Cool.random(-10, 10),
-			Cool.random(-10, 10),
-			Cool.random(-10, 10),
-		);
-		model.traverse(obj => {
-			if (obj.isMesh) obj.castShadow = true;
-		});
-		mixer = new THREE.AnimationMixer(model);
-		gltf.animations.forEach(a => {
-			animations[a.name] = a;
-		});
-		mixer.clipAction(animations['Flapping']).play();
-		isLoaded = true;
-		scene.add(model);
-	}
+	const animator = new Animator({
+		increment: 1,
+		func: (value, params) => {
+			return Cool.map(Math.cos(value * (2 + params.i * 0.1)), -1, 1, -1, 1);
+		}
+	});
 
 	function flock(others) {
 		const alignment = new THREE.Vector3(); // flock velocity
@@ -160,12 +157,15 @@ export default function Bird(params) {
 	function update(time, timeElapsed, others, target) {
 		// if (!isLoaded) return;
 		// mixer.update(timeElapsed / 1000);
+		let timeElapsedInSeconds = timeElapsed / 1000;
 
 		for (let i = 0; i < 3; i++) {
-			const a = Cool.map(Math.cos(time * (0.01 + i * 0.001)) * Math.PI, 0, Math.PI * 2, 0, 1)
-			lines.left[i].rotation.x = a;
-			lines.right[i].rotation.x = a;
+			const a = animator.update(timeElapsedInSeconds, { i });
+			joints[i].setTargetRotation({ x: a });
+			joints[i].rotate(timeElapsedInSeconds);
 		}
+
+		return;
 
 		if (model.position.distanceTo(target) > 2) { 
 			flock(others);
@@ -183,7 +183,7 @@ export default function Bird(params) {
 	}
 
 	return { 
-		loadModel, update,
+		update,
 		getID: () => { return model.id; },
 		getPosition: () => { return model.position; },
 		getVelocity: () => { return velocity; },

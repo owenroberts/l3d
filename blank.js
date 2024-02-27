@@ -2,13 +2,15 @@ import * as THREE from 'three';
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import './doodoo/ui/lib/cool/cool.js'; // fuck off
-import CatLines from './src/CatLines.js'
+import CatLines from './src/CatLines.js';
+import Flock from './src/Flock.js';
+
 
 let w = 960, h = 540;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 const camera = new THREE.PerspectiveCamera( 75, w / h, 0.1, 1000 );
-camera.position.set(4, 4, 4);
+camera.position.set(10, 10, 10);
 camera.lookAt(new THREE.Vector3(0, 0, 0));
 scene.add(new THREE.AxesHelper(5));
 
@@ -39,8 +41,8 @@ const X_AXIS = new THREE.Vector3(1, 0, 0);
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 
-const cat = new CatLines({ scene });
-scene.add(cat.getModel());
+let flock = new Flock({ scene });
+flock.setTarget(new THREE.Vector3(0, 0, 20));
 
 let previousTime = null;
 function animate(time) {
@@ -51,7 +53,7 @@ function animate(time) {
 
 	renderer.render( scene, camera );
 
-	cat.update(timeElapsed);
+	flock.update(time, timeElapsed);
 
 	if (showCube) cube.rotation.x += 0.01;
 	if (showCube) cube.rotation.y += 0.01;

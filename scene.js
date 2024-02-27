@@ -71,6 +71,7 @@ const particles = new Particles({ scene: scene1, worldRadius });
 const flocks = [];
 for (let i = 0; i < 4; i++) {
 	flocks.push(new Flock({ scene: scene1, globe }));
+	flocks[i].globeSetup();
 }
 
 cat.globeSetup();
