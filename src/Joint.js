@@ -46,7 +46,7 @@ export default function Joint() {
 		},
 		rotate: timeElapsed => {
 			if (obj.quaternion.equals(tQ)) return;
-			obj.quaternion.rotateTowards(tQ, timeElapsed * rotateSpeed); 
+			obj.quaternion.rotateTowards(tQ, timeElapsed * rotateSpeed);
 		},
 		unrotate: timeElapsed => {
 			if (obj.quaternion.equals(oQ)) return;
@@ -89,6 +89,9 @@ export default function Joint() {
 		rotateX: a => { obj.rotateX(a); },
 		rotateY: a => { obj.rotateY(a); },
 		rotateZ: a => { obj.rotateZ(a); },
+		translateX: v => { obj.translateX(v); },
+		translateY: v => { obj.translateY(v); },
+		translateZ: v => { obj.translateZ(v); },
 		randomRotation: () => {
 			for (let i = 0; i < obj.children.length; i++) {
 				if (obj.children[i].isMesh) {

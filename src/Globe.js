@@ -12,8 +12,10 @@ export default function Globe(params) {
 		// new THREE.SphereGeometry(worldRadius, 32, 16),
 		new THREE.IcosahedronGeometry(worldRadius, 3),
 		// new THREE.MeshStandardMaterial(),
-		// new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true }),
-		new THREE.MeshStandardMaterial({ color: 0x00ffff, }),
+		new THREE.MeshStandardMaterial({ 
+			color: 0x00ffff, 
+			// wireframe: true,
+		}),
 	);
 
 	globe.castShadow = false;

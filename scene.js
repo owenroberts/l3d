@@ -13,6 +13,8 @@ import Scenery from './src/Scenery.js';
 import Particles from './src/DumbParticles.js';
 import Lighting from './src/Lighting.js';
 import Flock from './src/Flock.js';
+import Bird from './src/Bird.js';
+import Worm from './src/Worm.js';
 
 import './doodoo/build/doodoo.min.js'; // holy shit what
 import './doodoo/build/lib/tone/build/Tone.js';
@@ -69,8 +71,21 @@ const cc = new CameraControls({ camera });
 const cat = new Cat({ globe, scene: scene1 });
 const particles = new Particles({ scene: scene1, worldRadius });
 const flocks = [];
-for (let i = 0; i < 4; i++) {
-	flocks.push(new Flock({ scene: scene1, globe }));
+for (let i = 0; i < 5; i++) {
+	let type, height;
+	if (Cool.chance(0.5)) {
+		type = Bird;
+		height = 10;
+	} else {	
+		type = Worm;
+		height = 0;
+	}
+	flocks.push(new Flock({
+		scene: scene1,
+		globe,
+		type,
+		height,
+	}));
 	flocks[i].globeSetup();
 }
 
@@ -100,8 +115,9 @@ function animate(time) {
 	cat.update(timeElapsed, tracks[0] === 'play');
 
 	particles.update();
-	for (let i = 0; i < 4; i++) {
-		flocks[i].update(time, timeElapsed);
+
+	for (let i = 0; i < flocks.length; i++) {
+		flocks[i].update(timeElapsed);
 	}
 
 	if (tracks[1] === 'play') {

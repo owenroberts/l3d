@@ -268,11 +268,9 @@ export default function Cat(params) {
 		let timeElapsedInSeconds = timeElapsed / 1000;
 		
 		// console.log(state, isWalking, body.isAtOrigin());
-		
-		if (state === 'walking' && isWalking) {
-			
-			walk(timeElapsedInSeconds);
 
+		if (isWalking) {
+			walk(timeElapsedInSeconds);
 			const walkDistance = model.position.distanceTo(next.position);
 			if (walkDistance > 0.1) {
 				model.translateZ(speed * timeElapsed);
@@ -281,16 +279,29 @@ export default function Cat(params) {
 				next = globe.getNext(next.position);
 				model.lookAt(next.position);
 			}
-
-		} else if (state === 'walking' && !isWalking) {
-			state = 'idling';
-		} else if (state === 'idling' && !body.isAtOrigin()) {
-			reset(timeElapsedInSeconds);
-		} else if (state === 'idling' && isWalking) {
-			state = 'walking';
 		} else {
 			idle(timeElapsedInSeconds);
 		}
+		
+		// if (state === 'walking' && isWalking) {
+		// 	walk(timeElapsedInSeconds);
+		// 	const walkDistance = model.position.distanceTo(next.position);
+		// 	if (walkDistance > 0.1) {
+		// 		model.translateZ(speed * timeElapsed);
+		// 	} else {
+		// 		model.up.copy(next.normal);
+		// 		next = globe.getNext(next.position);
+		// 		model.lookAt(next.position);
+		// 	}
+		// } else if (state === 'walking' && !isWalking) {
+		// 	state = 'idling';
+		// } else if (state === 'idling' && !body.isAtOrigin()) {
+		// 	reset(timeElapsedInSeconds);
+		// } else if (state === 'idling' && isWalking) {
+		// 	state = 'walking';
+		// } else {
+		// 	idle(timeElapsedInSeconds);
+		// }
 	}
 
 	/* key commands */
