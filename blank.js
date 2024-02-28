@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import './doodoo/ui/lib/cool/cool.js'; // fuck off
+
+import CameraControls from './src/CameraControls.js';
 import CatLines from './src/CatLines.js';
 import Flock from './src/Flock.js';
 import Bird from './src/Bird.js';
@@ -47,8 +49,18 @@ const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const globe = new Globe({ scene, worldRadius: 128 });
 scene.add(globe.getGlobe());
 
+const cc = new CameraControls({ camera });
+let useControls = false; // debug
+let ccTarget;
+
 let birdFlock = new Flock({ scene, globe, type: Bird, height: 10 });
-let wormFlock = new Flock({ scene, globe, type: Worm, height: 0 });
+// let wormFlock = new Flock({ scene, globe, type: Worm, height: 0 });
+
+console.log()
+const b = birdFlock.getFlock()[0].getObject();
+b.add(cc.getGoal()); // parents camera goal to the cat
+cc.getGoal().position.set(0, 10, -8);
+camera.position.copy(b.position).add(new THREE.Vector3(0, 4, -8));
 
 let previousTime = null;
 function animate(time) {
@@ -59,10 +71,23 @@ function animate(time) {
 	renderer.render(scene, camera);
 
 	birdFlock.update(timeElapsed);
-	wormFlock.update(timeElapsed);
+	// wormFlock.update(timeElapsed);
+
+	if (useControls) {
+		controls.update();
+	} else {
+		cc.update();
+		ccTarget =  birdFlock.getFlock()[0].getObject();
+		// camera.up.copy(ccTarget.up);
+		camera.lookAt(ccTarget.position);
+	}
 
 	if (showCube) cube.rotation.x += 0.01;
 	if (showCube) cube.rotation.y += 0.01;
 }
 animate();
 
+function keyDown(ev) {
+	if (ev.code === 'KeyC') useControls = !useControls;
+}
+document.addEventListener('keydown', keyDown);

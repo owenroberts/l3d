@@ -13,14 +13,13 @@ export default function FlockMember(params) {
 	obj.up.copy(start.normal);
 	obj.lookAt(next.position);
 
-	const model = new type({ scene });
+	const model = new type({ scene, parent: obj });
 	obj.add(model.get());
 	scene.add(obj);
 	
 	let speed = model.getSpeed();
 	let is2D = model.is2D();
 
-	// let speed = 0.025;
 	let reachedTarget = false;
 	const velocity = new THREE.Vector3(0, 0, 0);
 	const acceleration = new THREE.Vector3(0, 0, 0);
@@ -29,9 +28,10 @@ export default function FlockMember(params) {
 
 	const flocking = {
 		radius: 20,
-		align: 2,
-		center: 1,
+		align: 2, // 2,
+		center: 1, // 1,
 		separation: 1,
+		seek: 1,
 	};
 
 	function flock(others) {
@@ -44,14 +44,12 @@ export default function FlockMember(params) {
 			if (obj.id === others[i].getID()) continue;
 			const other = others[i].getProps();
 			const distance = obj.position.distanceTo(other.position);
-			
-			// console.log(distance, flocking.radius)
 			if (distance < flocking.radius) {
-				// console.log('distance', distance);
-				
+
 				count++;
 
 				center.add(other.position);
+
 				alignment.add(other.velocity);
 
 				separation.copy(obj.position).sub(other.position);
@@ -62,15 +60,13 @@ export default function FlockMember(params) {
 			}
 		}
 
-		// separation.normalize();
-		if (separation.length() > 0) {
 			// console.log(separation.length());
+		if (separation.length() > 0) {
 			separation.normalize();
 			separation.multiplyScalar(maxSpeed);
-			separation.multiplyScalar(flocking.separation);
 			separation.sub(velocity);
 			separation.clampScalar(-maxForce, maxForce);
-			// console.log(separation.length());
+			separation.multiplyScalar(flocking.separation);
 			applyForce(separation);
 		}
 
@@ -79,15 +75,16 @@ export default function FlockMember(params) {
 			alignment.divideScalar(count);
 			alignment.normalize();
 			alignment.multiplyScalar(maxSpeed);
-			alignment.multiplyScalar(flocking.align);
 			alignment.sub(velocity);
 			alignment.clampScalar(-maxForce, maxForce);
+			alignment.multiplyScalar(flocking.align);
 			applyForce(alignment);
 
 			// cohesion
 			center.divideScalar(count);
-			// seek(center);
+			seek(center);
 		}
+		// console.log(alignment);
 	}
 
 	function seek(target) {
@@ -95,11 +92,11 @@ export default function FlockMember(params) {
 		desired.multiplyScalar(maxSpeed);
 		const steer = desired.sub(velocity);
 		steer.clampScalar(-maxForce, maxForce);
+		steer.multiplyScalar(flocking.seek);
 		applyForce(steer);
 	}
 
 	function applyForce(force) {
-		// if (is2D) force.z = 0;
 		acceleration.add(force);
 	}
 
@@ -107,27 +104,30 @@ export default function FlockMember(params) {
 		// if (!isLoaded) return;
 		// mixer.update(timeElapsed / 1000);
 
-		model.update(timeElapsed);
+		// model.update(timeElapsed);
 
 		// flock(others);
-		
-		if (obj.position.distanceTo(target) > 2) { 
+		// console.log (obj.position.distanceTo(target))
+		if (obj.position.distanceTo(target) > 1) { 
 			flock(others);
-			seek(target);
+			// seek(target);
 			
 			velocity.add(acceleration);
 			velocity.clampScalar(-maxSpeed, maxSpeed);
+			// console.log(velocity);
 			obj.position.add(velocity);
 			acceleration.multiplyScalar(0);
 			obj.lookAt(obj.position.clone().add(velocity));
 		} else {
-			flock(others);
+			// flock(others);
+			console.log('new target')
 			reachedTarget = true;
 		}
 	}
 
 	return { 
 		update,
+		getObject: () => { return obj; },
 		getID: () => { return obj.id; },
 		getPosition: () => { return obj.position; },
 		getVelocity: () => { return velocity; },

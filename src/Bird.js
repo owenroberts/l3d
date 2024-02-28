@@ -7,15 +7,20 @@ import Animator from './Animator.js';
 
 export default function Bird(params) {
 
-	const { position, scene } = params;
+	const { scene, parent } = params;
 
-	let speed = 0.005;
+	let speed = 0.006;
 	const model = new THREE.Object3D();
-	model.position.set(
-		Cool.random(-10, 10),
-		Cool.random(-10, 10),
-		Cool.random(-10, 10),
-	);
+
+	parent.position.x += Cool.random(-4, 4);
+	parent.position.y += Cool.random(2, 10);
+	parent.position.z += Cool.random(-4, 4);
+
+	// model.position.set(
+	// 	Cool.random(-4, 4),
+	// 	Cool.random(2, 10),
+	// 	Cool.random(-4, 4),
+	// );
 	// addHelper(model.position);
 
 	function addHelper(position) {

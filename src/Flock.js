@@ -16,14 +16,17 @@ export default function Flock(params) {
 	let start, next, target = new THREE.Vector3;
 
 	function globeSetup() {
-		const vertIndex = globe.getRandomVertex();
+		const vertIndex = 1 // globe.getRandomVertex();
 		start = globe.getGlobePos(vertIndex);
 		next = globe.getNext(start.position);
 		target = next.position.addScaledVector(next.normal, height);
 
-		// const a = addHelper(start.position);
-		// a.up.copy(start.normal);
-		// a.lookAt(next.position);
+		const a = addHelper(start.position);
+		a.up.copy(start.normal);
+		a.lookAt(next.position);
+
+		const b = addHelper(next.position);
+		b.up.copy(next.normal);
 		// console.log(start, next, target);
 	}
 	globeSetup();
@@ -63,5 +66,7 @@ export default function Flock(params) {
 		update, getNewTarget, globeSetup,
 		setTarget: position => { target.copy(position); },
 		getTarget: () => { return target; },
+		getNext: () => { return next; },
+		getFlock: () => { return members; },
 	};
 }
