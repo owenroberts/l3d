@@ -6,19 +6,30 @@ import Bird from './Bird.js';
 
 export default function FlockMember(params) {
 
-	const { start, next, scene, type } = params;
+	const { start, next, scene, type, boundaries } = params;
+
+	const earthCenter = new THREE.Vector3(0, 0, 0);
 
 	const obj = new THREE.Object3D();
 	obj.position.copy(start.position);
 	obj.up.copy(start.normal);
 	obj.lookAt(next.position);
+	scene.add(obj);
+
+	obj.add(addHelper(new THREE.Vector3(0, 0, 0)));
 
 	const model = new type({ scene, parent: obj });
 	obj.add(model.get());
-	scene.add(obj);
 	
-	let speed = model.getSpeed();
-	let is2D = model.is2D();
+	function addHelper(position) {
+		const a = new THREE.AxesHelper(5);
+		a.position.copy(position);
+		scene.add(a);
+		return a;
+	}
+
+	let speed =  model.getSpeed();
+	let flocking = model.getFlocking();
 
 	let reachedTarget = false;
 	const velocity = new THREE.Vector3(0, 0, 0);
@@ -26,15 +37,8 @@ export default function FlockMember(params) {
 	const maxSpeed = 8 * speed;
 	const maxForce = 0.2 * speed;
 
-	const flocking = {
-		radius: 20,
-		align: 2, // 2,
-		center: 1, // 1,
-		separation: 1,
-		seek: 1,
-	};
 
-	function flock(others) {
+	function flock(others, target) {
 		const alignment = new THREE.Vector3(); // flock velocity
 		const separation = new THREE.Vector3();
 		const center = new THREE.Vector3();
@@ -56,35 +60,28 @@ export default function FlockMember(params) {
 				separation.normalize();
 				separation.divideScalar(distance);
 				separation.multiplyScalar((flocking.radius - distance));
-				// separation.multiplyScalar(flocking.separation);
 			}
 		}
 
-			// console.log(separation.length());
-		if (separation.length() > 0) {
-			separation.normalize();
-			separation.multiplyScalar(maxSpeed);
-			separation.sub(velocity);
-			separation.clampScalar(-maxForce, maxForce);
-			separation.multiplyScalar(flocking.separation);
-			applyForce(separation);
-		}
-
-		// alignment
 		if (count > 0) {
+			separation.normalize();
+			separation.sub(velocity);
+			separation.multiplyScalar(flocking.separation);
+			separation.multiplyScalar(maxSpeed);
+			separation.clampScalar(-maxForce, maxForce);
+			applyForce(separation);
+
 			alignment.divideScalar(count);
 			alignment.normalize();
-			alignment.multiplyScalar(maxSpeed);
 			alignment.sub(velocity);
-			alignment.clampScalar(-maxForce, maxForce);
 			alignment.multiplyScalar(flocking.align);
+			alignment.multiplyScalar(maxSpeed);
+			alignment.clampScalar(-maxForce, maxForce);
 			applyForce(alignment);
 
-			// cohesion
-			center.divideScalar(count);
-			seek(center);
+			// center.divideScalar(count);
+			// seek(center);
 		}
-		// console.log(alignment);
 	}
 
 	function seek(target) {
@@ -96,6 +93,29 @@ export default function FlockMember(params) {
 		applyForce(steer);
 	}
 
+	function boundary() {
+		const d = obj.position.distanceTo(earthCenter);
+		if (d < boundaries[0]) { 
+			// console.log('bottom')
+			const direction = obj.position.clone().sub(earthCenter);
+			direction.normalize();
+			direction.multiplyScalar(flocking.boundary);
+			direction.multiplyScalar(maxSpeed).sub(velocity);
+			direction.clampScalar(-maxForce, maxForce);
+			applyForce(direction);
+		}
+
+		if (d > boundaries[1]) { 
+			// console.log('top')
+			const direction = earthCenter.clone().sub(obj.position);
+			direction.normalize();
+			direction.multiplyScalar(flocking.boundary);
+			direction.multiplyScalar(maxSpeed).sub(velocity);
+			direction.clampScalar(-maxForce, maxForce);
+			applyForce(direction);
+		}
+	}
+
 	function applyForce(force) {
 		acceleration.add(force);
 	}
@@ -104,23 +124,18 @@ export default function FlockMember(params) {
 		// if (!isLoaded) return;
 		// mixer.update(timeElapsed / 1000);
 
-		// model.update(timeElapsed);
+		model.update(timeElapsed);
+		flock(others);
+		seek(target);
+		boundary();
+		
+		velocity.add(acceleration);
+		velocity.clampScalar(-maxSpeed, maxSpeed);
+		obj.position.add(velocity);
+		acceleration.multiplyScalar(0);
+		obj.lookAt(obj.position.clone().add(velocity));
 
-		// flock(others);
-		// console.log (obj.position.distanceTo(target))
-		if (obj.position.distanceTo(target) > 1) { 
-			flock(others);
-			// seek(target);
-			
-			velocity.add(acceleration);
-			velocity.clampScalar(-maxSpeed, maxSpeed);
-			// console.log(velocity);
-			obj.position.add(velocity);
-			acceleration.multiplyScalar(0);
-			obj.lookAt(obj.position.clone().add(velocity));
-		} else {
-			// flock(others);
-			console.log('new target')
+		if (obj.position.distanceTo(target) < 1) { 
 			reachedTarget = true;
 		}
 	}

@@ -10,7 +10,7 @@ import '../doodoo/ui/lib/cool/cool.js'; // fuck off
 
 export default function Flock(params) {
 
-	const { globe, scene, type, height } = params;
+	const { globe, scene, type, height, boundaries } = params;
 
 	const members = [];
 	let start, next, target = new THREE.Vector3;
@@ -38,20 +38,17 @@ export default function Flock(params) {
 		return a;
 	}
 	
-	const count = Cool.random(3, 8);
+	const count = 2; // Cool.random(3, 8);
 	for (let i = 0; i < count; i++) {
-		const member = new FlockMember({ start, next, scene, type });
+		const member = new FlockMember({ start, next, scene, type, boundaries });
 		members.push(member);
 	}
 
 	function getNewTarget() {
-		// console.log('next', next);
 		next = globe.getNext(next.position);
 		const v = next.position.addScaledVector(next.normal, height);
 		target.copy(v);
-
 		addHelper(target);
-		// console.log('new', target);
 	}
 
 	function update(timeElapsed) {

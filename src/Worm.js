@@ -11,22 +11,30 @@ import Animator from './Animator.js';
 
 export default function Worm(params) {
 
-	const { position, scene } = params;
+	const { position, scene, parent } = params;
 
-	const speed = 0.008;
+	const speed = 0.0001;
+	const flocking = {
+		radius: 20,
+		align: 1, 
+		center: 1, 
+		separation: 0.5,
+		seek: 1.5,
+		boundary: 2.5,
+	};
+
 	const model = new THREE.Object3D();
 	const mat = new THREE.MeshStandardMaterial({ 
 		color: 0x3d3d3d,
 		side: THREE.DoubleSide,
 		// wireframe: true,
 	});
-	model.position.set(
+
+	parent.position.add(new THREE.Vector3(
 		Cool.random(-5, 5),
 		0,  // + Cool.random(-10, 10),
 		Cool.random(-5, 5),
-	);
-	scene.add(model);
-	// addHelper(model.position);
+	));
 
 	function addHelper(position) {
 		const a = new THREE.AxesHelper(5);
@@ -38,11 +46,6 @@ export default function Worm(params) {
 	function addLine(pos, pos2) {
 		const line = new THREE.LineCurve3(pos, pos2);
 		const tube = new THREE.TubeGeometry(line, 1, .08, 3);
-		const mat = new THREE.MeshStandardMaterial({ 
-			color: 0xafafaf,
-			side: THREE.DoubleSide,
-			// wireframe: true,
-		});
 		const mesh = new THREE.Mesh(tube, mat);
 		mesh.castShadow = true;
 		model.add(mesh);
@@ -64,9 +67,9 @@ export default function Worm(params) {
 		mesh.castShadow = true;
 		joint.add(mesh);
 
-		if (Cool.chance(0.5)) {
+		if (i === 0) {
 			const p1 = mesh.position.clone();
-			p1.add(new THREE.Vector3(0, 0, Cool.random(s, s * 1.5) * Cool.choice([1, 1])));
+			p1.add(new THREE.Vector3(0, 0, Cool.random(s, s * 1.5)));
 			const p2 = p1.clone();
 			const p3 = p1.clone();
 			p2.add(new THREE.Vector3(
@@ -86,7 +89,8 @@ export default function Worm(params) {
 		}
 
 
-		joint.setRotateSpeed(0.5);
+		joint.setRotateSpeed(0.25);
+		joint.setLerpSpeed(0.25);
 		joint.setOrigins();
 		
 		model.add(joint.get());
@@ -109,14 +113,13 @@ export default function Worm(params) {
 	function update(timeElapsed) {
 		// if (!isLoaded) return;
 		// mixer.update(timeElapsed / 1000);
-		let timeElapsedInSeconds = timeElapsed / 1000;
 
 		for (let i = 0; i < jointCount; i++) {
-			const a = animator.update(timeElapsedInSeconds, { i });
+			const a = animator.update(timeElapsed, { i });
 			const t = {};
 			t[coord] = a;
 			joints[i].setTargetPosition(t);
-			joints[i].lerp(timeElapsedInSeconds);
+			joints[i].lerp(timeElapsed);
 		}
 	}
 
@@ -124,6 +127,6 @@ export default function Worm(params) {
 		update,
 		get: () => { return model; },
 		getSpeed: () => { return speed; },
-		is2D: () => { return false; },
+		getFlocking: () => { return flocking; },
 	};
 }

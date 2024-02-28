@@ -9,20 +9,30 @@ export default function Bird(params) {
 
 	const { scene, parent } = params;
 
-	let speed = 0.006;
+	const speed = 0.006;
+	const flocking = {
+		radius: 30,
+		align: 1, 
+		center: 1, 
+		separation: 2,
+		seek: 1,
+		boundary: 1,
+	};
+
+	parent.position.add(new THREE.Vector3(
+		Cool.random(-5, 5),
+		Cool.random(0, 10),
+		Cool.random(-5, 5),
+	));
+
 	const model = new THREE.Object3D();
+	const mat = new THREE.MeshStandardMaterial({ 
+		color: 0xafafaf,
+		side: THREE.DoubleSide,
+		// wireframe: true,
+	});
 
-	parent.position.x += Cool.random(-4, 4);
-	parent.position.y += Cool.random(2, 10);
-	parent.position.z += Cool.random(-4, 4);
-
-	// model.position.set(
-	// 	Cool.random(-4, 4),
-	// 	Cool.random(2, 10),
-	// 	Cool.random(-4, 4),
-	// );
-	// addHelper(model.position);
-
+	
 	function addHelper(position) {
 		const a = new THREE.AxesHelper(5);
 		a.position.copy(position);
@@ -31,16 +41,8 @@ export default function Bird(params) {
 	}
 
 	function addLine(pos, pos2) {
-		// addHelper(pos);
-		// addHelper(pos2);
-				
 		const line = new THREE.LineCurve3(pos, pos2);
 		const tube = new THREE.TubeGeometry(line, 1, .08, 3);
-		const mat = new THREE.MeshStandardMaterial({ 
-			color: 0xafafaf,
-			side: THREE.DoubleSide,
-			// wireframe: true,
-		});
 		const mesh = new THREE.Mesh(tube, mat);
 		mesh.castShadow = true;
 		model.add(mesh);
@@ -75,14 +77,10 @@ export default function Bird(params) {
 	});
 
 	function update(timeElapsed) {
-		// if (!isLoaded) return;
-		// mixer.update(timeElapsed / 1000);
-		let timeElapsedInSeconds = timeElapsed / 1000;
-
 		for (let i = 0; i < 3; i++) {
-			const a = animator.update(timeElapsedInSeconds, { i });
+			const a = animator.update(timeElapsed, { i });
 			joints[i].setTargetRotation({ x: a });
-			joints[i].rotate(timeElapsedInSeconds);
+			joints[i].rotate(timeElapsed);
 		}
 	}
 
@@ -90,6 +88,6 @@ export default function Bird(params) {
 		update,
 		get: () => { return model; },
 		getSpeed: () => { return speed; },
-		is2D: () => { return true; },
+		getFlocking: () => { return flocking; },
 	};
 }

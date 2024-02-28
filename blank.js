@@ -38,7 +38,7 @@ function lights() {
 	light.shadow.mapSize.height = 2048;
 	light.lookAt(new THREE.Vector3(0, 0, 0));
 	scene.add(light);
-	// scene.add(new THREE.AmbientLight(0xeeefff, 0.1));
+	scene.add(new THREE.AmbientLight(0xeeefff, 0.1));
 }
 lights();
 
@@ -46,20 +46,33 @@ const X_AXIS = new THREE.Vector3(1, 0, 0);
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 
-const globe = new Globe({ scene, worldRadius: 128 });
+const worldRadius = 128;
+const globe = new Globe({ scene, worldRadius });
 scene.add(globe.getGlobe());
 
 const cc = new CameraControls({ camera });
 let useControls = false; // debug
 let ccTarget;
 
-let birdFlock = new Flock({ scene, globe, type: Bird, height: 10 });
-// let wormFlock = new Flock({ scene, globe, type: Worm, height: 0 });
+// let birdFlock = new Flock({ 
+// 	scene, 
+// 	globe, 
+// 	type: Bird, 
+// 	height: 10, 
+// 	boundaries: [worldRadius, worldRadius + 25]
+// });
 
-console.log()
-const b = birdFlock.getFlock()[0].getObject();
+let wormFlock = new Flock({
+	scene, 
+	globe, 
+	type: Worm, 
+	height: 0, 
+	boundaries: [worldRadius, worldRadius + 2]
+});
+
+const b = wormFlock.getFlock()[0].getObject();
 b.add(cc.getGoal()); // parents camera goal to the cat
-cc.getGoal().position.set(0, 10, -8);
+cc.getGoal().position.set(0, 2, -4);
 camera.position.copy(b.position).add(new THREE.Vector3(0, 4, -8));
 
 let previousTime = null;
@@ -70,14 +83,14 @@ function animate(time) {
 	previousTime = time;
 	renderer.render(scene, camera);
 
-	birdFlock.update(timeElapsed);
+	wormFlock.update(timeElapsed / 1000);
 	// wormFlock.update(timeElapsed);
 
 	if (useControls) {
 		controls.update();
 	} else {
 		cc.update();
-		ccTarget =  birdFlock.getFlock()[0].getObject();
+		ccTarget =  wormFlock.getFlock()[0].getObject();
 		// camera.up.copy(ccTarget.up);
 		camera.lookAt(ccTarget.position);
 	}

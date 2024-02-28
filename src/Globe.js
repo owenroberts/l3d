@@ -14,7 +14,7 @@ export default function Globe(params) {
 		// new THREE.MeshStandardMaterial(),
 		new THREE.MeshStandardMaterial({ 
 			color: 0x00ffff, 
-			wireframe: true,
+			// wireframe: true,
 		}),
 	);
 
