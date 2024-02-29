@@ -16,17 +16,17 @@ export default function Flock(params) {
 	let start, next, target = new THREE.Vector3;
 
 	function globeSetup() {
-		const vertIndex = 1 // globe.getRandomVertex();
+		const vertIndex = globe.getRandomVertex();
 		start = globe.getGlobePos(vertIndex);
 		next = globe.getNext(start.position);
 		target = next.position.addScaledVector(next.normal, height);
 
-		const a = addHelper(start.position);
-		a.up.copy(start.normal);
-		a.lookAt(next.position);
+		// const a = addHelper(start.position);
+		// a.up.copy(start.normal);
+		// a.lookAt(next.position);
 
-		const b = addHelper(next.position);
-		b.up.copy(next.normal);
+		// const b = addHelper(next.position);
+		// b.up.copy(next.normal);
 		// console.log(start, next, target);
 	}
 	globeSetup();
@@ -38,7 +38,7 @@ export default function Flock(params) {
 		return a;
 	}
 	
-	const count = 2; // Cool.random(3, 8);
+	const count = Cool.random(3, 8);
 	for (let i = 0; i < count; i++) {
 		const member = new FlockMember({ start, next, scene, type, boundaries });
 		members.push(member);

@@ -67,7 +67,7 @@ let wormFlock = new Flock({
 	globe, 
 	type: Worm, 
 	height: 0, 
-	boundaries: [worldRadius, worldRadius + 2]
+	boundaries: [worldRadius - 1, worldRadius + 1]
 });
 
 const b = wormFlock.getFlock()[0].getObject();

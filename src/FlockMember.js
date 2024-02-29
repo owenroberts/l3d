@@ -16,7 +16,7 @@ export default function FlockMember(params) {
 	obj.lookAt(next.position);
 	scene.add(obj);
 
-	obj.add(addHelper(new THREE.Vector3(0, 0, 0)));
+	// obj.add(addHelper(new THREE.Vector3(0, 0, 0)));
 
 	const model = new type({ scene, parent: obj });
 	obj.add(model.get());
@@ -24,7 +24,6 @@ export default function FlockMember(params) {
 	function addHelper(position) {
 		const a = new THREE.AxesHelper(5);
 		a.position.copy(position);
-		scene.add(a);
 		return a;
 	}
 
@@ -36,7 +35,6 @@ export default function FlockMember(params) {
 	const acceleration = new THREE.Vector3(0, 0, 0);
 	const maxSpeed = 8 * speed;
 	const maxForce = 0.2 * speed;
-
 
 	function flock(others, target) {
 		const alignment = new THREE.Vector3(); // flock velocity
@@ -125,6 +123,7 @@ export default function FlockMember(params) {
 		// mixer.update(timeElapsed / 1000);
 
 		model.update(timeElapsed);
+		
 		flock(others);
 		seek(target);
 		boundary();

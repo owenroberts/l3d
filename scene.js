@@ -72,21 +72,29 @@ const cat = new Cat({ globe, scene: scene1 });
 const particles = new Particles({ scene: scene1, worldRadius });
 const flocks = [];
 for (let i = 0; i < 5; i++) {
-	let type, height;
 	if (Cool.chance(0.5)) {
-		type = Bird;
-		height = 10;
-	} else {	
-		type = Worm;
-		height = 0;
+		console.log('birds');
+		let birdFlock = new Flock({ 
+			scene: scene1, 
+			globe, 
+			type: Bird, 
+			height: 10, 
+			boundaries: [worldRadius, worldRadius + 25],
+		});
+		flocks.push(birdFlock);
+	} else {
+		console.log('worms');
+
+		let wormFlock = new Flock({
+			scene: scene1, 
+			globe, 
+			type: Worm, 
+			height: 0, 
+			boundaries: [worldRadius - 1, worldRadius + 1],
+		});
+		flocks.push(wormFlock);
 	}
-	flocks.push(new Flock({
-		scene: scene1,
-		globe,
-		type,
-		height,
-	}));
-	flocks[i].globeSetup();
+	// flocks[i].globeSetup();
 }
 
 cat.globeSetup();
@@ -117,7 +125,7 @@ function animate(time) {
 	particles.update();
 
 	for (let i = 0; i < flocks.length; i++) {
-		flocks[i].update(timeElapsed);
+		flocks[i].update(timeElapsed / 1000);
 	}
 
 	if (tracks[1] === 'play') {

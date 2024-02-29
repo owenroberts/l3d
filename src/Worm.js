@@ -13,14 +13,14 @@ export default function Worm(params) {
 
 	const { position, scene, parent } = params;
 
-	const speed = 0.0001;
+	const speed = 0.00125;
 	const flocking = {
 		radius: 20,
 		align: 1, 
 		center: 1, 
-		separation: 0.5,
+		separation: 0.75,
 		seek: 1.5,
-		boundary: 2.5,
+		boundary: 5,
 	};
 
 	const model = new THREE.Object3D();
@@ -29,12 +29,10 @@ export default function Worm(params) {
 		side: THREE.DoubleSide,
 		// wireframe: true,
 	});
+	model.up.copy(parent.up);
 
-	parent.position.add(new THREE.Vector3(
-		Cool.random(-5, 5),
-		0,  // + Cool.random(-10, 10),
-		Cool.random(-5, 5),
-	));
+	parent.translateX(Cool.random(-3, 3));
+	parent.translateZ(Cool.random(-2, 2));
 
 	function addHelper(position) {
 		const a = new THREE.AxesHelper(5);
