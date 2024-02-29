@@ -279,8 +279,13 @@ export default function Cat(params) {
 				next = globe.getNext(next.position);
 				model.lookAt(next.position);
 			}
+			// if (state !== 'walking') state = 'walking';
 		} else {
-			idle(timeElapsedInSeconds);
+			if (!body.isAtOrigin()) {
+				reset(timeElapsedInSeconds);
+			} else {
+				idle(timeElapsedInSeconds);
+			}
 		}
 		
 		// if (state === 'walking' && isWalking) {
