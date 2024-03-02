@@ -48,7 +48,7 @@ export default function Flock(params) {
 		next = globe.getNext(next.position);
 		const v = next.position.addScaledVector(next.normal, height);
 		target.copy(v);
-		addHelper(target);
+		// addHelper(target);
 	}
 
 	function update(timeElapsed) {

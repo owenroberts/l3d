@@ -90,7 +90,7 @@ for (let i = 0; i < 5; i++) {
 			globe, 
 			type: Worm, 
 			height: 0, 
-			boundaries: [worldRadius - 1, worldRadius + 1],
+			boundaries: [worldRadius - 0.5, worldRadius + 0.5],
 		});
 		flocks.push(wormFlock);
 	}
@@ -212,7 +212,7 @@ function start() {
 		doodoo.stop();
 		startDoodoo();
 	} else {
-		fetch('./doodoo/compositions/l3d_theme_15.json')
+		fetch('./doodoo/compositions/l3d_theme_17.json')
 			.then(res => res.json())
 			.then(json => {
 				comp = json;

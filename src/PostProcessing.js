@@ -58,7 +58,7 @@ export default function PostProcessing(params) {
 		}),
 		noise: new Animator({
 			value: 10,
-			valueClamp: [1, 16],
+			valueClamp: [2, 14],
 			increment: 1,
 			randomRange: [-1, 1],
 			clampRange: [-3, 2],

@@ -42,6 +42,8 @@ export default function Cat(params) {
 	const headHeight = s * 5;
 	const tailRotateSpeed = 3, legRotateSpeed = 4;	
 	const tailSegNum = 7;
+
+	// model.add(addHelper(model.position));
 	
 	function createModel() {
 
@@ -144,6 +146,7 @@ export default function Cat(params) {
 	createModel();
 
 	function addHelper(position) {
+		if (!position) position = new THREE.Vector3(0, 0, 0);
 		const a = new THREE.AxesHelper(5);
 		a.position.copy(position);
 		scene.add(a);
@@ -157,6 +160,21 @@ export default function Cat(params) {
 		mesh.castShadow = true;
 		model.add(mesh);
 		return mesh;
+	}
+
+	function breadcrumb() {
+		
+		const geo = new THREE.IcosahedronGeometry(Cool.random(0.01, 0.05), 1);
+		const crumb = new THREE.Mesh(geo, mat);
+		crumb.position.copy(model.position);
+		crumb.quaternion.copy(model.quaternion);
+		// crumb.add(addHelper());
+		// crumb.up.copy(model.up);
+		crumb.translateX(Cool.random(-0.8, 0.8));
+		crumb.translateZ(Cool.random(1));
+		// crumb.rotateY(Cool.random(Math.PI * 2))
+		// crumb.rotateX(Cool.random(Math.PI * 2));
+		scene.add(crumb);
 	}
 
 	/* animations */
@@ -200,7 +218,16 @@ export default function Cat(params) {
 					return Cool.map(Math.sin(value), -1, 1, -1.2, 1.2);
 				}
 			}),
-		}
+		},
+		crumbs: new Animator({
+			increment: 1,
+			count: 36,
+			randomRange: [-1, 1],
+			clampRange: [-10, 10],
+			func: (value, params, isCount) => {
+				if (isCount) breadcrumb();
+			}
+		}),
 	};
 
 	function walk(timeElapsedInSeconds) {
@@ -234,6 +261,8 @@ export default function Cat(params) {
 
 		head.setTargetPosition({ y: headHeight - bodyPosition });
 		head.lerp(timeElapsedInSeconds);
+
+		animators.crumbs.update(timeElapsedInSeconds);
 	}
 
 	function reset(timeElapsedInSeconds) {
@@ -280,6 +309,7 @@ export default function Cat(params) {
 				model.lookAt(next.position);
 			}
 			// if (state !== 'walking') state = 'walking';
+
 		} else {
 			if (!body.isAtOrigin()) {
 				reset(timeElapsedInSeconds);
@@ -287,26 +317,6 @@ export default function Cat(params) {
 				idle(timeElapsedInSeconds);
 			}
 		}
-		
-		// if (state === 'walking' && isWalking) {
-		// 	walk(timeElapsedInSeconds);
-		// 	const walkDistance = model.position.distanceTo(next.position);
-		// 	if (walkDistance > 0.1) {
-		// 		model.translateZ(speed * timeElapsed);
-		// 	} else {
-		// 		model.up.copy(next.normal);
-		// 		next = globe.getNext(next.position);
-		// 		model.lookAt(next.position);
-		// 	}
-		// } else if (state === 'walking' && !isWalking) {
-		// 	state = 'idling';
-		// } else if (state === 'idling' && !body.isAtOrigin()) {
-		// 	reset(timeElapsedInSeconds);
-		// } else if (state === 'idling' && isWalking) {
-		// 	state = 'walking';
-		// } else {
-		// 	idle(timeElapsedInSeconds);
-		// }
 	}
 
 	/* key commands */

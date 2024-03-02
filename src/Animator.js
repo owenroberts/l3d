@@ -27,12 +27,14 @@ export default function Animator(params) {
 
 	function update(timeElapsedInSeconds=1, params={}) {
 		// console.log(counter, count, value, increment);
+		let isCount = false;
 		if (counter === count) {
 			value += increment * timeElapsedInSeconds;
 			if (randomize) {
 				increment = (increment + Cool.random(...range)).clamp(min, max);
 			}
 			counter = 0;
+			isCount = true;
 		} else {
 			counter++;
 		}
@@ -42,7 +44,7 @@ export default function Animator(params) {
 			value = value.clamp(...params.valueClamp);
 		}
 		// console.log(counter, count, value, increment);
-		return func(value, params);
+		return func(value, params, isCount);
 	}
 
 	return { update };
