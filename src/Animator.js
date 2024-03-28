@@ -6,7 +6,7 @@
 
 import '../doodoo/ui/lib/cool/cool.js'; // fuck off
 
-export default function Animator(params) {
+export function Animator(params) {
 
 	let value = params.value ?? 0;
 	let increment = params.increment ?? 1;

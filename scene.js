@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import Globe from './src/Globe.js';
 import NoiseEffect from './src/NoiseEffect.js';
 import CameraControls from './src/CameraControls.js';
-import PostProcessing from './src/PostProcessing.js';
+import { PostProcessing } from './src/PostProcessing.js';
 import Cat from './src/CatLines.js';
 
 import Scenery from './src/Scenery.js';

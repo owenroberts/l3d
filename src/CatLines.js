@@ -3,7 +3,7 @@
 */
 import * as THREE from 'three';
 import Joint from './Joint.js';
-import Animator from './Animator.js';
+import { Animator } from './Animator.js';
 import '../doodoo/ui/lib/cool/cool.js'; // fuck off
 
 

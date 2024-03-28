@@ -9,10 +9,9 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { LinesPass } from './LinesPass.js';
 import vertexShader from './vert.glsl';
 import blenderShader from './blend.glsl';
-import Animator from './Animator.js';
+import { Animator } from './Animator.js';
 
-
-export default function PostProcessing(params) {
+export function PostProcessing(params) {
 
 	const { scene1, scene2, renderer, camera, noScene2 } = params;
 

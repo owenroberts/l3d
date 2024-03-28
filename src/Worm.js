@@ -7,7 +7,7 @@
 */
 import * as THREE from 'three';
 import Joint from './Joint.js';
-import Animator from './Animator.js';
+import { Animator } from './Animator.js';
 
 export default function Worm(params) {
 
