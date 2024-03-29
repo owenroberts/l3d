@@ -78,6 +78,9 @@ export function PostProcessing(params) {
 				bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
 				lineWidth: 1,
 				numLines: 5,
+				diffuseCutoff: { type: 'float', value: 40 },
+				normalCutoff: { type: 'float', value: 50 },
+				noiseMultiplier: { type: 'float', value: 10 },
 			}
 		});
 
