@@ -16,10 +16,8 @@ import Flock from './src/Flock.js';
 import Bird from './src/Bird.js';
 import Worm from './src/Worm.js';
 
-import './doodoo/build/doodoo.min.js'; // holy shit what
-import './doodoo/build/lib/tone/build/Tone.js';
-import './doodoo/ui/lib/cool/cool.js'; // fuck off
-// https://lea.verou.me/blog/2020/07/import-non-esm-libraries-in-es-modules-with-client-side-vanilla-js/
+import { Doodoo } from './doodoo/src/Doodoo.js';
+import * as Cool from './cool/cool.js';
 
 const worldRadius = 128;
 let w = 960, h = 540;
@@ -73,7 +71,6 @@ const particles = new Particles({ scene: scene1, worldRadius });
 const flocks = [];
 for (let i = 0; i < 5; i++) {
 	if (Cool.chance(0.5)) {
-		console.log('birds');
 		let birdFlock = new Flock({ 
 			scene: scene1, 
 			globe, 
@@ -83,8 +80,6 @@ for (let i = 0; i < 5; i++) {
 		});
 		flocks.push(birdFlock);
 	} else {
-		console.log('worms');
-
 		let wormFlock = new Flock({
 			scene: scene1, 
 			globe, 

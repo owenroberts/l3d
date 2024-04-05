@@ -1,3 +1,4 @@
+import * as Cool from '../cool/cool.js';
 import * as THREE from 'three';
 
 

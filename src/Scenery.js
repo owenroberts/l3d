@@ -1,6 +1,8 @@
 /*
 	setup scenery 
 */
+
+import * as Cool from '../cool/cool.js';
 import * as THREE from 'three';
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';

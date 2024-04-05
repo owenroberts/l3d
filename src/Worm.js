@@ -2,12 +2,10 @@
 	worm flock
 */
 
-/*
-	bird obj for flock
-*/
 import * as THREE from 'three';
 import Joint from './Joint.js';
 import { Animator } from './Animator.js';
+import * as Cool from '../cool/cool.js';
 
 export default function Worm(params) {
 

@@ -4,16 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "glsl-blend": "^1.0.3",
-    "three": "^0.161.0"
+    "three": "^0.161.0",
+    "tone": "^14.7.77"
   },
   "devDependencies": {
-    "vite": "^4.2.2",
+    "vite": "^5.2.8",
+    "vite-plugin-static-copy": "^1.0.2",
     "vite-plugin-string": "^1.2.1"
   }
 }

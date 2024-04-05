@@ -2,9 +2,7 @@
 	controls noise effect
 */
 import * as THREE from 'three';
-
-
-import '../doodoo/ui/lib/cool/cool.js'; 
+import * as Cool from '../cool/cool.js';
 
 export default function NoiseEffect() {
 	

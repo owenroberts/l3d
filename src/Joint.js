@@ -3,7 +3,7 @@
 */
 
 import * as THREE from 'three';
-import '../doodoo/ui/lib/cool/cool.js'; // fuck off
+import * as Cool from '../cool/cool.js';
 
 export default function Joint() {
 

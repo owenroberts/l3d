@@ -6,7 +6,7 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import FlockMember from './FlockMember.js';
 import Bird from './Bird.js';
 import Worm from './Worm.js';
-import '../doodoo/ui/lib/cool/cool.js'; // fuck off
+import * as Cool from '../cool/cool.js';
 
 export default function Flock(params) {
 
