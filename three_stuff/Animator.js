@@ -23,28 +23,31 @@ export function Animator(params) {
 	let min = params.clampRange ? increment + params.clampRange[0] : 0;
 	let max = params.clampRange ? increment + params.clampRange[1] : 1;
 
+	let valueClamp = params.valueClamp ?? false;
+
 	// console.log(value, increment, randomize, range, min, max);
 
 	function update(timeElapsedInSeconds=1, params={}) {
-		// console.log(counter, count, value, increment);
-		let isCount = false;
+		
+		params.isCount = false;
+		params.timeElapsedInSeconds = timeElapsedInSeconds;
+
 		if (counter === count) {
 			value += increment * timeElapsedInSeconds;
 			if (randomize) {
 				increment = (increment + Cool.random(...range)).clamp(min, max);
 			}
 			counter = 0;
-			isCount = true;
+			params.isCount = true;
 		} else {
 			counter++;
 		}
 
-		if (params.valueClamp) {
-		// console.log(value.clamp(...params.valueClamp));
-			value = value.clamp(...params.valueClamp);
+		if (valueClamp) {
+			value = value.clamp(...valueClamp);
 		}
-		// console.log(counter, count, value, increment);
-		return func(value, params, isCount);
+		
+		return func(value, params);
 	}
 
 	return { update };

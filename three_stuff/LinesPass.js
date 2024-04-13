@@ -3,6 +3,7 @@ import { Pass, FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { CopyShader } from 'three/addons/shaders/CopyShader.js';
 import { LinesMaterial } from './LinesMaterial.js';
 import * as THREE from 'three';
+import noiseTexture from './imgs/image-7.png'; // vite-ee
 
 export class LinesPass extends Pass {
 	
@@ -28,13 +29,19 @@ export class LinesPass extends Pass {
 		normalBuffer.stencilBuffer = false;
 		this.normalBuffer = normalBuffer;
 		this.normalMaterial = new THREE.MeshNormalMaterial();
-
 		// this.needsSwap = false;
+		// this.material.uniforms.uTexture.value = texture;
 
 		const loader = new THREE.TextureLoader();
-		loader.load('./imgs/image-7.png', texture => {
+		// loader.load('./imgs/image-7.png', texture => {
+		loader.load(noiseTexture, texture => {
 			this.material.uniforms.uTexture.value = texture;
 		});
+	}
+
+	setSize(width, height) {
+		this.material.uniforms.uResolution.value = new THREE.Vector2(width, height);
+		this.normalBuffer.setSize(width, height);
 	}
 
 	dispose() {

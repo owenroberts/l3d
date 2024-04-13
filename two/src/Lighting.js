@@ -2,9 +2,9 @@
 	set up lights for shadows
 */
 import * as THREE from 'three';
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
 
-export default function Lighting(params) {
+export function Lighting(params) {
 
 	const { scene, debugRender } = params;
 

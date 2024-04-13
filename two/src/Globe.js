@@ -3,9 +3,9 @@
 */
 import * as THREE from 'three';
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
 
-export default function Globe(params) {
+export function Globe(params) {
 
 	const { worldRadius, scene } = params;
 

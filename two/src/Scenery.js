@@ -2,15 +2,14 @@
 	setup scenery 
 */
 
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
 import * as THREE from 'three';
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
 
-
-export default function Scenery(params) {
+export function Scenery(params) {
 
 	const { scene1, scene2, worldRadius, w, h, noScene2 } = params;
 

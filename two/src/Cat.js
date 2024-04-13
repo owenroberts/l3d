@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
-export default function Cat(params) {
+export function Cat(params) {
 
 	const { globe } = params;
 	let model, mixer, start, next;

@@ -3,21 +3,21 @@ import Stats from 'three/addons/libs/stats.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-import Globe from './src/Globe.js';
-import NoiseEffect from './src/NoiseEffect.js';
-import CameraControls from './src/CameraControls.js';
-import { PostProcessing } from './src/PostProcessing.js';
-import Cat from './src/CatLines.js';
+import { PostProcessing } from '../../three_stuff/ThreeStuff.js';
 
-import Scenery from './src/Scenery.js';
-import Particles from './src/DumbParticles.js';
-import Lighting from './src/Lighting.js';
-import Flock from './src/Flock.js';
-import Bird from './src/Bird.js';
-import Worm from './src/Worm.js';
+import { Globe } from './Globe.js';
+import { NoiseEffect } from './NoiseEffect.js';
+import { CameraControls } from './CameraControls.js';
+import { Cat } from './CatLines.js';
+import { Scenery } from './Scenery.js';
+import { Particles } from './DumbParticles.js';
+import { Lighting } from './Lighting.js';
+import { Flock } from './Flock.js';
+import { Bird } from './Bird.js';
+import { Worm } from './Worm.js';
 
-import { Doodoo } from './doodoo/src/Doodoo.js';
-import * as Cool from './cool/cool.js';
+import { Doodoo } from '../../doodoo/src/Doodoo.js';
+import * as Cool from '../../cool/cool.js';
 
 const worldRadius = 128;
 let w = 960, h = 540;
@@ -160,7 +160,12 @@ let doodoo, comp;
 let tracks = ['rest'];
 const controlsDiv = document.getElementById('controls');
 const startButton = document.getElementById('start');
+const backButton = document.getElementById('back');
+
 startButton.addEventListener('click', start);
+backButton.addEventListener('click', () => {
+	location.href = '../index.html';
+});
 
 document.addEventListener('keydown', keyDown);
 function keyDown(ev) {
@@ -207,7 +212,7 @@ function start() {
 		doodoo.stop();
 		startDoodoo();
 	} else {
-		fetch('./doodoo/compositions/l3d_theme_17.json')
+		fetch('../../doodoo/compositions/l3d_theme_17.json')
 			.then(res => res.json())
 			.then(json => {
 				comp = json;
@@ -221,7 +226,7 @@ function startDoodoo() {
 		...comp,
 		// withRecording: true,
 		// withCount: modCount,
-		samplesURL: './doodoo/samples/',
+		samplesURL: '../../doodoo/samples/',
 		// volume: -12,
 		// autoStart: false,
 		onModulate: count => {

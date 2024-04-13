@@ -2,9 +2,9 @@
 	controls noise effect
 */
 import * as THREE from 'three';
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
 
-export default function NoiseEffect() {
+export function NoiseEffect() {
 	
 	let count = 0;
 	let value = new THREE.Vector2();

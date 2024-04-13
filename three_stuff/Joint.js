@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import * as Cool from '../cool/cool.js';
 
-export default function Joint() {
+export function Joint() {
 
 	const obj = new THREE.Object3D();
 	const oQ = new THREE.Quaternion(); // original quat
@@ -24,10 +24,11 @@ export default function Joint() {
 	return {
 		get: () => { return obj; },
 		getPosition: () => { return obj.position; },
+		getRotation: () => { return obj.rotation; },
 		setRotateSpeed: value => { rotateSpeed = value; },
 		setLerpSpeed: value => { lerpSpeed = value; },
 		setPosition: (x, y, z) => { obj.position.set(x, y, z); },
-		add: child => { 
+		add: child => {
 			if (child.isMesh || child.isObject3D) obj.add(child); 
 			else obj.add(child.get());
 		},
@@ -89,9 +90,19 @@ export default function Joint() {
 		rotateX: a => { obj.rotateX(a); },
 		rotateY: a => { obj.rotateY(a); },
 		rotateZ: a => { obj.rotateZ(a); },
+		rotateOnAxis: (axis, a) => {
+			if (axis === 'x') obj.rotateX(a);
+			if (axis === 'y') obj.rotateY(a);
+			if (axis === 'z') obj.rotateZ(a);
+		},
 		translateX: v => { obj.translateX(v); },
 		translateY: v => { obj.translateY(v); },
 		translateZ: v => { obj.translateZ(v); },
+		translateOnAxis: (axis, v) => {
+			if (axis === 'x') obj.translateX(v);
+			if (axis === 'y') obj.translateY(v);
+			if (axis === 'z') obj.translateZ(v);
+		},
 		randomRotation: () => {
 			for (let i = 0; i < obj.children.length; i++) {
 				if (obj.children[i].isMesh) {
@@ -105,5 +116,4 @@ export default function Joint() {
 			}
 		}
 	};
-
 }

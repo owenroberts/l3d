@@ -2,11 +2,10 @@
 	make a cat out of lines instead of models ... 
 */
 import * as THREE from 'three';
-import Joint from './Joint.js';
-import { Animator } from './Animator.js';
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
+import { Joint, Animator } from '../../three_stuff/ThreeStuff.js';
 
-export default function Cat(params) {
+export function Cat(params) {
 
 	const { globe, scene } = params;
 	let start, next;

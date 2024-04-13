@@ -5,7 +5,7 @@
 
 import * as THREE from 'three';
 
-export default function CameraControls(params) {
+export function CameraControls(params) {
 
 	const { camera } = params;
 

@@ -2,9 +2,9 @@
 	flock functions
 */
 import * as THREE from 'three';
-import Bird from './Bird.js';
+import { Bird } from './Bird.js';
 
-export default function FlockMember(params) {
+export function FlockMember(params) {
 
 	const { start, next, scene, type, boundaries } = params;
 

@@ -1,8 +1,7 @@
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
 import * as THREE from 'three';
 
-
-export default function Particles(params) {
+export function Particles(params) {
 
 	const { scene, worldRadius } = params;
 

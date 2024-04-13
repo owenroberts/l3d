@@ -21,6 +21,16 @@ body {
 	justify-content: center;
 	height: 100%;
 	background-color: black;
+	color: white;
+	font-family: verdana;
+}
+
+a {
+	color: white;
+}
+
+#header {
+	margin-bottom: 2em;
 }
 
 #inner {

@@ -3,11 +3,10 @@
 */
 
 import * as THREE from 'three';
-import Joint from './Joint.js';
-import { Animator } from './Animator.js';
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
+import { Joint, Animator } from '../../three_stuff/ThreeStuff.js';
 
-export default function Worm(params) {
+export function Worm(params) {
 
 	const { position, scene, parent } = params;
 

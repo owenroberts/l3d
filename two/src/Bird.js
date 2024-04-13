@@ -2,11 +2,10 @@
 	bird obj for flock
 */
 import * as THREE from 'three';
-import Joint from './Joint.js';
-import { Animator } from './Animator.js';
-import * as Cool from '../cool/cool.js';
+import * as Cool from '../../cool/cool.js';
+import { Joint, Animator } from '../../three_stuff/ThreeStuff.js';
 
-export default function Bird(params) {
+export function Bird(params) {
 
 	const { scene, parent } = params;
 
