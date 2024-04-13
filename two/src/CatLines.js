@@ -222,8 +222,8 @@ export function Cat(params) {
 			count: 36,
 			randomRange: [-1, 1],
 			clampRange: [-10, 10],
-			func: (value, params, isCount) => {
-				if (isCount) breadcrumb();
+			func: (value, params) => {
+				if (params.isCount) breadcrumb();
 			}
 		}),
 	};

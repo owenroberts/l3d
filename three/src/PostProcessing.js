@@ -10,7 +10,6 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPixelatedPass } from 'three/addons/postprocessing/RenderPixelatedPass.js';
 import { Animator, vertexShader, blendShader, BandShader, LinesPass } from '../../three_stuff/ThreeStuff.js';
 
-
 export function PostProcessing(params) {
 
 	const { scene, skyScene, renderer, camera } = params;
@@ -35,8 +34,6 @@ export function PostProcessing(params) {
 	const composer = new EffectComposer(renderer);
 	composer.addPass(linesRenderPass);
 	composer.addPass(linesPass);
-
-	
 
 	// const options = {
 	// 	normalEdgeStrength: 0,
@@ -87,7 +84,7 @@ export function PostProcessing(params) {
 		normal: new Animator({
 			value: 50,
 			valueClamp: [10, 100],
-			increment: 100,
+			increment: 1,
 			randomRange: [-1, 1],
 			clampRange: [-3, 2],
 			count: 24,
@@ -95,27 +92,18 @@ export function PostProcessing(params) {
 		noise: new Animator({
 			value: 10,
 			valueClamp: [2, 14],
-			increment: 1,
-			randomRange: [-1, 1],
+			increment: 0.1,
+			randomRange: [-0.1, 0.1],
 			clampRange: [-3, 2],
 			count: 24,
 		}),
 	};
 
-	function update(timeElapsedInSeconds) {
+	function update() {
 
-		// animators.diffuse.update();
-		// animators.normal.update();
-		// console.log(timeElapsedInSeconds);
-
-		linesPass.material.uniforms.diffuseCutoff.value = animators.diffuse.update(timeElapsedInSeconds)
-		linesPass.material.uniforms.normalCutoff.value = animators.normal.update(timeElapsedInSeconds);
-		linesPass.material.uniforms.noiseMultiplier.value = animators.noise.update(timeElapsedInSeconds);
-
-		console.log(linesPass.material.uniforms.normalCutoff.value);
-
-		// linesPass1.material.uniforms.noiseOffset.value.x = value.x;
-		// linesPass1.material.uniforms.noiseOffset.value.y = value.y;
+		linesPass.material.uniforms.diffuseCutoff.value = animators.diffuse.update()
+		linesPass.material.uniforms.normalCutoff.value = animators.normal.update();
+		linesPass.material.uniforms.noiseMultiplier.value = animators.noise.update();
 
 	}
 

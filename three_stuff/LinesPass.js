@@ -52,7 +52,7 @@ export class LinesPass extends Pass {
 	render(renderer, writeBuffer, readBuffer) {
 		// console.log(readBuffer)
 		
-		// this.material.uniforms['tDiffuse'].value = readBuffer.texture;
+		this.material.uniforms['tDiffuse'].value = readBuffer.texture;
 		renderer.setRenderTarget(this.normalBuffer);
 		
 		const overrideMaterialValue = this.scene.overrideMaterial;

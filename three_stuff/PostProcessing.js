@@ -135,5 +135,4 @@ export function PostProcessing(params) {
 	}
 
 	return { process, update, setSize };
-
 }

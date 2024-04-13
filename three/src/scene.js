@@ -114,7 +114,8 @@ function animate(time) {
 
 	cc.update(timeElapsed / 1000);
 
-	if (tracks[0] === 'play') post.update(timeElapsed / 1000)
+	if (tracks[0] === 'play') 
+		post.update();
 
 	pig.update(timeElapsed / 100, tracks[1] === 'play');
 	bird.update(timeElapsed / 100, tracks[2] === 'play');
@@ -230,5 +231,4 @@ function startDoodoo() {
 			}
 		}
 	});
-	console.log('doodoo', doodoo);
 }
