@@ -15,8 +15,12 @@ const stats = new Stats();
 const container = document.getElementById("longies");
 container.appendChild(stats.dom);
 
-const renderer = new THREE.WebGLRenderer({ antialias: false });
+const renderer = new THREE.WebGLRenderer({ 
+	antialias: false,
+});
 renderer.setSize(w, h);
+renderer.setClearColor(0x123123, 1);
+
 // renderer.autoClear = false;
 // renderer.shadowMap.enabled = true;
 // renderer.shadowMap.type = THREE.PCFSoftShadowMap;

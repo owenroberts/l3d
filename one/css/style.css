@@ -1,8 +1,3 @@
-body {
-	margin: 0;
-	
-}
-
 /* make this style.scss if u wanna go crazy */
 
 * { 
@@ -21,17 +16,6 @@ body {
 	justify-content: center;
 	height: 100%;
 	background-color: black;
-	color: white;
-	font-family: verdana;
-	line-height: 2;
-}
-
-a {
-	color: white;
-}
-
-#header {
-	margin-bottom: 2em;
 }
 
 #inner {
@@ -41,7 +25,7 @@ a {
 	justify-content: center;
 }
 
-#longies {
+#lines {
 	background-color: #C7C7C7;
 }
 
@@ -52,8 +36,7 @@ a {
 /*	background: white;*/
 	display: flex;
 	align-items: center;
-    justify-content: center;
-    display: none;
+	justify-content: center;
 }
 
 .mobile #splash {
@@ -87,10 +70,6 @@ button:hover {
 	color: black;
 }
 
-button:active {
-	background-color: white;
-}
-
 .mobile #title {
 	font-size:  1.5em;
 }
@@ -101,13 +80,6 @@ button:active {
 
 .mobile #inner-splash {
 	text-align:  center;
-}
-
-.track {
-	margin-bottom: 1em;
-	padding: 0.25em 0.5em;
-	border-radius: 0.5em;
-	background-color: #444466;
 }
 
 /* debug remove */

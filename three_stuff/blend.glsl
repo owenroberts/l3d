@@ -5,6 +5,7 @@ varying vec2 vUv;
 
 // blendOverlay from https://github.com/jamieowen/glsl-blend
 // dont' want to figure out es6 import for this ... 
+// ah fuck now i prob can ... 
 
 float blendOverlay(float base, float blend) {
 	return base<0.5?(2.0*base*blend):(1.0-2.0*(1.0-base)*(1.0-blend));

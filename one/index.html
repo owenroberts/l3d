@@ -8,8 +8,8 @@
 	<link rel="stylesheet" href="./css/style.css">
 
 	<!-- Primary Meta Tags -->
-	<title>one two three four</title>
-	<meta name="title" content="one two three four">
+	<title>i dont think i think i dont</title>
+	<meta name="title" content="i dont think i think i dont">
 	<meta name="description" content="">
 
 	<!-- Open Graph / Facebook -->
@@ -29,16 +29,31 @@
 
 <body>
 	<div id="container">
-		<div id="header">
-			<h1>one, two, three, four</h1>
-			<p>by hwyv and owenribbit</p>
+		<div id="log"></div>
+		<div id="inner">
+			<canvas id="lines">
+				How old is your dang computer???
+			</canvas>
+			
+			<div id="splash">
+				<noscript>
+					<div class="nojava">
+						This site requires JavaScript.
+					</div>
+				</noscript>
+				<div id="inner-splash">
+					<p id="title"> loading </p>
+				</div>
+			</div>
 		</div>
-		<div id="tracks">
-			<div class="track">1. <a href="./one/">i dont think i think i dont</a></div>
-			<div class="track">2. <a href="./two/">i dont know whats going to happen</a></div>
-			<div class="track">3. <a href="./three/">life is so fucking complex</a></div>
-			<div class="track">4. <a href="./four/">is it possible to do anything that doesnt kind of suck</a></div>
+		<div id="controls">
+			<button id="start">start</button>
+			<button id="fullscreen">fullscreen</button>
+			<button id="back">back</button>
 		</div>
 	</div>
+
+	<script src="./src/game.js" type="module"></script>
+	
 </body>
 </html>

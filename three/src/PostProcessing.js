@@ -80,6 +80,9 @@ export function PostProcessing(params) {
 			randomRange: [-1, 1],
 			clampRange: [-3, 2],
 			count: 24,
+			func: (value, params) => {
+				linesPass.material.uniforms.diffuseCutoff.value = value;
+			}
 		}),
 		normal: new Animator({
 			value: 50,
@@ -88,6 +91,9 @@ export function PostProcessing(params) {
 			randomRange: [-1, 1],
 			clampRange: [-3, 2],
 			count: 24,
+			func: (value, params) => {
+				linesPass.material.uniforms.normalCutoff.value = value;
+			}
 		}),
 		noise: new Animator({
 			value: 10,
@@ -96,15 +102,26 @@ export function PostProcessing(params) {
 			randomRange: [-0.1, 0.1],
 			clampRange: [-3, 2],
 			count: 24,
+			func: (value, params) => {
+				linesPass.material.uniforms.noiseMultiplier.value = value;
+			}
+		}),
+		bandNoise: new Animator({
+			value: 56,
+			valueClamp: [1, 254],
+			increment: 0.1,
+			randomRange: [-0.2, 0.1],
+			func: (value, params) => {
+				bandEffect.uniforms['noiseBlend'].value = value / 256;
+			}
 		}),
 	};
 
 	function update() {
-
-		linesPass.material.uniforms.diffuseCutoff.value = animators.diffuse.update()
-		linesPass.material.uniforms.normalCutoff.value = animators.normal.update();
-		linesPass.material.uniforms.noiseMultiplier.value = animators.noise.update();
-
+		animators.diffuse.update()
+		animators.normal.update();
+		animators.noise.update();
+		animators.bandNoise.update();
 	}
 
 	function process() {
