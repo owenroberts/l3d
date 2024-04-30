@@ -1,0 +1,19 @@
+{
+	"bg": { "src": "./drawings/graphy_four.json" },
+	"g4_16": { "src": "./drawings/g4_16.json" },
+	"g4_15": { "src": "./drawings/g4_15.json" },
+	"g4_14": { "src": "./drawings/g4_14.json" },
+	"g4_13": { "src": "./drawings/g4_13.json" },
+	"g4_12": { "src": "./drawings/g4_12.json" },
+	"g4_10": { "src": "./drawings/g4_10.json" },
+	"g4_11": { "src": "./drawings/g4_11.json" },
+	"g4_9": { "src": "./drawings/g4_9.json" },
+	"g4_8": { "src": "./drawings/g4_8.json" },
+	"g4_7": { "src": "./drawings/g4_7.json" },
+	"g4_6": { "src": "./drawings/g4_6.json" },
+	"g4_5": { "src": "./drawings/g4_5.json" },
+	"g4_4": { "src": "./drawings/g4_4.json" },
+	"g4_3": { "src": "./drawings/g4_3.json" },
+	"g4_2": { "src": "./drawings/g4_2.json" },
+	"g4_1": { "src": "./drawings/g4_1.json" }
+}
