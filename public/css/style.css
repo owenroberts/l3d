@@ -69,10 +69,11 @@ a {
 
 #controls {
 	margin-top: 1em;
+	margin-bottom: 1em;
 }
 
 button {
-	font-size: 1.5em;
+	font-size: 1em;
 	padding: 0.25em 0.5em;
 	border-style: solid;
 	border-radius: 0.25em;
@@ -107,7 +108,43 @@ button:active {
 	margin-bottom: 1em;
 	padding: 0.25em 0.5em;
 	border-radius: 0.5em;
+	display: flex;
+}
+
+.active {
 	background-color: #444466;
+}
+
+.track label {
+	margin-right: auto;
+}
+
+.track span {
+	cursor: pointer;
+	margin-left: 1em;
+}
+
+.track input {
+	width: 42px;
+}
+
+#info {
+	display: none;
+	position: fixed;
+    background: black;
+    width: 600px;
+    border: 1px solid white;
+    border-radius: 1em;
+    padding: 1em;
+}
+
+#info.visible {
+	display: block;
+}
+
+#info p {
+	margin: 1em;
+	font-size: 14px;
 }
 
 /* debug remove */
