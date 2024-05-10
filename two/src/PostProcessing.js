@@ -97,7 +97,7 @@ export function PostProcessing(params) {
 					blendTexture: { value: scene2Composer.renderTarget2.texture }
 				},
 				vertexShader: vertexShader,
-				fragmentShader: blenderShader,
+				fragmentShader: blendShader,
 				defines: {}
 			} ), 'baseTexture'
 		);
@@ -121,8 +121,8 @@ export function PostProcessing(params) {
 
 		if (!linesPass2) return;
 		
-		linesPass2.material.uniforms.noiseOffset.value.x = value.x;
-		linesPass2.material.uniforms.noiseOffset.value.y = value.y;
+		// linesPass2.material.uniforms.noiseOffset.value.x = value.x;
+		// linesPass2.material.uniforms.noiseOffset.value.y = value.y;
 	}
 
 	function process() {

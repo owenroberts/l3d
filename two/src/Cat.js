@@ -11,6 +11,7 @@ export function Cat(params) {
 	const animations = {};
 	let speed = 0.005; // default 0.005
 	let isLoaded = false;
+	let prevDistance = 1_000_000;
 
 	function loadModel(gltf) {
 		model = clone(gltf.scene);
@@ -51,13 +52,15 @@ export function Cat(params) {
 	
 		if (isWalking) {
 			const walkDistance = model.position.distanceTo(next.position);
-			if (walkDistance > 0.1) {
+			console.log(walkDistance, prevDistance);
+			if (walkDistance > 0.1 && walkDistance < prevDistance) {
 				model.translateZ(speed * timeElapsed);
 			} else {
 				model.up.copy(next.normal);
 				next = globe.getNext(next.position);
 				model.lookAt(next.position);
 			}
+			prevDistance = walkDistance;
 		}
 	}
 

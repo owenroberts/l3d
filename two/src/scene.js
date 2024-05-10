@@ -18,8 +18,12 @@ import { Worm } from './Worm.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import * as Cool from '../../cool/cool.js';
 
+console.log('perf low?', Cool.testLowPerformance());
+
 const worldRadius = 128;
-let w = 960, h = 540;
+let dpr = 1; // devicePixelRatio;
+let w = 960 * dpr, h = 540 * dpr;
+
 const scene1 = new THREE.Scene();
 const scene2 = new THREE.Scene();
 
@@ -32,7 +36,11 @@ renderer.setSize(w, h);
 // renderer.autoClear = false;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(window.devicePixelRatio);
 container.appendChild(renderer.domElement);
+// renderer.domElement.style.width = '960px';
+// renderer.domElement.style.height = '540px';
+
 
 let debugRender = true;
 debugRender = false;
@@ -43,7 +51,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 let useControls = false; // debug
 
 let noScene2 = false;
-noScene2 = true;
+// noScene2 = true;
 const post = new PostProcessing({ scene1, scene2, noScene2, renderer, camera });
 
 function addTestCube(x, y, z, size=0.5) {
@@ -141,18 +149,28 @@ function animate(time) {
 }
 requestAnimationFrame(animate);
 
-function onWindowResize() {
-	if (w === 960) {
-		w = window.innerWidth;
-		h = window.innerHeight;
+function onWindowResize(e) {
+	
+	if (w === 960 * dpr) {
+		w = window.innerWidth * dpr;
+		h = window.innerHeight * dpr;
 	} else {
-		w = 960;
-		h = 540;
+		w = 960 * dpr;
+		h = 540 * dpr;
 	}
+
 	camera.aspect = w / h;
 	camera.updateProjectionMatrix();
 	renderer.setSize(w, h);
 	post.setSize(w, h);
+
+	// if (w === 960 * dpr) {
+	// 	renderer.domElement.style.width = '960px';
+	// 	renderer.domElement.style.height = '540px';
+	// } else {
+	// 	renderer.domElement.style.width = `${window.innerWidth}px`;
+	// 	renderer.domElement.style.height = `${window.innerHeight}px`;
+	// }
 }
 
 let doodoo, comp;
@@ -192,15 +210,11 @@ document.addEventListener("fullscreenchange", onWindowResize);
 function toggleFullScreen() {
 	if (!document.fullscreenElement) {
 		document.documentElement.requestFullscreen();
-		// gme.renderer.setScale(2);
-		// scale three
 		controlsDiv.style.display = 'none';
 		container.style.cursor = 'none';
 
 	} else if (document.exitFullscreen) {
 		document.exitFullscreen();
-		// gme.renderer.setScale(1);
-		// scale three
 		controlsDiv.style.display = 'block';
 		container.style.cursor = 'inherit';
 	}
@@ -208,8 +222,9 @@ function toggleFullScreen() {
 
 function start() {
 	if (doodoo) {
-		doodoo.stop();
-		startDoodoo();
+		if (doodoo.getStatusIsPlaying()) return;
+		// doodoo.stop();
+		// startDoodoo();
 	} else {
 		fetch('../../doodoo/compositions/l3d_theme_17.json')
 			.then(res => res.json())

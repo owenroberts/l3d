@@ -84,7 +84,7 @@ export function Scenery(params) {
 		);
 		scene2.add(inverseGlobe);
 		scene = scene2;
-		setup(inverseGlobe, true);
+		// setup(inverseGlobe, true);
 	}
 
 	function addLine(pos, pos2, mat=mat1) {

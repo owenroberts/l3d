@@ -9,6 +9,7 @@ export function Cat(params) {
 
 	const { globe, scene } = params;
 	let start, next;
+	let prevDistance = 1_000_000;
 	
 	const model = new THREE.Object3D();
 	const mat = new THREE.MeshStandardMaterial({ 
@@ -299,15 +300,17 @@ export function Cat(params) {
 		if (isWalking) {
 			walk(timeElapsedInSeconds);
 			const walkDistance = model.position.distanceTo(next.position);
-			if (walkDistance > 0.1) {
+			if (walkDistance > 0.1 && (prevDistance - walkDistance) > 0 ) {
 				model.translateZ(speed * timeElapsed);
+				prevDistance = walkDistance;
 			} else {
+				prevDistance = 1_000_000;
 				model.up.copy(next.normal);
 				next = globe.getNext(next.position);
 				model.lookAt(next.position);
 			}
 			// if (state !== 'walking') state = 'walking';
-
+			
 		} else {
 			if (!body.isAtOrigin()) {
 				reset(timeElapsedInSeconds);
