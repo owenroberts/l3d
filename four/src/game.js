@@ -91,7 +91,7 @@ function startDoodoo() {
 		...comp,
 		// withRecording: true,
 		withCount: modCount,
-		samplesURL: '../../doodoo/samples/',
+		samplesURL: '../doodoo/samples/',
 		// volume: -12,
 		// autoStart: false,
 		onModulate: count => {
