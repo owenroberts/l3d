@@ -22,7 +22,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(w, h);
 renderer.setClearColor(0x123123, 1);
-
+renderer.setPixelRatio(window.devicePixelRatio);
 // renderer.autoClear = false;
 // renderer.shadowMap.enabled = true;
 // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
