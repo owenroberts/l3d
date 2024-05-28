@@ -79,7 +79,7 @@ function load() {
 		
 		doodoo = new Doodoo({
 			...comps[key],
-			samplesURL: '../../doodoo/samples/',
+			samplesURL: '../doodoo/samples/',
 			withCount: count,
 			onModulate: (playCount, sequenceCount) => {
 				if (sequenceCount >= count) {
