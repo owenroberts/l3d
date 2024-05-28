@@ -28,7 +28,15 @@ export default defineConfig({
 				{
 					src: 'three/models',
 					dest: 'three/'
-				}
+				},
+				{
+					src: 'four/data/',
+					dest: 'four/',
+				},
+				{
+					src: 'four/drawings/',
+					dest: 'four/',
+				},
 			]
 		})
 	],
@@ -42,6 +50,7 @@ export default defineConfig({
 				one: resolve(__dirname, 'one/index.html'),
 				two: resolve(__dirname, 'two/index.html'),
 				three: resolve(__dirname, 'three/index.html'),
+				four: resolve(__dirname, 'four/index.html'),
 			},
 			output: {
 				manualChunks: {

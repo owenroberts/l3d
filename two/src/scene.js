@@ -23,7 +23,7 @@ import { Worm } from './Worm.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import * as Cool from '../../cool/cool.js';
 
-import comp from '../../doodoo/compositions/l3d_theme_17.json';
+import comp from '../compositions/l3d_theme_17.json';
 
 // console.log('perf low?', Cool.testLowPerformance());
 

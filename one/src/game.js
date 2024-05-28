@@ -4,8 +4,6 @@ import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import comp from '../compositions/longy_1.json';
 
-// import data from './data/sprites.json';
-
 
 // loading animation pre lines render
 const title = document.getElementById('title');

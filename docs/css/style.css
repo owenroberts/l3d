@@ -28,8 +28,16 @@ body {
 	padding-top: 4vh;
 }
 
-a {
+a, span {
 	color: white;
+	background-color: #ad95df;
+	padding: 4px;
+	border-radius: 4px;
+	line-height: 1.5em;
+}
+
+#container {
+	margin: auto;
 }
 
 #header {
@@ -107,7 +115,7 @@ button:active {
 }
 
 .track {
-	margin-bottom: 1em;
+/*	margin-bottom: 1em;*/
 	padding: 0.25em 0.5em;
 	border-radius: 0.5em;
 	display: flex;

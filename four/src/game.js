@@ -2,6 +2,7 @@ import * as Cool from '../../cool/cool.js';
 import { Game, Sprite, TextButton, TextSprite, Button } from '../../lines/src/GameEngine.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import Stats from 'three/addons/libs/stats.module.js';
+import comp from '../compositions/graphy.json';
 
 // loading animation pre lines render
 const title = document.getElementById('title');
@@ -59,7 +60,6 @@ document.addEventListener("fullscreenchange", onWindowResize);
 
 
 let doodoo, sprites = [];
-let comp;
 let modCount = 16;
 let spriteIndexes = Cool.shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
 let indexOffset = 0;
@@ -82,17 +82,8 @@ function keyDown(ev) {
 }
 
 function start() {
-	if (doodoo) {
-		doodoo.stop();
-		startDoodoo();
-	} else {
-		fetch('./compositions/graphy.json')
-			.then(res => res.json())
-			.then(json => {
-				comp = json;
-				startDoodoo();
-			});
-	}		
+	if (doodoo) doodoo.stop();
+	startDoodoo();
 }
 
 function startDoodoo() {

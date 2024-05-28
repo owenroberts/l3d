@@ -62,16 +62,15 @@ function load() {
 	}
 
 	function playAll() {
-		console.log(isPlaying, current);
 		if (isPlaying) return;
 		isPlaying = true;
 		playComp("one", true);
 	}
 
 	function playComp(key, keepPlaying) {
-		console.log('play', key, keepPlaying);
 		if (doodoo) doodoo.stop();
 		
+		if (current !== 'none') compUis[current].track.classList.remove("active");
 		current = key;
 		compUis[key].track.classList.add("active");
 		
@@ -103,6 +102,5 @@ function load() {
 		isPlaying = false;
 		compUis[current].track.classList.remove("active");
 		current = "none";
-
 	}
 }

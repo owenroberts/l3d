@@ -39,7 +39,6 @@ export function CameraControls(params) {
 		cc.setOrigins();
 		ccCam.setOrigins();
 
-
 		let type = Cool.random(['rotate', 'translate']);
 		let direction = Cool.random([-1, 1]);
 		let count = Cool.randomInt(200, 2000);
@@ -59,7 +58,6 @@ export function CameraControls(params) {
 				
 				// console.log(type, Math.round(counter / count * 10) / 10, axis, value * direction);
 				// console.log(type, axis, value);
-				
 				const target = {};
 
 				if (type === 'rotate') {

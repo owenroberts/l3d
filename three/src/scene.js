@@ -17,6 +17,8 @@ const stats = new Stats();
 const container = document.getElementById("longies");
 container.appendChild(stats.dom);
 
+import comp from '../compositions/drummys.json';
+
 const renderer = new THREE.WebGLRenderer({ 
 	antialias: false,
 });
@@ -120,8 +122,9 @@ function animate(time) {
 
 	cc.update(timeElapsed / 1000);
 
-	if (tracks[0] === 'play') 
+	if (tracks[0] === 'play') {
 		post.update();
+	}
 
 	pig.update(timeElapsed / 100, tracks[1] === 'play');
 	bird.update(timeElapsed / 100, tracks[2] === 'play');
@@ -151,7 +154,7 @@ function onWindowResize() {
 	post.setSize(w, h);
 }
 
-let doodoo, comp;
+let doodoo;
 let tracks = ['rest'];
 const controlsDiv = document.getElementById('controls');
 const startButton = document.getElementById('start');
@@ -197,13 +200,8 @@ function start() {
 		doodoo.stop();
 		startDoodoo();
 	} else {
-		fetch('../../doodoo/compositions/drummys.json')
-			.then(res => res.json())
-			.then(json => {
-				comp = json;
-				startDoodoo();
-				cc.set();
-			});
+		startDoodoo();
+		cc.set();
 	}		
 }
 
