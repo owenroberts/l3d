@@ -1,35 +1,19 @@
 import { Doodoo } from './doodoo/src/Doodoo.js';
+import compOne from './one/compositions/longy_1.json';
+import compTwo from './two/compositions/l3d_theme_17.json';
+import compThree from './three/compositions/drummys.json';
+import compFour from './four/compositions/graphy.json';
 
 window.addEventListener("load", load);
 
 function load() {
 
-	const compUrls = {
-		'one': './one/compositions/longy_1.json',
-		'two': './doodoo/compositions/l3d_theme_17.json',
-		'three': './doodoo/compositions/drummys.json',
-		'four': './four/compositions/graphy.json',
+	const comps = {
+		'one': compOne,
+		'two': compTwo,
+		'three': compThree,
+		'four': compFour,
 	};
-	const comps = {};
-	let loadCount = 0;
-	function loadCompositions() {
-		for (const key in compUrls) {
-			const comp = fetch(compUrls[key])
-				.then(res => res.json())
-				.then(json => { 
-					comps[key] = json;
-					loadCount++;
-					if (loadCount === 4) {
-						onLoad(comps);
-					} 
-				})
-				.catch(err => { console.log('my err', err); });
-		}
-	}
-	loadCompositions();
-}
-
-function onLoad(comps) {
 
 	let doodoo; // there's only one doodoo
 	let isPlaying = false;
@@ -47,10 +31,10 @@ function onLoad(comps) {
 
 	const compUis = {};
 	let numSettings = {
-		"one": 12, 
+		"one": 8, 
 		"two": 12, 
-		"three": 12, 
-		"four": 12,
+		"three": 24, 
+		"four": 16,
 	};
 
 	playBtn.addEventListener('click', playAll);
@@ -78,14 +62,14 @@ function onLoad(comps) {
 	}
 
 	function playAll() {
+		console.log(isPlaying, current);
 		if (isPlaying) return;
 		isPlaying = true;
-		if (current === "none") {
-			playComp("one", true);
-		}
+		playComp("one", true);
 	}
 
 	function playComp(key, keepPlaying) {
+		console.log('play', key, keepPlaying);
 		if (doodoo) doodoo.stop();
 		
 		current = key;
@@ -101,6 +85,7 @@ function onLoad(comps) {
 				if (sequenceCount >= count) {
 					doodoo.stop();
 					compUis[key].track.classList.remove("active");
+					console.log('end comp', key, keepPlaying);
 					
 					if (key === 'four' || !keepPlaying) {
 						isPlaying = false;

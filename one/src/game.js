@@ -2,6 +2,10 @@ import * as Cool from '../../cool/cool.js';
 import { Game, Sprite, TextButton, TextSprite, Button } from '../../lines/src/GameEngine.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import Stats from 'three/addons/libs/stats.module.js';
+import comp from '../compositions/longy_1.json';
+
+// import data from './data/sprites.json';
+
 
 // loading animation pre lines render
 const title = document.getElementById('title');
@@ -62,10 +66,7 @@ fullScreenButton.addEventListener('click', getFullscreen);
 
 
 let doodoo, sprites = [];
-let comp;
-// let recorder = new Recorder(gme, 30);
 let modCount = 16;
-
 
 document.addEventListener('keydown', keyDown);
 
@@ -89,12 +90,7 @@ function start() {
 		doodoo.stop();
 		startDoodoo();
 	} else {
-		fetch('./compositions/longy_1.json')
-			.then(res => res.json())
-			.then(json => {
-				comp = json;
-				startDoodoo();
-			});
+		startDoodoo();
 	}		
 }
 

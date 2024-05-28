@@ -13,21 +13,23 @@ export default defineConfig({
 		viteStaticCopy({
 			targets: [
 				{
-					src: 'doodoo/public/compositions/l3d_theme_17.json',
-					dest: 'doodoo/compositions/',
-				},
-				{
-					src: 'doodoo/public/compositions/drummys.json',
-					dest: 'doodoo/compositions/',
-				},
-				{
-					src: 'doodoo/public/samples/',
+					src: 'doodoo/samples/',
 					dest: 'doodoo/',
-				}
+				},
+				{
+					src: 'one/data/',
+					dest: 'one/',
+				},
+				{
+					src: 'one/drawings/',
+					dest: 'one/',
+				},
+				
 			]
 		})
 	],
 	build: {
+		outDir: './docs',
 		rollupOptions: {
 			input: {
 				main: resolve(__dirname, 'index.html'),

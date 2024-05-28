@@ -18,7 +18,9 @@ import { Worm } from './Worm.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import * as Cool from '../../cool/cool.js';
 
-console.log('perf low?', Cool.testLowPerformance());
+import comp from '../../doodoo/compositions/l3d_theme_17.json';
+
+// console.log('perf low?', Cool.testLowPerformance());
 
 const worldRadius = 128;
 let dpr = 1; // devicePixelRatio;
@@ -173,7 +175,7 @@ function onWindowResize(e) {
 	// }
 }
 
-let doodoo, comp;
+let doodoo;
 let tracks = ['rest'];
 const controlsDiv = document.getElementById('controls');
 const startButton = document.getElementById('start');
@@ -226,12 +228,7 @@ function start() {
 		// doodoo.stop();
 		// startDoodoo();
 	} else {
-		fetch('../../doodoo/compositions/l3d_theme_17.json')
-			.then(res => res.json())
-			.then(json => {
-				comp = json;
-				startDoodoo();
-			});
+		startDoodoo();
 	}		
 }
 
