@@ -55,6 +55,7 @@ backButton.addEventListener('click', () => {
 
 const fullScreenButton = document.getElementById('fullscreen');
 fullScreenButton.addEventListener('click', getFullscreen);
+document.addEventListener("fullscreenchange", onWindowResize);
 
 
 let doodoo, sprites = [];
@@ -62,7 +63,6 @@ let comp;
 let modCount = 16;
 let spriteIndexes = Cool.shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
 let indexOffset = 0;
-console.log('indexes', spriteIndexes)
 
 document.addEventListener('keydown', keyDown);
 
@@ -127,20 +127,26 @@ function startDoodoo() {
 	// console.log('doodoo', doodoo);
 }
 
-function getFullscreen() {
-	if (!document.fullscreenElement) {
-		document.documentElement.requestFullscreen();
+function onWindowResize(e) {
+	if (document.fullscreen) {
 		gme.renderer.setScale(2);
 		controls.style.display = 'none';
-	} else if (document.exitFullscreen) {
-		document.exitFullscreen();
+	} else {
 		gme.renderer.setScale(1);
 		controls.style.display = 'block';
 	}
 }
 
+function getFullscreen() {
+	if (!document.fullscreenElement) {
+		document.documentElement.requestFullscreen();
+	} else if (document.exitFullscreen) {
+		document.exitFullscreen();
+	}
+}
+
 gme.start = function() {
-	console.log('gme', gme);
+	// console.log('gme', gme);
 	document.getElementById('splash').remove();
 	clearInterval(loadingInterval);
 

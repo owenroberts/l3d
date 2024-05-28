@@ -25,11 +25,15 @@ export default defineConfig({
 					src: 'one/drawings/',
 					dest: 'one/',
 				},
-				
+				{
+					src: 'three/models',
+					dest: 'three/'
+				}
 			]
 		})
 	],
 	build: {
+		chunkSizeWarningLimit: 600,
 		outDir: './docs',
 		rollupOptions: {
 			input: {
@@ -38,6 +42,11 @@ export default defineConfig({
 				one: resolve(__dirname, 'one/index.html'),
 				two: resolve(__dirname, 'two/index.html'),
 				three: resolve(__dirname, 'three/index.html'),
+			},
+			output: {
+				manualChunks: {
+					three: ['three'],
+				},
 			},
 		}
 	}
