@@ -26,6 +26,7 @@ body {
 	line-height: 2;
 	max-width: 100vw;
 	padding-top: 4vh;
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0.95) 50%, rgba(0, 0, 0, 0.95) 100%), url(noise.jpg);
 }
 
 a, span {
@@ -34,6 +35,9 @@ a, span {
 	padding: 4px;
 	border-radius: 4px;
 	line-height: 1.5em;
+}
+span a {
+	text-decoration: none;
 }
 
 #container {
@@ -163,4 +167,16 @@ button:active {
 	left: 10px;
 	font-family:  monaco, monospace;
 	font-size:  32px;
+}
+
+/* some basic media queries */
+
+@media only screen and (max-device-width: 540px) {
+	#container {
+		margin: 1em;
+	}
+	.track span {
+		height: 2em;
+		margin-left: 0;
+	}
 }
