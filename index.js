@@ -68,7 +68,11 @@ function load() {
 	}
 
 	function playComp(key, keepPlaying) {
-		if (doodoo) doodoo.stop();
+		let waitTime = 0;
+		if (doodoo) {
+			doodoo.stop();
+		}
+		// setTimeout()
 		
 		if (current !== 'none') compUis[current].track.classList.remove("active");
 		current = key;
@@ -84,7 +88,6 @@ function load() {
 				if (sequenceCount >= count) {
 					doodoo.stop();
 					compUis[key].track.classList.remove("active");
-					console.log('end comp', key, keepPlaying);
 					
 					if (key === 'four' || !keepPlaying) {
 						isPlaying = false;

@@ -90,3 +90,13 @@ button:hover {
 	font-family:  monaco, monospace;
 	font-size:  32px;
 }
+
+@media only screen and (max-device-width: 540px) {
+	body {
+		display: block;
+	}
+	.track span {
+		height: 2em;
+		margin-left: 0;
+	}
+}

@@ -161,9 +161,13 @@ function onWindowResize(e) {
 	if (w === 960 * dpr) {
 		w = window.innerWidth * dpr;
 		h = window.innerHeight * dpr;
+		controlsDiv.style.display = 'none';
+		container.style.cursor = 'none';
 	} else {
 		w = 960 * dpr;
 		h = 540 * dpr;
+		controlsDiv.style.display = 'block';
+		container.style.cursor = 'inherit';
 	}
 
 	camera.aspect = w / h;
@@ -171,13 +175,6 @@ function onWindowResize(e) {
 	renderer.setSize(w, h);
 	post.setSize(w, h);
 
-	// if (w === 960 * dpr) {
-	// 	renderer.domElement.style.width = '960px';
-	// 	renderer.domElement.style.height = '540px';
-	// } else {
-	// 	renderer.domElement.style.width = `${window.innerWidth}px`;
-	// 	renderer.domElement.style.height = `${window.innerHeight}px`;
-	// }
 }
 
 let doodoo;
@@ -217,13 +214,8 @@ document.addEventListener("fullscreenchange", onWindowResize);
 function toggleFullScreen() {
 	if (!document.fullscreenElement) {
 		document.documentElement.requestFullscreen();
-		controlsDiv.style.display = 'none';
-		container.style.cursor = 'none';
-
 	} else if (document.exitFullscreen) {
 		document.exitFullscreen();
-		controlsDiv.style.display = 'block';
-		container.style.cursor = 'inherit';
 	}
 }
 
