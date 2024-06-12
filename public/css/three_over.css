@@ -1,0 +1,42 @@
+.label {
+	color: #FFF;
+	font-family: sans-serif;
+	padding: 2px;
+	background: rgba( 0, 0, 0, .6 );
+}
+
+body { 
+	margin: 0; 
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	background-color: black;
+}
+
+button {
+	font-size: 1em;
+	padding: 0.25em 0.5em;
+	border-style: solid;
+	border-radius: 0.25em;
+	background: transparent;
+	border-color: white;
+	color: white;
+}
+
+button:hover {
+	cursor: pointer;
+	background: white;
+	color: black;
+}
+		
+@media only screen and (max-device-width: 540px) {
+	body {
+		display: block;
+	}
+	.track span {
+		height: 2em;
+		margin-left: 0;
+	}
+}
