@@ -69,7 +69,7 @@ document.addEventListener("fullscreenchange", onWindowResize);
 
 
 let doodoo, sprites = [];
-let modCount = 8;
+let modCount = 12;
 
 document.addEventListener('keydown', keyDown);
 
@@ -101,7 +101,7 @@ function startDoodoo() {
 	doodoo = new Doodoo({
 		...comp,
 		// withRecording: true,
-		// withCount: modCount,
+		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
 		// volume: -12,
 		// autoStart: false,

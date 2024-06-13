@@ -132,7 +132,7 @@ button:active {
 .track {
 /*	margin-bottom: 1em;*/
 	padding: 0.25em 0.5em;
-	border-radius: 0.5em;
+	border-radius: 5px;
 	display: flex;
 }
 
@@ -146,7 +146,7 @@ button:active {
 
 .track span {
 	cursor: pointer;
-	margin-left: 1em;
+	margin-left: 3px;
 }
 
 .track input {

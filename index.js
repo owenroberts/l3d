@@ -31,10 +31,10 @@ function load() {
 
 	const compUis = {};
 	let numSettings = {
-		"one": 8, 
-		"two": 12, 
-		"three": 24, 
-		"four": 16,
+		"one": 12, 
+		"two": 24, 
+		"three": 12, 
+		"four": 32,
 	};
 
 	playBtn.addEventListener('click', playAll);
@@ -45,6 +45,10 @@ function load() {
 		numSettings = JSON.parse(settings);
 	}
 
+	function saveNums() {
+		localStorage.setItem('doodoo-nums', JSON.stringify(numSettings));
+	}
+
 	for (const key in comps) {
 		document.getElementById("play-" + key).addEventListener('click', () => {
 			playComp(key, false);
@@ -53,9 +57,9 @@ function load() {
 		compUis[key] = {};
 		compUis[key].num = document.getElementById("num-" + key);
 		compUis[key].num.value = numSettings[key];
-		compUis[key].num.addEventListener('click', () => {
+		compUis[key].num.addEventListener('change', () => {
 			numSettings[key] = +compUis[key].num.value;
-			localStorage.setItem('doodoo-nums', JSON.stringify(numSettings));
+			saveNums();
 		});
 
 		compUis[key].track = document.getElementById("track-" + key);

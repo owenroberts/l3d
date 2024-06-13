@@ -33,19 +33,24 @@
 
 		<div id="header">
 			<h1>one, two, three, four</h1>
-			<p>by <a href="https://owen.cool" target="_blank">owenribbit</a> ~ <button id="info-btn">info</button></p>
+			<p>by 
+				<a href="https://owen.cool" target="_blank">owenribbit</a> ~ 
+				<button id="info-btn">info</button>
+				<button id="stop-btn">stop </button>
+				<button id="play-btn">play album</button>
+			</p>
 			
 			<div id="info">
 				<p>click on the <span>⃞</span> to view the animation for each composition.</p>
-				<p>"one, two, three, four" is an album of experimental compositions using the procedural generation program GREG (Guided Realtime Euphoney Generator) aka "doodoo".</p>
+				<p>"one, two, three, four" is an album of experimental compositions using the procedural generation program GREG (Guided Realtime Euphony Generator) aka "doodoo".</p>
 				<p>GREG works by adding modulations to the rhythm, melody, harmony and effects of a composition that acculumate with each play.</p>
 				<p>the number next to each track is the number of times the composition will play and modulate. you can adjust this number to change the length of the album play back.</p>
+				<p>GREG uses <a href="https://tonejs.github.io/" target="_blank">tone.js</a> for audio synthesis.</p>
 			</div>
 		</div>
 
 		<div id="controls">
-			<button id="play-btn">play album</button>
-			<button id="stop-btn">stop </button>
+		
 		</div>
 
 		<div id="tracks">
@@ -62,13 +67,13 @@
 				<span id="play-two">▶</span>
 			</div>
 			<div class="track" id="track-three">
-				<label>3. complexity, lack thereof</label>
+				<label>3. success is cringe</label>
 				<span id="tv-three"><a href="./three/">⃞</a></span>
 				<span><input id="num-three" type="number" min="1"></span>
 				<span id="play-three">▶</span>
 			</div>
 			<div class="track" id="track-four">
-				<label>4. does it all kind of suck</label>
+				<label>4. dont make choices</label>
 				<span id="tv-four"><a href="./four/">⃞</a></span>
 				<span><input id="num-four" type="number" min="1"></span>
 				<span id="play-four">▶</span>

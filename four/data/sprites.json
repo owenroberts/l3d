@@ -1,5 +1,7 @@
 {
 	"bg": { "src": "./drawings/graphy_four.json" },
+	"parts": { "src": "./drawings/graphy_parts.json" },
+
 	"g4_16": { "src": "./drawings/g4_16.json" },
 	"g4_15": { "src": "./drawings/g4_15.json" },
 	"g4_14": { "src": "./drawings/g4_14.json" },
