@@ -35,8 +35,4 @@ button:hover {
 	body {
 		display: block;
 	}
-	.track span {
-		height: 2em;
-		margin-left: 0;
-	}
 }

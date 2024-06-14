@@ -3,5 +3,5 @@
 	"guy_1": { "src": "./drawings/liney.json" },
 	"circles": { "src": "./drawings/circles_2.json" },
 	"trees": { "src": "./drawings/trees_3.json" },
-	"cat_guy": { "src": "./drawings/cat_guy.json" }
+	"cat_guy": { "src": "./drawings/kitty_2.json" }
 }

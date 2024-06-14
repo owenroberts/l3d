@@ -32,9 +32,9 @@ function load() {
 	const compUis = {};
 	let numSettings = {
 		"one": 12, 
-		"two": 24, 
-		"three": 12, 
-		"four": 32,
+		"two": 8,
+		"three": 8, 
+		"four": 16,
 	};
 
 	playBtn.addEventListener('click', playAll);

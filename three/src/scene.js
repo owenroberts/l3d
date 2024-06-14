@@ -12,10 +12,11 @@ import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import { Singer } from './Singer.js';
 import { CameraControls } from './CameraControls.js';
 
+const debug = false;
 let w = 960, h = 540;
 const stats = new Stats();
 const container = document.getElementById("longies");
-container.appendChild(stats.dom);
+if (debug) container.appendChild(stats.dom);
 
 import comp from '../compositions/drummys.json';
 
@@ -40,8 +41,8 @@ const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 const cc = CameraControls({ camera, scene });
 
 let controls;
-let useControls = false; // debug
-useControls = true;
+let useControls = debug; // debug
+// useControls = true;
 if (useControls) controls = new OrbitControls(camera, renderer.domElement);
 
 const pig = new Singer({ scene });
@@ -111,7 +112,7 @@ cat.get().translateZ(offset);
 let previousTime = null;
 function animate(time) {
 	if (!previousTime) previousTime = time;
-	stats.update();
+	if (debug) stats.update();
 	requestAnimationFrame(animate);
 	const timeElapsed = time - previousTime;
 	previousTime = time;
@@ -156,6 +157,7 @@ function onWindowResize() {
 
 let doodoo;
 let tracks = ['rest'];
+const modCount = 12;
 const controlsDiv = document.getElementById('controls');
 const startButton = document.getElementById('start');
 const backButton = document.getElementById('back');
@@ -208,14 +210,13 @@ function start() {
 function startDoodoo() {
 	doodoo = new Doodoo({
 		...comp,
-		// withRecording: true,
-		// withCount: modCount,
+		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
-		// volume: -12,
-		// autoStart: false,
-		onModulate: count => {
-			// if (count === modCount) recorder.stop();
-		},
+		// onModulate: (playCount, sequenceCount) => {
+		// 	if (modCount === sequenceCount) {
+		// 		doodoo.stop();
+		// 	}
+		// },
 		onLoop: totalPlays => {
 			for (let i = 0; i < tracks.length; i++) {
 				tracks[i] = 'rest';

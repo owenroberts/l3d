@@ -1,8 +1,4 @@
-body {
-	margin: 0;
-	
-}
-
+/* main  */
 /* make this style.scss if u wanna go crazy */
 
 * { 
@@ -13,47 +9,6 @@ body {
 
 html { height: 100%; }
 
-body { 
-	margin: 0; 
-/*	overflow: hidden;*/
-	display: flex;
-/*	align-items: center;*/
-	justify-content: center;
-	height: 100%;
-	background-color: black;
-	color: white;
-	font-family: verdana;
-	line-height: 2;
-	max-width: 100vw;
-	padding-top: 4vh;
-	background: linear-gradient(0deg, rgba(0, 0, 0, 0.95) 50%, rgba(0, 0, 0, 0.95) 100%), url(noise.jpg);
-}
-
-a, span {
-	color: white;
-	background-color: #ad95df;
-	padding: 4px;
-	border-radius: 4px;
-	line-height: 1.5em;
-}
-
-a:hover,
-span:hover {
-	background-color: white;
-	color: black;
-}
-
-a {
-	text-decoration: none;
-}
-
-#container {
-	margin: auto;
-}
-
-#header {
-/*	margin-bottom: 2em;*/
-}
 
 #inner {
 	position: relative;

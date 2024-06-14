@@ -1,12 +1,4 @@
-/* make this style.scss if u wanna go crazy */
-
-* { 
-	margin: 0; 
-	padding: 0; 
-	box-sizing: border-box;
-}
-
-html { height: 100%; }
+/* styles for lines only one/four */
 
 body { 
 	margin: 0; 
@@ -16,7 +8,6 @@ body {
 	justify-content: center;
 	height: 100%;
 	background-color: black;
-	
 }
 
 #inner {
@@ -83,23 +74,9 @@ button:hover {
 	text-align:  center;
 }
 
-/* debug remove */
-#log {
-	position: fixed;
-	top: 10px;
-	left: 10px;
-	font-family:  monaco, monospace;
-	font-size:  32px;
-}
-
 /* some basic media queries */
-
 @media only screen and (max-device-width: 540px) {
 	body {
 		display: block;
-	}
-	.track span {
-		height: 2em;
-		margin-left: 0;
 	}
 }

@@ -1,5 +1,5 @@
 import * as Cool from '../../cool/cool.js';
-import { Game, Sprite, TextButton, TextSprite, Button } from '../../lines/src/GameEngine.js';
+import { Game, Sprite, TextButton, TextSprite, Button, GameAnim } from '../../lines/src/GameEngine.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import comp from '../compositions/graphy.json';
@@ -94,9 +94,18 @@ function startDoodoo() {
 		samplesURL: '../doodoo/samples/',
 		// volume: -12,
 		// autoStart: false,
-		onModulate: count => {
+		onModulate: (playCount, sequenceCount) => {
+			// if (modCount === sequenceCount) {
+			// 	doodoo.stop();
+			// }
 			for (let i = 0; i < sprites.length; i++) {
 				sprites[i].animation.stop();
+			}
+
+			if (modCount === sequenceCount) {
+				for (let i = 1; i < sprites.length; i++) {
+					sprites[i].isActive = false;
+				}
 			}
 		},
 		onNote: params => {
@@ -105,6 +114,7 @@ function startDoodoo() {
 			let i;
 			if (index === 0) i = index;
 			if (index > 0) i = spriteIndexes[(index + indexOffset - 1) % (spriteIndexes.length)];
+			if (index > 0) console.log(i);
 			
 			const sprite = sprites[i];
 			if (note === 'rest') {
@@ -141,27 +151,21 @@ gme.start = function() {
 	document.getElementById('splash').remove();
 	clearInterval(loadingInterval);
 
+	const partsJson = gme.loader.getAnimationData('sprites', 'parts').json;
+
 	sprites[0] = new Sprite(0, 0, gme.anims.sprites.bg);
 	gme.scenes.main.addToDisplay(sprites[0]);
 
 	for (let i = 1; i <= 16; i++) {
-		sprites[i] = new Sprite(0, 0, gme.anims.sprites[`g4_${i}`]);
+		const animation = new GameAnim();
+		animation.loadJSON(structuredClone(partsJson));
+		sprites[i] = new Sprite(0, 0, animation);
 		sprites[i].isActive = false;
-		const animation = sprites[i].animation;
-		animation.loop = false;
-		animation.createNewState('reverse', 0, animation.endFrame, -1);
-		animation.state = 'default';
+		// animation.loop = false;
+		animation.sequenceIndex = i - 1;
 		animation.onPlayedState = function() {
-			if (animation.stateName === 'default') {
-				animation.state = 'reverse';
-				animation.stop();
-				animation.frame = animation.endFrame;
-			} else {
-				animation.state = 'default';
-				animation.stop();
-				animation.frame = 0;
-			}
 			indexOffset = (indexOffset + 1) % (spriteIndexes.length);
+			animation.stop();
 		};
 		gme.scenes.main.addToDisplay(sprites[i]);
 	}

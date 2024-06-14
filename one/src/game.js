@@ -16,13 +16,10 @@ function loadingAnimation() {
 	title.textContent = t;
 }
 let loadingInterval = setInterval(loadingAnimation, 1000 / 12);
-// let loadingInterval;
 
 const isMobile = Cool.mobilecheck();
 if (isMobile) document.body.classList.add('mobile');
 
-// const { Game, GameAnim, Scene, Sprite, SpriteCollection, ColliderSprite, ColliderEntity, TextSprite, Texture, UI, Counter, SoundProvider, ColliderEmpty } = LinesEngine;
-// const { Drawing, Layer } = Lines;
 
 /* this is the game part */
 const gme = new Game({
@@ -105,11 +102,18 @@ function startDoodoo() {
 		samplesURL: '../doodoo/samples/',
 		// volume: -12,
 		// autoStart: false,
-		onModulate: count => {
-			// if (count === modCount) recorder.stop();
+		onModulate: (playCount, sequenceCount) => {
+
 			for (let i = 0; i < sprites.length; i++) {
 				sprites[i].animation.stop();
 			}
+			
+			if (modCount === sequenceCount) {
+				sprites[1].isActive = false;
+				sprites[2].isActive = false;
+				sprites[3].isActive = false;
+			}
+			
 		},
 		onNote: params => {
 			// console.log(params.loopIndex, params.note[0]);

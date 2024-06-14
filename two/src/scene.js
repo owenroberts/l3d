@@ -27,6 +27,7 @@ import comp from '../compositions/l3d_theme_17.json';
 
 // console.log('perf low?', Cool.testLowPerformance());
 
+const debug = false;
 const worldRadius = 128;
 let dpr = 1; // devicePixelRatio;
 let w = 960 * dpr, h = 540 * dpr;
@@ -36,7 +37,7 @@ const scene2 = new THREE.Scene();
 
 const stats = new Stats();
 const container = document.getElementById("longies");
-container.appendChild(stats.dom);
+if (debug) container.appendChild(stats.dom);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h);
@@ -120,7 +121,7 @@ let catModel;
 
 function animate(time) {
 	if (!previousTime) previousTime = time;
-	stats.update();
+	if (debug) stats.update();
 	requestAnimationFrame(animate);
 	const timeElapsed = time - previousTime;
 	previousTime = time;
@@ -179,6 +180,7 @@ function onWindowResize(e) {
 
 let doodoo;
 let tracks = ['rest'];
+const modCount = 24;
 const controlsDiv = document.getElementById('controls');
 const startButton = document.getElementById('start');
 const backButton = document.getElementById('back');
@@ -233,13 +235,13 @@ function startDoodoo() {
 	doodoo = new Doodoo({
 		...comp,
 		// withRecording: true,
-		// withCount: modCount,
+		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
-		// volume: -12,
-		// autoStart: false,
-		onModulate: count => {
-			// if (count === modCount) recorder.stop();
-		},
+		// onModulate: (playCount, sequenceCount) => {
+		// 	if (modCount === sequenceCount) {
+		// 		doodoo.stop();
+		// 	}
+		// },
 		onNote: params => {
 			// console.log(params.loopIndex, params.note[0]);
 			const index = params.loopIndex;
