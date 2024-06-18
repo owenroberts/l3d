@@ -180,7 +180,7 @@ function onWindowResize(e) {
 
 let doodoo;
 let tracks = ['rest'];
-const modCount = 24;
+const modCount = 8;
 const controlsDiv = document.getElementById('controls');
 const startButton = document.getElementById('start');
 const backButton = document.getElementById('back');
