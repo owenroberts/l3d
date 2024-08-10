@@ -102,6 +102,9 @@ function load() {
 				}
 			}
 		});
+
+		// if doodoo is playing need to stop before using anchors ... 
+		anchorSetup();
 	}
 
 	function stop() {
@@ -110,4 +113,19 @@ function load() {
 		compUis[current].track.classList.remove("active");
 		current = "none";
 	}
+
+	/* stop doodoo if any anchor is clicked */
+	function anchorSetup() {
+		const anchors = document.getElementsByTagName('a');
+		Array.from(anchors).forEach(a => {
+			a.addEventListener('click', ev => {
+				ev.preventDefault();
+				doodoo.stop();
+				setTimeout(() => {
+					location.href = a.href;
+				}, 300);
+			});
+		});
+	}
+	
 }

@@ -57,7 +57,10 @@ const backButton = document.getElementById('back');
 
 startButton.addEventListener('click', start);
 backButton.addEventListener('click', () => {
-	location.href = '../index.html';
+	doodoo.stop();
+	setTimeout(() => {
+		location.href = '../index.html';
+	}, 300);
 });
 
 const fullScreenButton = document.getElementById('fullscreen');
