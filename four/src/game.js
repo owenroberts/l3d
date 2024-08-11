@@ -51,10 +51,14 @@ const backButton = document.getElementById('back');
 
 startButton.addEventListener('click', start);
 backButton.addEventListener('click', () => {
-	doodoo.stop();
-	setTimeout(() => {
+	if (doodoo) {
+		doodoo.stop();
+		setTimeout(() => {
+			location.href = '../index.html';
+		}, 300);
+	} else {
 		location.href = '../index.html';
-	}, 300);
+	}
 });
 
 const fullScreenButton = document.getElementById('fullscreen');

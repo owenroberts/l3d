@@ -14,17 +14,27 @@ body {
 	background: linear-gradient(0deg, rgba(0, 0, 0, 0.95) 50%, rgba(0, 0, 0, 0.95) 100%), url(noise.jpg);
 }
 
+h1 {
+	color: #ad95df;
+}
+
 a, span {
-	color: white;
-	background-color: #ad95df;
+	color: #ad95df;
+	border: #ad95df;
+	border-style: solid;
 	padding: 4px;
 	border-radius: 4px;
 	line-height: 1.5em;
 }
 
+span a {
+	border: none;
+}
+
 a:hover,
 span:hover {
-	background-color: white;
+	background: white;
+	border-color: white;
 	color: black;
 }
 

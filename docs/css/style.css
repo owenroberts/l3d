@@ -53,12 +53,11 @@ button {
 	padding: 0.25em 0.5em;
 	border-style: solid;
 	border-radius: 0.25em;
-
-/*	background: transparent;*/
+	background: transparent;
 /*	border-color: white;*/
-	background-color: #ad95df;
+/*	background-color: #ad95df;*/
 	border-color: #ad95df;
-	color: white;
+	color: #ad95df;
 }
 
 button:hover {
