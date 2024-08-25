@@ -8,7 +8,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPixelatedPass } from 'three/addons/postprocessing/RenderPixelatedPass.js';
-import { Animator, vertexShader, blendShader, BandShader, LinesPass } from '../../three_stuff/ThreeStuff.js';
+import { Animator, vertexShader, blendShader, BandShader, LinesPass } from '../../tre/Tre.js';
 
 export function PostProcessing(params) {
 

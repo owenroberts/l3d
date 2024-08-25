@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import * as Cool from '../../cool/cool.js';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { Joint, Animator } from '../../three_stuff/ThreeStuff.js';
+import { Joint, Animator } from '../../tre/Tre.js';
 
 export function Singer(params) {
 	

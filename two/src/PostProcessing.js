@@ -7,7 +7,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { Animator, vertexShader, blendShader, LinesPass } from '../../three_stuff/ThreeStuff.js';
+import { Animator, vertexShader, blendShader, LinesPass } from '../../tre/Tre.js';
 
 export function PostProcessing(params) {
 

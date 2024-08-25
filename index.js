@@ -19,6 +19,7 @@ function load() {
 	let isPlaying = false;
 	let current = "none";
 	const order = ["one", "two", "three", "four"];
+	let fft;
 
 	const playBtn = document.getElementById("play-btn");
 	const stopBtn = document.getElementById("stop-btn");
@@ -50,19 +51,28 @@ function load() {
 	}
 
 	for (const key in comps) {
-		document.getElementById("play-" + key).addEventListener('click', () => {
-			playComp(key, false);
-		});
 
-		compUis[key] = {};
-		compUis[key].num = document.getElementById("num-" + key);
-		compUis[key].num.value = numSettings[key];
-		compUis[key].num.addEventListener('change', () => {
+		const btn = document.getElementById("play-" + key);
+		btn.addEventListener('click', () => {
+			if (current == key && doodoo.getStatusIsPlaying()) {
+				doodoo.stop();
+				btn.innerText = '⏵︎';
+			} else {
+				playComp(key, false);
+				
+			}
+		});
+		
+		const num = document.getElementById("num-" + key);
+		num.value = numSettings[key];
+		num.addEventListener('change', () => {
 			numSettings[key] = +compUis[key].num.value;
 			saveNums();
 		});
 
-		compUis[key].track = document.getElementById("track-" + key);
+		const track = document.getElementById("track-" + key);
+
+		compUis[key] = { btn, num, track };
 	}
 
 	function playAll() {
@@ -81,6 +91,7 @@ function load() {
 		if (current !== 'none') compUis[current].track.classList.remove("active");
 		current = key;
 		compUis[key].track.classList.add("active");
+		compUis[key].btn.innerText = '⏹';
 		
 		const count = numSettings[key];
 		
@@ -88,10 +99,13 @@ function load() {
 			...comps[key],
 			samplesURL: './doodoo/samples/',
 			withCount: count,
+			useFFT: true,
+			getFFT: toneFFT => { fft = toneFFT; },
 			onModulate: (playCount, sequenceCount) => {
 				if (sequenceCount >= count) {
 					doodoo.stop();
 					compUis[key].track.classList.remove("active");
+					compUis[key].btn.innerText = '⏵︎';
 					
 					if (key === 'four' || !keepPlaying) {
 						isPlaying = false;
@@ -111,6 +125,7 @@ function load() {
 		doodoo.stop();
 		isPlaying = false;
 		compUis[current].track.classList.remove("active");
+		compUis[current].btn.innerText = '⏵︎';
 		current = "none";
 	}
 
