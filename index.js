@@ -1,4 +1,5 @@
 import { Doodoo } from './doodoo/src/Doodoo.js';
+import { map } from './cool/cool.js';
 import compOne from './one/compositions/longy_1.json';
 import compTwo from './two/compositions/l3d_theme_17.json';
 import compThree from './three/compositions/drummys.json';
@@ -19,12 +20,13 @@ function load() {
 	let isPlaying = false;
 	let current = "none";
 	const order = ["one", "two", "three", "four"];
-	let fft;
+	let fft, fftCtx;
 
 	const playBtn = document.getElementById("play-btn");
 	const stopBtn = document.getElementById("stop-btn");
 	const infoBtn = document.getElementById("info-btn");
 	const info = document.getElementById("info");
+	const fftCanvas = document.getElementById("fft-canvas");
 
 	infoBtn.addEventListener('click', () => {
 		info.classList.toggle('visible');
@@ -100,7 +102,10 @@ function load() {
 			samplesURL: './doodoo/samples/',
 			withCount: count,
 			useFFT: true,
-			getFFT: toneFFT => { fft = toneFFT; },
+			getFFT: toneFFT => {
+				fft = toneFFT;
+				if (fft) setupFFT();
+			},
 			onModulate: (playCount, sequenceCount) => {
 				if (sequenceCount >= count) {
 					doodoo.stop();
@@ -141,6 +146,43 @@ function load() {
 				}, 300);
 			});
 		});
+	}
+
+	function setupFFT() {
+		if (fftCanvas.getContext('2d')) {
+			fftCtx = fftCanvas.getContext('2d');
+			fftCtx.fillStyle = 'black';
+			fftCtx.fillRect(0, 0, 64, 32);
+		} else {
+			return;
+		}
+		fftTimer = performance.now();
+		requestAnimationFrame(updateFFT);
+	}
+
+	let levels;
+	const fftInterval = 1000 / 24;
+	let fftTimer = 0;
+
+	function updateFFT() {
+		requestAnimationFrame(updateFFT);
+		if (!fft) return;
+		const time = performance.now();
+		if (time > fftTimer + fftInterval ) {
+			fftTimer = time;
+
+			fftCtx.fillStyle = 'black';
+			fftCtx.fillRect(0, 0, 64, 32);
+
+			fftCtx.fillStyle = '#ad95df';
+			levels = fft.getValue();
+
+			for (let i = 0; i < levels.length; i++) {
+				const v = map(levels[i], -120, 12, 0, 28, true);
+				const x = i * 4;
+				fftCtx.fillRect(x + 1, 30 - v, 2, v);
+			}
+		}
 	}
 	
 }
