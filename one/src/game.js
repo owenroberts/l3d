@@ -53,9 +53,11 @@ gme.load({
 
 const controls = document.getElementById('controls');
 const startButton = document.getElementById('start');
+const stopButton = document.getElementById('stop');
 const backButton = document.getElementById('back');
 
 startButton.addEventListener('click', start);
+stopButton.addEventListener('click', stop);
 backButton.addEventListener('click', () => {
 	if (doodoo) {
 		doodoo.stop();
@@ -98,6 +100,15 @@ function start() {
 	} else {
 		startDoodoo();
 	}		
+}
+
+function stop() {
+	if (doodoo) {
+		doodoo.stop();
+		for (let i = 0; i < sprites.length; i++) {
+			sprites[i].animation.stop();
+		}
+	}
 }
 
 function startDoodoo() {
