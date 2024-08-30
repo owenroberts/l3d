@@ -12,24 +12,26 @@
 
 	<!-- Primary Meta Tags -->
 	<title>four compositions</title>
-	<meta name="title" content="one two three four">
-	<meta name="description" content="">
+	<meta name="title" content="four compositions" />
+	<meta name="description" content="album by owen ribbit" />
 
 	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website">
-	<meta property="og:url" content="">
-	<meta property="og:title" content="">
-	<meta property="og:description" content="">
-	<meta property="og:image" content="">
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="http://four.owen.cool/" />
+	<meta property="og:title" content="four compositions" />
+	<meta property="og:description" content="album by owen ribbit" />
+	<meta property="og:image" content="./album_interface_960.png" />
 
 	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image">
-	<meta property="twitter:url" content="">
-	<meta property="twitter:title" content="">
-	<meta property="twitter:description" content="">
-	<meta property="twitter:image" content="">
-  <script type="module" crossorigin src="./assets/main-C8nDGFrW.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/Doodoo-ghMZrfjj.js">
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:url" content="http://four.owen.cool/" />
+	<meta property="twitter:title" content="four compositions" />
+	<meta property="twitter:description" content="album by owen ribbit" />
+	<meta property="twitter:image" content="./album_interface_960.png" />
+
+	<!-- Meta Tags Generated with https://metatags.io -->
+  <script type="module" crossorigin src="./assets/main-BqDMZMJw.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/Doodoo-CpJwzwjr.js">
   <link rel="modulepreload" crossorigin href="./assets/longy_1--fQUu0TI.js">
   <link rel="modulepreload" crossorigin href="./assets/l3d_theme_17-B90w5pWU.js">
   <link rel="modulepreload" crossorigin href="./assets/drummys-asBFSA3t.js">
@@ -42,10 +44,11 @@
 		<div id="header">
 			<h1>four compositions</h1>
 			<p>by 
-				<a href="https://owen.cool" target="_blank">owenribbit</a> ~ 
+				<a href="https://owen.cool" target="_blank">owen ribbit</a> ~ 
 				<button id="info-btn">info</button>
 				<button id="stop-btn">stop </button>
 				<button id="play-btn">play</button>
+				<canvas id="fft-canvas" width="64" height="32"></canvas>
 			</p>
 			
 			<div id="info">
@@ -63,25 +66,25 @@
 				<label>1. i dont think i think i dont</label>
 				<span id="tv-one"><a class="vis-link" href="./one/">☁</a></span>
 				<span><input id="num-one" type="number" min="1"></span>
-				<span id="play-one">▶</span>
+				<span class="track-play-btn" id="play-one">⏵︎</span>
 			</div>
 			<div class="track" id="track-two">
 				<label>2. i dont know whats going to happen</label>
 				<span id="tv-two"><a class="vis-link" href="./two/">⁂</a></span>
 				<span><input id="num-two" type="number" min="1"></span>
-				<span id="play-two">▶</span>
+				<span class="track-play-btn" id="play-two">⏵︎</span>
 			</div>
 			<div class="track" id="track-three">
 				<label>3. free will is cringe</label>
 				<span id="tv-three"><a class="vis-link" href="./three/">☠</a></span>
 				<span><input id="num-three" type="number" min="1"></span>
-				<span id="play-three">▶</span>
+				<span class="track-play-btn" id="play-three">⏵︎</span>
 			</div>
 			<div class="track" id="track-four">
 				<label>4. choices</label>
 				<span id="tv-four"><a class="vis-link" href="./four/">☼</a></span>
 				<span><input id="num-four" type="number" min="1"></span>
-				<span id="play-four">▶</span>
+				<span class="track-play-btn" id="play-four">⏵︎</span>
 			</div>
 		</div>
 

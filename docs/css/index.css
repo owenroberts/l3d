@@ -20,8 +20,7 @@ h1 {
 
 a, span {
 	color: #ad95df;
-	border: #ad95df;
-	border-style: solid;
+/*	border: 2px solid #ad95df;*/
 	padding: 4px;
 	border-radius: 4px;
 	line-height: 1.5em;
@@ -48,4 +47,13 @@ a {
 
 #header {
 	margin-bottom: 1em;
+}
+
+.track-play-btn {
+	font-size: 1.5em;
+	line-height: 1em;
+}
+
+#fft-canvas {
+	vertical-align: bottom;
 }
