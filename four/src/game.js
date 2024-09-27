@@ -132,7 +132,7 @@ function startDoodoo() {
 			let i;
 			if (index === 0) i = index;
 			if (index > 0) i = spriteIndexes[(index + indexOffset - 1) % (spriteIndexes.length)];
-			if (index > 0) console.log(i);
+			// if (index > 0) console.log(i);
 			
 			const sprite = sprites[i];
 			if (note === 'rest') {
