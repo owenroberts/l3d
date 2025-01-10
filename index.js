@@ -34,9 +34,9 @@ function load() {
 
 	const compUis = {};
 	let numSettings = {
-		"one": 12, 
+		"one": 12,
 		"two": 8,
-		"three": 8, 
+		"three": 8,
 		"four": 16,
 	};
 

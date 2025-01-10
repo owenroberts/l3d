@@ -46,7 +46,6 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				main: resolve(__dirname, 'index.html'),
-				// doodoo: resolve(__dirname, 'doodoo/index.html'),
 				one: resolve(__dirname, 'one/index.html'),
 				two: resolve(__dirname, 'two/index.html'),
 				three: resolve(__dirname, 'three/index.html'),

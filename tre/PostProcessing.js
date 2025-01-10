@@ -1,5 +1,6 @@
 /*
 	setup post processing
+	example
 */
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
