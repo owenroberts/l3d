@@ -3,8 +3,10 @@
 */
 
 import * as Cool from '../../cool/cool.js';
-import { Game, Sprite, TextButton, TextSprite, Button } from '../../lines/src/GameEngine.js';
+import { Game, Sprite, TextButton, TextSprite, Button } from '../../lines/src/Engine.js';
+import { Animator } from '../../lines/src/Lines.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
+import { getMidiDelta } from '../../doodoo/src/Midi.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import comp from '../compositions/longy_1.json';
 
@@ -73,8 +75,9 @@ const fullScreenButton = document.getElementById('fullscreen');
 fullScreenButton.addEventListener('click', getFullscreen);
 document.addEventListener("fullscreenchange", onWindowResize);
 
-let doodoo, sprites = [];
+let doodoo, sprites = [], animators = [];
 let modCount = 12;
+let notePrev = [];
 
 document.addEventListener('keydown', keyDown);
 
@@ -136,15 +139,59 @@ function startDoodoo() {
 			// console.log(params.loopIndex, params.note[0]);
 			const index = params.loopIndex;
 			const note = params.note[0];
-			if (sprites[index]) {
+			// console.log(index, note);
+			
+			if (sprites[index] && index < 2) {
 				const sprite = sprites[index];
 				if (note === 'rest') {
 					sprite.animation.stop();
 				} else if (note !== null) {
 					sprite.animation.play();
 					sprite.isActive = true;
+
+					
+					if (notePrev[index]) {
+						const noteDelta = getMidiDelta(notePrev[index], note);
+
+						// nah but interesting
+						// if (noteDelta > 0) {
+						// 	sprite.animation.state.dir = 1;
+						// } else if (sprite.animation.currentFrame > sprite.animation.endFrame / 4) {
+						// 	sprite.animation.state.dir = -1;
+						// }
+					}
+
+					notePrev[index] = note;
 				}
 			}
+
+			if (index === 0 && note !== null && note !== "rest") {
+
+				const nonVisibleLayers = sprites[2].animation.layers.filter(l => !l.isVisible);
+
+				console.log(nonVisibleLayers)
+
+				if (nonVisibleLayers.length === 0) {
+					sprites[2].currentAnimDir = -1;
+				}
+
+				if (nonVisibleLayers.length === sprites[2].animation.layers.length) {
+					sprites[2].currentAnimDir = 1;
+				}
+
+				if (sprites[2].currentAnimDir === 1) {
+					const vIndex = Cool.randomInt(0, nonVisibleLayers.length);
+					nonVisibleLayers[vIndex].isVisible = true;
+				} else if (sprites[2].currentAnimDir === -1) {
+					const visibleLayers = sprites[2].animation.layers.filter(l => l.isVisible);
+					const vIndex = Cool.randomInt(0, visibleLayers.length);
+					visibleLayers[vIndex].isVisible = false;
+				}
+			}
+
+			// animators[2].update();
+			// animators[3].update();
+			// animators[4].update();
 		}
 	});
 	// console.log('doodoo', doodoo);
@@ -178,13 +225,23 @@ gme.start = function() {
 	sprites[0] = new Sprite(0, 0, gme.anims.sprites.bg);
 	// sprites[1] = new Sprite(0, 0, gme.anims.sprites.guy_1);
 	sprites[1] = new Sprite(0, 0, gme.anims.sprites.circles);
-	sprites[2] = new Sprite(0, 0, gme.anims.sprites.trees);
-	sprites[3] = new Sprite(0, 0, gme.anims.sprites.cat_guy);
+	
+	sprites[2] = new Sprite(0, 0, gme.anims.sprites.faces_cat);
+	sprites[3] = new Sprite(0, 0, gme.anims.sprites.faces_pig);
+	sprites[4] = new Sprite(0, 0, gme.anims.sprites.faces_bird);
+
+	// animators[2] = new Animator(sprites[2].animation);
+	// animators[3] = new Animator(sprites[3].animation);
+	// animators[4] = new Animator(sprites[4].animation);
 	
 	for (let i = 0; i < sprites.length; i++) {
 		sprites[i].isActive = false;
 		gme.scenes.main.addToDisplay(sprites[i]);
 	}
+
+	sprites[2].animation.layers.forEach(l => l.isVisible = false);
+	sprites[2].isActive = true;
+	sprites[2].currentAnimDir = 1;
 	
 	sprites[0].isActive = true;
 	gme.scenes.current = 'main';
