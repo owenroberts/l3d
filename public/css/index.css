@@ -32,9 +32,9 @@ span a {
 
 a:hover,
 span:hover {
-	background: white;
-	border-color: white;
-	color: black;
+/*	background: white;*/
+/*	border-color: white;*/
+	color: white;
 }
 
 a {

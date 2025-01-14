@@ -5,7 +5,7 @@
 	"trees": { "src": "./drawings/trees_3.json" },
 	"cat_guy": { "src": "./drawings/kitty_2.json" },
 
-	"faces_cat": { "src": "./drawings/faces_cat_2.json" },
+	"faces_cat": { "src": "./drawings/faces_cat_3.json" },
 	"faces_pig": { "src": "./drawings/faces_pig_2.json" },
 	"faces_bird": { "src": "./drawings/faces_bird_2.json" }
 }

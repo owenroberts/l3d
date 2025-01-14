@@ -1,5 +1,5 @@
 /*
-	one
+	one ~ i dont think i think i dont
 */
 
 import * as Cool from '../../cool/cool.js';
@@ -9,7 +9,6 @@ import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import { getMidiDelta } from '../../doodoo/src/Midi.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import comp from '../compositions/longy_1.json';
-
 
 // loading animation pre lines render
 const title = document.getElementById('title');
@@ -198,8 +197,8 @@ gme.start = function() {
 	// sprites[1] = new Sprite(0, 0, gme.anims.sprites.guy_1);
 	sprites[1] = new Sprite(0, 0, gme.anims.sprites.circles);
 	
-	sprites[2] = new Sprite(0, 0, gme.anims.sprites.faces_cat);
-	sprites[3] = new Sprite(0, 0, gme.anims.sprites.faces_pig);
+	sprites[3] = new Sprite(0, 0, gme.anims.sprites.faces_cat);
+	sprites[2] = new Sprite(0, 0, gme.anims.sprites.faces_pig);
 	sprites[4] = new Sprite(0, 0, gme.anims.sprites.faces_bird);
 
 	for (let i = 0; i < sprites.length; i++) {
@@ -215,7 +214,6 @@ gme.start = function() {
 
 	sprites[0].isActive = true;
 	gme.scenes.current = 'main';
-
 };
 
 gme.draw = function() {
