@@ -1,22 +1,19 @@
+/*
+	four ~ choices
+*/
+
 import * as Cool from '../../cool/cool.js';
-import { Game, Sprite, TextButton, TextSprite, Button, GameAnim } from '../../lines/src/GameEngine.js';
+import { Game, Sprite, TextButton, TextSprite, Button, GameAnim } from '../../lines/src/Engine.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
+import { Controls } from '../../public/js/controls.js'; 
+
 import Stats from 'three/addons/libs/stats.module.js';
 import comp from '../compositions/graphy.json';
 
-// loading animation pre lines render
-const title = document.getElementById('title');
-function loadingAnimation() {
-	let t = '~' + title.textContent + '~';
-	title.textContent = t;
-}
-let loadingInterval = setInterval(loadingAnimation, 1000 / 12);
-
-const isMobile = Cool.mobilecheck();
-if (isMobile) document.body.classList.add('mobile');
-
 /* this is the game part */
 const gme = new Game({
+	loadingMessage: "title",
+	loadingSplash: "splash",
 	dps: 30,
 	lineWidth: 1,
 	// zoom: 2,
@@ -26,9 +23,9 @@ const gme = new Game({
 	multiColor: true,
 	checkRetina: true,
 	// debug: true,
-	// stats: true,
+	stats: true,
 	suspend: true,
-	events: isMobile ? ['touch'] : ['keyboard', 'mouse'],
+	events: ['touch', 'keyboard', 'mouse'],
 	scenes: ['main'],
 	bounds: {
 		left: -1024,
@@ -38,57 +35,17 @@ const gme = new Game({
 	},
 	// drawBg: '#C7C7C7', // for recording
 });
-
 gme.load({
 	animations: {
 		sprites: './data/sprites.json',	
 	}
 }, false);
 
-const controls = document.getElementById('controls');
-const startButton = document.getElementById('start');
-const stopButton = document.getElementById('stop');
-const backButton = document.getElementById('back');
-
-startButton.addEventListener('click', start);
-stopButton.addEventListener('click', stop);
-backButton.addEventListener('click', () => {
-	if (doodoo) {
-		doodoo.stop();
-		setTimeout(() => {
-			location.href = '../index.html';
-		}, 300);
-	} else {
-		location.href = '../index.html';
-	}
-});
-
-const fullScreenButton = document.getElementById('fullscreen');
-fullScreenButton.addEventListener('click', getFullscreen);
-document.addEventListener("fullscreenchange", onWindowResize);
-
-
+let controls;
 let doodoo, sprites = [];
 let modCount = 16;
 let spriteIndexes = Cool.shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
 let indexOffset = 0;
-
-document.addEventListener('keydown', keyDown);
-
-function keyDown(ev) {
-
-	/* debugging */
-	if (ev.code === 'Comma') doodoo.stop();
-	else if (ev.code === 'KeyP') {
-		doodoo.printLoops();
-		doodoo.printParams();
-	}
-
-	/* key commands */
-	if (ev.code === 'Space') start();
-	if (ev.code === 'Enter') doodoo.stop();
-	if (ev.code === 'KeyF') getFullscreen();
-}
 
 function start() {
 	if (doodoo) doodoo.stop();
@@ -104,91 +61,84 @@ function stop() {
 	}
 }
 
+function resize() {
+	if (document.fullscreen) {
+		gme.renderer.setScale(2);
+	} else {
+		gme.renderer.setScale(1);
+	}
+}
+
 function startDoodoo() {
 	doodoo = new Doodoo({
 		...comp,
-		// withRecording: true,
 		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
-		// volume: -12,
-		// autoStart: false,
 		onModulate: (playCount, sequenceCount) => {
-			// if (modCount === sequenceCount) {
-			// 	doodoo.stop();
-			// }
-			for (let i = 0; i < sprites.length; i++) {
-				sprites[i].animation.stop();
-			}
-
-			if (modCount === sequenceCount) {
-				for (let i = 1; i < sprites.length; i++) {
-					sprites[i].isActive = false;
-				}
-			}
+			onModulate(playCount, sequenceCount);
 		},
-		onNote: params => {
-			const index = params.loopIndex;
-			const note = params.note[0];
-			let i;
-			if (index === 0) i = index;
-			if (index > 0) i = spriteIndexes[(index + indexOffset - 1) % (spriteIndexes.length)];
-			// if (index > 0) console.log(i);
-			
-			const sprite = sprites[i];
-			if (note === 'rest') {
-				sprite.animation.stop();
-			} else if (note !== null) {
-				sprite.animation.play();
-				sprite.isActive = true;
-			}
-		}
+		onNote: params => { onNote(params) },
 	});
-	// console.log('doodoo', doodoo);
+	controls.addDoodoo(doodoo);
 }
 
-function onWindowResize(e) {
-	if (document.fullscreen) {
-		gme.renderer.setScale(2);
-		controls.style.display = 'none';
-	} else {
-		gme.renderer.setScale(1);
-		controls.style.display = 'block';
+function onModulate(playCount, sequenceCount) {
+	for (let i = 0; i < sprites.length; i++) {
+		sprites[i].animation.stop();
+	}
+
+	if (modCount === sequenceCount) {
+		for (let i = 1; i < sprites.length; i++) {
+			sprites[i].isActive = false;
+		}
 	}
 }
 
-function getFullscreen() {
-	if (!document.fullscreenElement) {
-		document.documentElement.requestFullscreen();
-	} else if (document.exitFullscreen) {
-		document.exitFullscreen();
+function onNote(params) {
+	const index = params.loopIndex;
+	const note = params.note[0];
+	let i;
+	if (index === 0) i = index;
+	if (index > 0) i = spriteIndexes[(index + indexOffset - 1) % (spriteIndexes.length)];
+	// if (index > 0) console.log(i);
+	
+	const sprite = sprites[i];
+	if (note === 'rest') {
+		sprite.animation.stop();
+	} else if (note !== null) {
+		sprite.animation.play();
+		sprite.isActive = true;
 	}
 }
+
 
 gme.start = function() {
 	// console.log('gme', gme);
-	document.getElementById('splash').remove();
-	clearInterval(loadingInterval);
 
-	const partsJson = gme.loader.getAnimationData('sprites', 'parts').json;
+	controls = Controls(start, stop, doodoo, resize);
 
+	// bg
 	sprites[0] = new Sprite(0, 0, gme.anims.sprites.bg);
+	sprites[0].isActive = true;
 	gme.scenes.main.addToDisplay(sprites[0]);
 
+	sprites[0].animation.onPlayedState = function() {
+		console.log('played state');
+		doodoo.moveTonic(Cool.random([1, -1, 2, -2]));
+	};
+
 	for (let i = 1; i <= 16; i++) {
-		const animation = new GameAnim();
-		animation.loadJSON(structuredClone(partsJson));
-		sprites[i] = new Sprite(0, 0, animation);
+		sprites[i] = new Sprite(0, 0, gme.anims.sprites[`gp_${i - 1}`]);
 		sprites[i].isActive = false;
-		// animation.loop = false;
-		animation.sequenceIndex = i - 1;
-		animation.onPlayedState = function() {
+		sprites[i].animation.sequenceIndex = i - 1;
+		sprites[i].animation.onPlayedState = function() {
 			indexOffset = (indexOffset + 1) % (spriteIndexes.length);
-			animation.stop();
+			sprites[i].animation.stop();
 		};
 		gme.scenes.main.addToDisplay(sprites[i]);
 	}
 	
-	sprites[0].isActive = true;
+	
 	gme.scenes.current = 'main';
 };
 
