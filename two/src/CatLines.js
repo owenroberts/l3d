@@ -1,31 +1,19 @@
 /*
 	make a cat out of lines instead of models ... 
 */
+
 import * as THREE from 'three';
 import * as Cool from '../../cool/cool.js';
-import { Joint, Animator } from '../../tre/Tre.js';
+import { Joint, Animator, getAxesHelper } from '../../tre/Tre.js';
+import { mat } from './Common.js';
 
-export function Cat(params) {
+export function CatLines(params) {
 
 	const { globe, scene } = params;
 	let start, next;
 	let prevDistance = 1_000_000;
 	
 	const model = new THREE.Object3D();
-	const mat = new THREE.MeshStandardMaterial({ 
-		color: 0x3d3d3d,
-		side: THREE.DoubleSide,
-		// wireframe: true,
-	});
-
-	function globeSetup() {
-		const vertIndex = globe.getRandomVertex();
-		start = globe.getGlobePos(vertIndex);
-		next = globe.getNext(start.position);
-		model.position.set(start.position.x, start.position.y, start.position.z);
-		model.up.copy(start.normal);
-		model.lookAt(next.position);
-	}
 
 	let state = 'idling'; // walking, idling
 	let speed = 0.005; // default 0.005
@@ -144,14 +132,7 @@ export function Cat(params) {
 	}
 	createModel();
 
-	function addHelper(position) {
-		if (!position) position = new THREE.Vector3(0, 0, 0);
-		const a = new THREE.AxesHelper(5);
-		a.position.copy(position);
-		scene.add(a);
-		return a;
-	}
-
+	// move to helpers
 	function addLine(pos, pos2) {
 		const line = new THREE.LineCurve3(pos, pos2);
 		const tube = new THREE.TubeGeometry(line, 1, .08, 3);
@@ -159,21 +140,6 @@ export function Cat(params) {
 		mesh.castShadow = true;
 		model.add(mesh);
 		return mesh;
-	}
-
-	function breadcrumb() {
-		
-		const geo = new THREE.IcosahedronGeometry(Cool.random(0.01, 0.05), 1);
-		const crumb = new THREE.Mesh(geo, mat);
-		crumb.position.copy(model.position);
-		crumb.quaternion.copy(model.quaternion);
-		// crumb.add(addHelper());
-		// crumb.up.copy(model.up);
-		crumb.translateX(Cool.random(-0.8, 0.8));
-		crumb.translateZ(Cool.random(1));
-		// crumb.rotateY(Cool.random(Math.PI * 2))
-		// crumb.rotateX(Cool.random(Math.PI * 2));
-		scene.add(crumb);
 	}
 
 	/* animations */
@@ -217,16 +183,7 @@ export function Cat(params) {
 					return Cool.map(Math.sin(value), -1, 1, -1.2, 1.2);
 				}
 			}),
-		},
-		crumbs: new Animator({
-			increment: 1,
-			count: 36,
-			randomRange: [-1, 1],
-			clampRange: [-10, 10],
-			func: (value, params) => {
-				if (params.isCount) breadcrumb();
-			}
-		}),
+		}
 	};
 
 	function walk(timeElapsedInSeconds) {
@@ -260,8 +217,6 @@ export function Cat(params) {
 
 		head.setTargetPosition({ y: headHeight - bodyPosition });
 		head.lerp(timeElapsedInSeconds);
-
-		animators.crumbs.update(timeElapsedInSeconds);
 	}
 
 	function reset(timeElapsedInSeconds) {
@@ -295,8 +250,6 @@ export function Cat(params) {
 		if (isNaN(timeElapsed)) return;
 		let timeElapsedInSeconds = timeElapsed / 1000;
 		
-		// console.log(state, isWalking, body.isAtOrigin());
-
 		if (isWalking) {
 			walk(timeElapsedInSeconds);
 			const walkDistance = model.position.distanceTo(next.position);

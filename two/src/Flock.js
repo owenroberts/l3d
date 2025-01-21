@@ -2,7 +2,7 @@
 	can we flock ??
 */
 import * as THREE from 'three';
-import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
+// import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { FlockMember } from './FlockMember.js';
 import { Bird } from './Bird.js';
 import { Worm } from './Worm.js';

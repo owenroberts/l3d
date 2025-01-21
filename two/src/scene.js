@@ -12,7 +12,8 @@ import { PostProcessing } from './PostProcessing.js';
 import { Globe } from './Globe.js';
 import { NoiseEffect } from './NoiseEffect.js';
 import { CameraControls } from './CameraControls.js';
-import { Cat } from './CatLines.js';
+// import { CatLines } from './CatLines.js';
+import { Follow } from './Follow.js';
 import { Scenery } from './Scenery.js';
 import { Particles } from './DumbParticles.js';
 import { Lighting } from './Lighting.js';
@@ -24,6 +25,8 @@ import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import * as Cool from '../../cool/cool.js';
 
 import comp from '../compositions/l3d_theme_17.json';
+
+import { Controls } from '../../public/js/controls.js';
 
 const debug = false;
 const worldRadius = 128;
@@ -50,31 +53,26 @@ const lights = new Lighting({ scene: scene1, debugRender });
 const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 camera.position.set(0, 10, 50);
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.minDistance = worldRadius + 5;
+controls.maxDistance = 1_100;
 let useControls = false; // debug
 
 let noScene2 = false;
 const post = new PostProcessing({ scene1, scene2, noScene2, renderer, camera });
 
-function addTestCube(x, y, z, size=0.5) {
-	var box = new THREE.Mesh(
-		new THREE.BoxGeometry(size, size, size), 
-		new THREE.MeshBasicMaterial({ color: "red", wireframe: true })
-	);
-	box.position.set(x, y, z);
-	scene1.add(box);
-	return box;
-}
-
-function addHelper(pos) {
-	scene1.add(new THREE.ArrowHelper(pos.normal, pos.position, 1, 0xff00ff));
-}
-
 const globe = new Globe({ scene: scene1, worldRadius });
 scene1.add(globe.getGlobe());
 if (!noScene2) scene2.add(globe.getGlobe().clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
+
 const cc = new CameraControls({ camera });
-const cat = new Cat({ globe, scene: scene1 });
+// get globe, scene out of follow
+const follow = new Follow({ globe, scene: scene1 });
+scene1.add(follow.getTarget());
+// follow.globeSetup();
+const followStart = globe.getGlobePos(globe.getRandomVertex());
+follow.setup(followStart, globe.getNext(followStart.position));
+
 const particles = new Particles({ scene: scene1, worldRadius });
 const flocks = [];
 for (let i = 0; i < 5; i++) {
@@ -100,30 +98,45 @@ for (let i = 0; i < 5; i++) {
 	// flocks[i].globeSetup();
 }
 
-cat.globeSetup();
-const catStart = cat.getStart();
-camera.position.copy(catStart.position).addScaledVector(catStart.normal, 10); // 1000 for final
-scene1.add(cat.getModel());
-cat.getModel().add(cc.getGoal()); // parents camera goal to the cat
-cc.getGoal().position.set(4, 4, -8);
-lights.setPosition(cat.getModel());
+// set original camera position
+let followTarget = follow.getTarget(); // used in anim update
+const cameraGoal = cc.getGoal();
+camera.position.copy(followStart.position).addScaledVector(followStart.normal, 150); // 1000 for final
+followTarget.add(cameraGoal); // parents camera goal to the cat
+const cameraGoalPosition = [0, 4, -8];
+cameraGoal.position.set(...cameraGoalPosition); // camera offset
+lights.setPosition(followTarget);
 
 const noiseEffect = new NoiseEffect();
 let previousTime = null;
-let catModel;
 
-function animate(time) {
-	if (!previousTime) previousTime = time;
-	if (debug) stats.update();
-	requestAnimationFrame(animate);
-	const timeElapsed = time - previousTime;
-	previousTime = time;
+camera.up.copy(followTarget.up);
+camera.lookAt(followTarget.position.clone().addScaledVector(followTarget.up, 4));
 
+function ccUpdate() {
+	cc.update();
+	followTarget = follow.getTarget();
+	camera.up.copy(followTarget.up);
+	camera.lookAt(followTarget.position.clone().addScaledVector(followTarget.up, 4));
+
+	// idk think about this more
+	if (Cool.chance(0.5)) {
+		// const coord = Cool.random(['x', 'y', 'z']);
+		const amount = Cool.random(-1, 1);
+		// console.log('cc', coord, amount);
+		// cameraGoal.position.x += amount;
+	}
+}
+
+function sceneUpdate(timeElapsed) {
 	// renderer.clear();
 	if (debugRender) renderer.render(scene1, camera);
 	else post.process();
 
-	cat.update(timeElapsed, tracks[0] === 'play');
+	follow.update(timeElapsed, tracks[0] === 'play');
+	if (follow.reachedNext()) {
+		follow.setTarget(globe.getNext(follow.getNextPosition()));
+	}
 
 	particles.update();
 
@@ -132,100 +145,36 @@ function animate(time) {
 	}
 
 	if (tracks[1] === 'play') {
-		// noiseEffect.update();me
+		// noiseEffect.update();
 		// post.update(noiseEffect.getValue());
 		post.update();
 	}
+}
+
+function animate(time) {
+	if (!previousTime) previousTime = time;
+	if (debug) stats.update();
+	requestAnimationFrame(animate);
+	const timeElapsed = time - previousTime;
+	previousTime = time;
+
+	sceneUpdate(timeElapsed);
 
 	if (useControls) {
 		controls.update();
-	} else if (cat.isLoaded()) {
-		cc.update();
-		// cc.temp.setFromMatrixPosition(cc.goal.matrixWorld);
-		// camera.position.lerp(cc.temp, 0.02);
-		catModel = cat.getModel();
-		camera.up.copy(catModel.up);
-		camera.lookAt(catModel.position.clone().addScaledVector(catModel.up, 4));
+	} else if (doodoo) {
+		ccUpdate();
 	}
 }
 requestAnimationFrame(animate);
 
-function onWindowResize(e) {
-	
-	if (w === 960 * dpr) {
-		w = window.innerWidth * dpr;
-		h = window.innerHeight * dpr;
-		controlsDiv.style.display = 'none';
-		container.style.cursor = 'none';
-	} else {
-		w = 960 * dpr;
-		h = 540 * dpr;
-		controlsDiv.style.display = 'block';
-		container.style.cursor = 'inherit';
-	}
-
-	camera.aspect = w / h;
-	camera.updateProjectionMatrix();
-	renderer.setSize(w, h);
-	post.setSize(w, h);
-
-}
-
 let doodoo;
 let tracks = ['rest'];
 const modCount = 8;
-const controlsDiv = document.getElementById('controls');
-const startButton = document.getElementById('start');
-const stopButton = document.getElementById('stop');
-const backButton = document.getElementById('back');
-
-startButton.addEventListener('click', start);
-stopButton.addEventListener('click', stop);
-backButton.addEventListener('click', () => {
-	if (doodoo) {
-		doodoo.stop();
-		setTimeout(() => {
-			location.href = '../index.html';
-		}, 300);
-	} else {
-		location.href = '../index.html';
-	}
-});
-
-document.addEventListener('keydown', keyDown);
-function keyDown(ev) {
-
-	/* debugging */
-	if (ev.code === 'Comma') doodoo.stop();
-	else if (ev.code === 'KeyP') {
-		doodoo.printLoops();
-		doodoo.printParams();
-	}
-
-	/* key commands */
-	if (ev.code === 'Space') start();
-	if (ev.code === 'Enter') doodoo.stop();
-	if (ev.code === 'KeyF') toggleFullScreen();
-	if (ev.code === 'KeyC') useControls = !useControls;
-	if (ev.code === 'KeyD') debugRender = !debugRender;
-}
-
-const fullScreenButton = document.getElementById('fullscreen');
-fullScreenButton.addEventListener('click', toggleFullScreen);
-document.addEventListener("fullscreenchange", onWindowResize);
-
-
-function toggleFullScreen() {
-	if (!document.fullscreenElement) {
-		document.documentElement.requestFullscreen();
-	} else if (document.exitFullscreen) {
-		document.exitFullscreen();
-	}
-}
 
 function start() {
 	if (doodoo) {
-		if (doodoo.getStatusIsPlaying()) return;
+		if (doodoo.isPlaying()) return;
 	} else {
 		startDoodoo();
 	}		
@@ -242,15 +191,43 @@ function startDoodoo() {
 		...comp,
 		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
-		onNote: params => {
-			const index = params.loopIndex;
-			const note = params.note[0];
-			if (tracks[index] === undefined) tracks[index] = 'rest';
-			if (note === 'rest') {
-				tracks[index] = 'rest';
-			} else if (note !== null) {
-				tracks[index] = 'play';
-			}
-		}
+		onNote: params => { onNote(params); },
 	});
+}
+
+function onNote(params) {
+	const index = params.loopIndex;
+	const note = params.note[0];
+	if (tracks[index] === undefined) tracks[index] = 'rest';
+	if (note === 'rest') {
+		tracks[index] = 'rest';
+	} else if (note !== null) {
+		tracks[index] = 'play';
+	}
+}
+
+function resize() {
+	if (w === 960 * dpr) {
+		w = window.innerWidth * dpr;
+		h = window.innerHeight * dpr;
+		container.style.cursor = 'none';
+	} else {
+		w = 960 * dpr;
+		h = 540 * dpr;
+		container.style.cursor = 'inherit';
+	}
+
+	camera.aspect = w / h;
+	camera.updateProjectionMatrix();
+	renderer.setSize(w, h);
+	post.setSize(w, h);
+}
+
+const debugControls = Controls(start, stop, doodoo, resize);
+
+// three specific controls
+document.addEventListener('keydown', keyDown);
+function keyDown(ev) {
+	if (ev.code === 'KeyC') useControls = !useControls;
+	if (ev.code === 'KeyD') debugRender = !debugRender;
 }

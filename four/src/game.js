@@ -5,7 +5,7 @@
 import * as Cool from '../../cool/cool.js';
 import { Game, Sprite, TextButton, TextSprite, Button, GameAnim } from '../../lines/src/Engine.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
-import { Controls } from '../../public/js/controls.js'; 
+import { Controls } from '../../public/js/controls.js';
 
 import Stats from 'three/addons/libs/stats.module.js';
 import comp from '../compositions/graphy.json';
