@@ -111,7 +111,6 @@ function onNote(params) {
 	}
 }
 
-
 gme.start = function() {
 	// console.log('gme', gme);
 
@@ -123,8 +122,12 @@ gme.start = function() {
 	gme.scenes.main.addToDisplay(sprites[0]);
 
 	sprites[0].animation.onPlayedState = function() {
-		console.log('played state');
-		doodoo.moveTonic(Cool.random([1, -1, 2, -2]));
+		// doodoo.moveTonic(Cool.random([1, -1, 2, -2]));
+		const rIndex = Cool.randomInt(6);
+		const rStep = Cool.random([1, -1, 2, -2]);
+		doodoo.moveScale(rIndex, rStep);
+		// console.log('played state', rIndex, rStep);
+		// doodoo.printComp();
 	};
 
 	for (let i = 1; i <= 16; i++) {

@@ -31,6 +31,7 @@ export function Controls(start, stop, doodoo, resize) {
 			else if (ev.code === 'KeyP') {
 				doodoo.printLoops();
 				doodoo.printParams();
+				doodoo.printComp();
 			}
 			if (ev.code === 'Enter') doodoo.stop();	
 		}

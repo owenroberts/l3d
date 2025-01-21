@@ -24,7 +24,7 @@ const gme = new Game({
 	multiColor: true,
 	checkRetina: true,
 	// debug: true,
-	// stats: true,
+	stats: true,
 	suspend: true,
 	events: ['touch', 'keyboard', 'mouse'],
 	scenes: ['main'],
@@ -73,7 +73,6 @@ function resize() {
 		gme.renderer.setScale(1);
 	}
 }
-
 
 function startDoodoo() {
 	doodoo = new Doodoo({

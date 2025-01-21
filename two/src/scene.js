@@ -25,8 +25,6 @@ import * as Cool from '../../cool/cool.js';
 
 import comp from '../compositions/l3d_theme_17.json';
 
-// console.log('perf low?', Cool.testLowPerformance());
-
 const debug = false;
 const worldRadius = 128;
 let dpr = 1; // devicePixelRatio;
@@ -41,14 +39,10 @@ if (debug) container.appendChild(stats.dom);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h);
-// renderer.autoClear = false;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setPixelRatio(window.devicePixelRatio);
 container.appendChild(renderer.domElement);
-// renderer.domElement.style.width = '960px';
-// renderer.domElement.style.height = '540px';
-
 
 let debugRender = true;
 debugRender = false;
@@ -59,7 +53,6 @@ const controls = new OrbitControls(camera, renderer.domElement);
 let useControls = false; // debug
 
 let noScene2 = false;
-// noScene2 = true;
 const post = new PostProcessing({ scene1, scene2, noScene2, renderer, camera });
 
 function addTestCube(x, y, z, size=0.5) {
@@ -139,7 +132,7 @@ function animate(time) {
 	}
 
 	if (tracks[1] === 'play') {
-		// noiseEffect.update();
+		// noiseEffect.update();me
 		// post.update(noiseEffect.getValue());
 		post.update();
 	}
@@ -233,8 +226,6 @@ function toggleFullScreen() {
 function start() {
 	if (doodoo) {
 		if (doodoo.getStatusIsPlaying()) return;
-		// doodoo.stop();
-		// startDoodoo();
 	} else {
 		startDoodoo();
 	}		
@@ -249,16 +240,9 @@ function stop() {
 function startDoodoo() {
 	doodoo = new Doodoo({
 		...comp,
-		// withRecording: true,
 		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
-		// onModulate: (playCount, sequenceCount) => {
-		// 	if (modCount === sequenceCount) {
-		// 		doodoo.stop();
-		// 	}
-		// },
 		onNote: params => {
-			// console.log(params.loopIndex, params.note[0]);
 			const index = params.loopIndex;
 			const note = params.note[0];
 			if (tracks[index] === undefined) tracks[index] = 'rest';
@@ -269,5 +253,4 @@ function startDoodoo() {
 			}
 		}
 	});
-	console.log('doodoo', doodoo);
 }
