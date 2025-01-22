@@ -5,19 +5,13 @@
 import * as THREE from 'three';
 import * as Cool from '../../cool/cool.js';
 import { Joint, Animator, getAxesHelper } from '../../tre/Tre.js';
-import { mat } from './Common.js';
+import { mat, addLine } from './Common.js';
 
 export function CatLines(params) {
-
-	let nextPosition = new THREE.Vector3();
-	let nextNormal = new THREE.Vector3();
-	let prevDistance = 1_000_000;
-	let reachedNext = false;
 	
 	const model = new THREE.Object3D();
 
 	let state = 'idling'; // walking, idling
-	let speed = 0.005; // default 0.005
 	const s = 0.5; // size
 
 	const body = new Joint();
@@ -31,12 +25,9 @@ export function CatLines(params) {
 	const tailRotateSpeed = 3, legRotateSpeed = 4;	
 	const tailSegNum = 7;
 
-	// model.add(addHelper(model.position));
-	
 	function createModel() {
 
-		// const bodyGeo = new THREE.IcosahedronGeometry(s * 1.4, 1);
-		const bodyGeo = new THREE.CapsuleGeometry( s, s * 2, 2, 5); 
+		const bodyGeo = new THREE.CapsuleGeometry(s, s * 2, 2, 5); 
 		const bodyMesh = new THREE.Mesh(bodyGeo, mat);
 		bodyMesh.castShadow = true;
 		body.add(bodyMesh);
@@ -84,7 +75,9 @@ export function CatLines(params) {
 				tail[i - 1].add(j);
 			}
 			j.rotateX(i * Math.PI * 0.02);
-			j.add(addLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, h, 0)));
+			const l = addLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, h, 0));
+			// model.add(l);
+			j.add(l);
 			j.setOrigins();
 			j.setRotateSpeed(tailRotateSpeed);
 			tail.push(j);
@@ -104,11 +97,15 @@ export function CatLines(params) {
 			j1.rotateX(Math.PI * a);
 			j1.setOrigins();
 			j1.setRotateSpeed(legRotateSpeed);
-			j1.add(addLine(p1, p2));
+			const l1 = addLine(p1, p2);
+			// model.add(l1);
+			j1.add(l1);
 
 			j2.setPosition(0, -h, 0);
 			j2.rotateX(Math.PI * -a * 2);
-			j2.add(addLine(p1, p2));
+			const l2 = addLine(p1, p2);
+			// model.add(l2);
+			j2.add(l2);
 			j2.setRotateSpeed(legRotateSpeed);
 			
 			
@@ -133,20 +130,10 @@ export function CatLines(params) {
 	}
 	createModel();
 
-	// move to helpers
-	function addLine(pos, pos2) {
-		const line = new THREE.LineCurve3(pos, pos2);
-		const tube = new THREE.TubeGeometry(line, 1, .08, 3);
-		const mesh = new THREE.Mesh(tube, mat);
-		mesh.castShadow = true;
-		model.add(mesh);
-		return mesh;
-	}
-
 	/* animations */
 	const animators = {
 		walk: {
-			tail: new Animator({
+			tail: Animator({
 				increment: 3, 
 				randomRange: [-0.1, 0.1],
 				clampRange: [-0.5, 0.5],
@@ -154,12 +141,12 @@ export function CatLines(params) {
 					return Cool.map(Math.sin(value), -1, 1, 0.2, 0.3);
 				}
 			}),
-			legs: new Animator({ 
+			legs: Animator({ 
 				increment: 4,
 				randomRange: [-0.1, 0.1],
 				clampRange: [-0.2, 0.2],
 			}),
-			body: new Animator({ 
+			body: Animator({ 
 				increment: 10,
 				func: value => {
 					return Cool.map(Math.sin(value), -1, 1, 0, 0.5);
@@ -167,7 +154,7 @@ export function CatLines(params) {
 			}),
 		},
 		idle: {
-			head: new Animator({
+			head: Animator({
 				increment: 1.25,
 				randomRange: [-0.1, 0.1],
 				clampRange: [-0.25, 0],
@@ -176,7 +163,7 @@ export function CatLines(params) {
 					// return Math.sin(value + 0.1);
 				}
 			}),
-			tail: new Animator({
+			tail: Animator({
 				increment: 1.25,
 				randomRange: [-0.1, 0.1],
 				clampRange: [-0.25, 0],
@@ -186,28 +173,6 @@ export function CatLines(params) {
 			}),
 		}
 	};
-
-	function setup(start, next) {
-		model.position.set(start.position.x, start.position.y, start.position.z);
-		model.up.copy(start.normal);
-		model.lookAt(next.position);
-		model.add(getAxesHelper());
-		// console.log(start, next);
-		nextPosition.copy(next.position);
-		nextNormal.copy(next.normal);
-	}
-
-	function setTarget(next) {
-		reachedNext = false;
-		prevDistance = 1_000_000;
-		
-		target.up.copy(nextNormal);
-		// next = globe.getNext(next.position);
-		nextPosition.copy(next.position);
-		nextNormal.copy(next.normal);
-		
-		target.lookAt(nextPosition);
-	}
 
 	function walk(timeElapsedInSeconds) {
 
@@ -270,18 +235,10 @@ export function CatLines(params) {
 
 	function update(timeElapsed, isWalking) {
 
-		if (isNaN(timeElapsed)) return;
 		let timeElapsedInSeconds = timeElapsed / 1000;
 		
 		if (isWalking) {
 			walk(timeElapsedInSeconds);
-			const walkDistance = model.position.distanceTo(nextPosition);
-			if (walkDistance > 0.1 && (prevDistance - walkDistance) > 0) {
-				model.translateZ(speed * timeElapsed);
-				prevDistance = walkDistance;
-			} else {
-				reachedNext = true;
-			}
 		} else {
 			if (!body.isAtOrigin()) {
 				reset(timeElapsedInSeconds);
@@ -302,11 +259,7 @@ export function CatLines(params) {
 	document.addEventListener('keydown', keyDown);
 
 	return {
-		setup, update, setTarget,
-		getStart: () => { return start; },
-		isLoaded: () => { return true; }, // remove if using this one
+		update,
 		getModel: () => { return model; },
-		getNextPosition: () => { return nextPosition; },
-		reachedNext: () => { return reachedNext; },
 	};
 }

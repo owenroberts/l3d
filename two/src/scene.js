@@ -15,6 +15,7 @@ import { CameraControls } from './CameraControls.js';
 // import { CatLines } from './CatLines.js';
 import { Follow } from './Follow.js';
 import { CatLines } from './CatLines.js';
+import { Breadcrumbs } from './Breadcrumbs.js';
 import { Scenery } from './Scenery.js';
 import { Particles } from './DumbParticles.js';
 import { Lighting } from './Lighting.js';
@@ -67,9 +68,11 @@ if (!noScene2) scene2.add(globe.getGlobe().clone());
 const scenery = new Scenery({ scene1, scene2, worldRadius, w, h, noScene2 });
 
 const cc = new CameraControls({ camera });
-// get globe, scene out of follow
-const follow = new Follow({ globe, scene: scene1 });
+const follow = Follow();
+const breadcrumbs = Breadcrumbs(scene1);
 scene1.add(follow.getTarget());
+follow.addAnimation(breadcrumbs);
+breadcrumbs.setTarget(follow.getTarget());
 // follow.globeSetup();
 const followStart = globe.getGlobePos(globe.getRandomVertex());
 follow.setup(followStart, globe.getNext(followStart.position));
@@ -134,7 +137,7 @@ function sceneUpdate(timeElapsed) {
 	if (debugRender) renderer.render(scene1, camera);
 	else post.process();
 
-	// follow.update(timeElapsed, tracks[0] === 'play');
+	follow.update(timeElapsed, tracks[0] === 'play');
 	if (follow.reachedNext()) {
 		follow.setTarget(globe.getNext(follow.getNextPosition()));
 	}
@@ -163,18 +166,17 @@ function sceneUpdate(timeElapsed) {
 
 function addThing() {
 
-	// should make a follow and connect and model / animation to it
-	// and make breadcrumbs separate ... 
-	
-	let cat = new CatLines();
-	scene1.add(cat.getModel());
-	
+	let catFollow = Follow();
+	let cat = CatLines();
+	catFollow.addAnimation(cat);
+	catFollow.getTarget().add(cat.getModel());
+	scene1.add(catFollow.getTarget());
+
 	const followTargetPosition = follow.getTarget().position; 
 	const start = globe.getNext(followTargetPosition);
-	cat.setup(start, globe.getNext(start.position));
+	catFollow.setup(start, globe.getNext(start.position));
 
-	flocks.push(cat);
-
+	flocks.push(catFollow);
 }
 
 addThing();

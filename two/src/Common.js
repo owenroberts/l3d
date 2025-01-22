@@ -11,4 +11,13 @@ const mat = new THREE.MeshStandardMaterial({
 	// wireframe: true,
 });
 
-export { mat };
+function addLine(pos, pos2) {
+	const line = new THREE.LineCurve3(pos, pos2);
+	const tube = new THREE.TubeGeometry(line, 1, .08, 3);
+	const mesh = new THREE.Mesh(tube, mat);
+	mesh.castShadow = true;
+	// model.add(mesh);
+	return mesh;
+}
+
+export { mat, addLine };

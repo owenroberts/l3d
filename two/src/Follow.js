@@ -6,14 +6,14 @@
 */
 import * as THREE from 'three';
 import * as Cool from '../../cool/cool.js';
-import { Animator, getAxesHelper } from '../../tre/Tre.js';
-import { mat } from './Common.js';
+import { getAxesHelper } from '../../tre/Tre.js';
 
-export function Follow(params) {
+export function Follow() {
 
-	const { globe, scene } = params;
 	const target = new THREE.Object3D();
+	let animation; // model and animation update
 	
+	let speed = 0.005; // default 0.005
 	let nextPosition = new THREE.Vector3();
 	let nextNormal = new THREE.Vector3();
 	let prevDistance = 1_000_000;
@@ -41,42 +41,15 @@ export function Follow(params) {
 		target.lookAt(nextPosition);
 	}
 
-	let speed = 0.005; // default 0.005
-
-	function breadcrumb() {
-		const geo = new THREE.IcosahedronGeometry(Cool.random(0.01, 0.05), 1);
-		const crumb = new THREE.Mesh(geo, mat);
-		crumb.position.copy(target.position);
-		crumb.quaternion.copy(target.quaternion);
-		crumb.translateX(Cool.random(-0.8, 0.8));
-		crumb.translateZ(Cool.random(1));
-		scene.add(crumb);
-	}
-
-	/* animations */
-	const animators = {
-		crumbs: new Animator({
-			increment: 1,
-			count: 36,
-			randomRange: [-1, 1],
-			clampRange: [-10, 10],
-			func: (value, params) => {
-				if (params.isCount) breadcrumb();
-			}
-		}),
-	};
-
-	function walk(timeElapsedInSeconds) {
-		animators.crumbs.update(timeElapsedInSeconds);
+	function addAnimation(_animation) {
+		animation = _animation;
 	}
 
 	function update(timeElapsed, isWalking) {
 
 		if (isNaN(timeElapsed)) return;
-		let timeElapsedInSeconds = timeElapsed / 1000;
-
+		
 		if (isWalking) {
-			walk(timeElapsedInSeconds);
 			const walkDistance = target.position.distanceTo(nextPosition);
 			if (walkDistance > 0.1 && (prevDistance - walkDistance) > 0) {
 				target.translateZ(speed * timeElapsed);
@@ -84,11 +57,14 @@ export function Follow(params) {
 			} else {
 				reachedNext = true;
 			}
+			if (animation) {
+				animation.update(timeElapsed, isWalking);
+			}
 		}
 	}
 
 	return {
-		setup, update, setTarget,
+		setup, update, setTarget, addAnimation,
 		// getStart: () => { return start; },
 		getTarget: () => { return target; },
 		reachedNext: () => { return reachedNext; },
