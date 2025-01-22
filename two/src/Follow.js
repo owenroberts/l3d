@@ -13,6 +13,7 @@ export function Follow() {
 	const target = new THREE.Object3D();
 	let animation; // model and animation update
 	
+	let nextCount = 0;
 	let speed = 0.005; // default 0.005
 	let nextPosition = new THREE.Vector3();
 	let nextNormal = new THREE.Vector3();
@@ -30,6 +31,7 @@ export function Follow() {
 	}
 
 	function setTarget(next) {
+		nextCount++;
 		reachedNext = false;
 		prevDistance = 1_000_000;
 		
@@ -57,9 +59,10 @@ export function Follow() {
 			} else {
 				reachedNext = true;
 			}
-			if (animation) {
-				animation.update(timeElapsed, isWalking);
-			}
+		}
+
+		if (animation) {
+			animation.update(timeElapsed, isWalking);
 		}
 	}
 
@@ -69,5 +72,7 @@ export function Follow() {
 		getTarget: () => { return target; },
 		reachedNext: () => { return reachedNext; },
 		getNextPosition: () => { return nextPosition; },
+		getNext: () => { return { position: nextPosition, normal: nextNormal }; },
+		getNextCount: () => { return nextCount; },
 	};
 }

@@ -25,6 +25,7 @@ import { Worm } from './Worm.js';
 
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import * as Cool from '../../cool/cool.js';
+import { getAxesHelper } from '../../tre/Tre.js';
 
 import comp from '../compositions/l3d_theme_17.json';
 
@@ -48,6 +49,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setPixelRatio(window.devicePixelRatio);
 container.appendChild(renderer.domElement);
+const frustum = new THREE.Frustum();
 
 let debugRender = true;
 debugRender = false;
@@ -144,10 +146,20 @@ function sceneUpdate(timeElapsed) {
 
 	particles.update();
 
-	for (let i = 0; i < flocks.length; i++) {
-		flocks[i].update(timeElapsed, tracks[0] === 'play');
+	for (let i = flocks.length - 1; i >= 0; i--) {
+		flocks[i].update(timeElapsed, tracks[Math.min(i, tracks.length - 1)] === 'play');
 		if (flocks[i].reachedNext()) {
 			flocks[i].setTarget(globe.getNext(flocks[i].getNextPosition()));
+		}
+		if (flocks[i].getNextCount() > 3) {
+			camera.updateMatrix();
+			camera.updateMatrixWorld();
+			frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+			if (!frustum.containsPoint(flocks[i].getTarget().position)) {
+				scene1.remove(flocks[i].getTarget());
+				flocks.splice(i, 1);
+				console.log('remove')
+			}
 		}
 	}
 
@@ -166,17 +178,20 @@ function sceneUpdate(timeElapsed) {
 
 function addThing() {
 
-	let catFollow = Follow();
+	let follower = Follow();
+	scene1.add(follower.getTarget());
+
+	// next position for player
+	const next = follow.getNext(); 
+	// get start position for cat around next position for player'
+	const start = globe.getNext(next.position); 
+	// aim him toward next position of the player
+	follower.setup(start, next); 
+	flocks.push(follower);
+
 	let cat = CatLines();
-	catFollow.addAnimation(cat);
-	catFollow.getTarget().add(cat.getModel());
-	scene1.add(catFollow.getTarget());
-
-	const followTargetPosition = follow.getTarget().position; 
-	const start = globe.getNext(followTargetPosition);
-	catFollow.setup(start, globe.getNext(start.position));
-
-	flocks.push(catFollow);
+	follower.addAnimation(cat);
+	follower.getTarget().add(cat.getModel());
 }
 
 addThing();
@@ -194,7 +209,7 @@ function onNote(params) {
 }
 
 function onModulate(playCount, sequenceCount) {
-	console.log('on mod', playCount, sequenceCount);
+	// console.log('on mod', playCount, sequenceCount);
 }
 
 function animate(time) {

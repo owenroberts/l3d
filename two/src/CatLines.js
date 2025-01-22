@@ -236,7 +236,6 @@ export function CatLines(params) {
 	function update(timeElapsed, isWalking) {
 
 		let timeElapsedInSeconds = timeElapsed / 1000;
-		
 		if (isWalking) {
 			walk(timeElapsedInSeconds);
 		} else {
