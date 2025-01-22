@@ -9,9 +9,10 @@ import { mat } from './Common.js';
 
 export function CatLines(params) {
 
-	const { globe, scene } = params;
-	let start, next;
+	let nextPosition = new THREE.Vector3();
+	let nextNormal = new THREE.Vector3();
 	let prevDistance = 1_000_000;
+	let reachedNext = false;
 	
 	const model = new THREE.Object3D();
 
@@ -186,6 +187,28 @@ export function CatLines(params) {
 		}
 	};
 
+	function setup(start, next) {
+		model.position.set(start.position.x, start.position.y, start.position.z);
+		model.up.copy(start.normal);
+		model.lookAt(next.position);
+		model.add(getAxesHelper());
+		// console.log(start, next);
+		nextPosition.copy(next.position);
+		nextNormal.copy(next.normal);
+	}
+
+	function setTarget(next) {
+		reachedNext = false;
+		prevDistance = 1_000_000;
+		
+		target.up.copy(nextNormal);
+		// next = globe.getNext(next.position);
+		nextPosition.copy(next.position);
+		nextNormal.copy(next.normal);
+		
+		target.lookAt(nextPosition);
+	}
+
 	function walk(timeElapsedInSeconds) {
 
 		const tailRotation = animators.walk.tail.update(timeElapsedInSeconds);
@@ -252,18 +275,13 @@ export function CatLines(params) {
 		
 		if (isWalking) {
 			walk(timeElapsedInSeconds);
-			const walkDistance = model.position.distanceTo(next.position);
-			if (walkDistance > 0.1 && (prevDistance - walkDistance) > 0 ) {
+			const walkDistance = model.position.distanceTo(nextPosition);
+			if (walkDistance > 0.1 && (prevDistance - walkDistance) > 0) {
 				model.translateZ(speed * timeElapsed);
 				prevDistance = walkDistance;
 			} else {
-				prevDistance = 1_000_000;
-				model.up.copy(next.normal);
-				next = globe.getNext(next.position);
-				model.lookAt(next.position);
+				reachedNext = true;
 			}
-			// if (state !== 'walking') state = 'walking';
-			
 		} else {
 			if (!body.isAtOrigin()) {
 				reset(timeElapsedInSeconds);
@@ -284,9 +302,11 @@ export function CatLines(params) {
 	document.addEventListener('keydown', keyDown);
 
 	return {
-		update, globeSetup,
+		setup, update, setTarget,
 		getStart: () => { return start; },
 		isLoaded: () => { return true; }, // remove if using this one
 		getModel: () => { return model; },
+		getNextPosition: () => { return nextPosition; },
+		reachedNext: () => { return reachedNext; },
 	};
 }

@@ -9,7 +9,6 @@ import * as Cool from '../../cool/cool.js';
 import { Animator, getAxesHelper } from '../../tre/Tre.js';
 import { mat } from './Common.js';
 
-
 export function Follow(params) {
 
 	const { globe, scene } = params;
@@ -42,7 +41,6 @@ export function Follow(params) {
 		target.lookAt(nextPosition);
 	}
 
-	let state = 'idling'; // walking, idling
 	let speed = 0.005; // default 0.005
 
 	function breadcrumb() {
@@ -80,7 +78,7 @@ export function Follow(params) {
 		if (isWalking) {
 			walk(timeElapsedInSeconds);
 			const walkDistance = target.position.distanceTo(nextPosition);
-			if (walkDistance > 0.1 && (prevDistance - walkDistance) > 0 ) {
+			if (walkDistance > 0.1 && (prevDistance - walkDistance) > 0) {
 				target.translateZ(speed * timeElapsed);
 				prevDistance = walkDistance;
 			} else {

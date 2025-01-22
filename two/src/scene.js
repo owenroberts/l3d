@@ -14,6 +14,7 @@ import { NoiseEffect } from './NoiseEffect.js';
 import { CameraControls } from './CameraControls.js';
 // import { CatLines } from './CatLines.js';
 import { Follow } from './Follow.js';
+import { CatLines } from './CatLines.js';
 import { Scenery } from './Scenery.js';
 import { Particles } from './DumbParticles.js';
 import { Lighting } from './Lighting.js';
@@ -84,7 +85,7 @@ for (let i = 0; i < 5; i++) {
 			height: 10, 
 			boundaries: [worldRadius, worldRadius + 25],
 		});
-		flocks.push(birdFlock);
+		// flocks.push(birdFlock);
 	} else {
 		let wormFlock = new Flock({
 			scene: scene1, 
@@ -93,7 +94,7 @@ for (let i = 0; i < 5; i++) {
 			height: 0, 
 			boundaries: [worldRadius - 0.5, worldRadius + 0.5],
 		});
-		flocks.push(wormFlock);
+		// flocks.push(wormFlock);
 	}
 	// flocks[i].globeSetup();
 }
@@ -133,7 +134,7 @@ function sceneUpdate(timeElapsed) {
 	if (debugRender) renderer.render(scene1, camera);
 	else post.process();
 
-	follow.update(timeElapsed, tracks[0] === 'play');
+	// follow.update(timeElapsed, tracks[0] === 'play');
 	if (follow.reachedNext()) {
 		follow.setTarget(globe.getNext(follow.getNextPosition()));
 	}
@@ -141,7 +142,10 @@ function sceneUpdate(timeElapsed) {
 	particles.update();
 
 	for (let i = 0; i < flocks.length; i++) {
-		flocks[i].update(timeElapsed / 1000);
+		flocks[i].update(timeElapsed, tracks[0] === 'play');
+		if (flocks[i].reachedNext()) {
+			flocks[i].setTarget(globe.getNext(flocks[i].getNextPosition()));
+		}
 	}
 
 	if (tracks[1] === 'play') {
@@ -149,6 +153,46 @@ function sceneUpdate(timeElapsed) {
 		// post.update(noiseEffect.getValue());
 		post.update();
 	}
+}
+
+// circumstance to add bird flock, cat, worms, etc
+// number of plays? certain amount of variation?
+// find nearby vertex (one that can't be seen?)
+// point it at the follow (or follow at it)
+// let it go for a while (until out of screen)
+
+function addThing() {
+
+	// should make a follow and connect and model / animation to it
+	// and make breadcrumbs separate ... 
+	
+	let cat = new CatLines();
+	scene1.add(cat.getModel());
+	
+	const followTargetPosition = follow.getTarget().position; 
+	const start = globe.getNext(followTargetPosition);
+	cat.setup(start, globe.getNext(start.position));
+
+	flocks.push(cat);
+
+}
+
+addThing();
+
+
+function onNote(params) {
+	const index = params.loopIndex;
+	const note = params.note[0];
+	if (tracks[index] === undefined) tracks[index] = 'rest';
+	if (note === 'rest') {
+		tracks[index] = 'rest';
+	} else if (note !== null) {
+		tracks[index] = 'play';
+	}
+}
+
+function onModulate(playCount, sequenceCount) {
+	console.log('on mod', playCount, sequenceCount);
 }
 
 function animate(time) {
@@ -192,18 +236,10 @@ function startDoodoo() {
 		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
 		onNote: params => { onNote(params); },
+		onModulate: (playCount, sequenceCount) => {
+			onModulate(playCount, sequenceCount);
+		},
 	});
-}
-
-function onNote(params) {
-	const index = params.loopIndex;
-	const note = params.note[0];
-	if (tracks[index] === undefined) tracks[index] = 'rest';
-	if (note === 'rest') {
-		tracks[index] = 'rest';
-	} else if (note !== null) {
-		tracks[index] = 'play';
-	}
 }
 
 function resize() {
