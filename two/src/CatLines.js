@@ -7,7 +7,7 @@ import * as Cool from '../../cool/cool.js';
 import { Joint, Animator, getAxesHelper } from '../../tre/Tre.js';
 import { mat, addLine } from './Common.js';
 
-export function CatLines(params) {
+export function CatLines() {
 	
 	const model = new THREE.Object3D();
 
@@ -130,7 +130,6 @@ export function CatLines(params) {
 	}
 	createModel();
 
-	/* animations */
 	const animators = {
 		walk: {
 			tail: Animator({
@@ -236,7 +235,9 @@ export function CatLines(params) {
 	function update(timeElapsed, isWalking) {
 
 		let timeElapsedInSeconds = timeElapsed / 1000;
+
 		if (isWalking) {
+		// if (state === 'walking') {
 			walk(timeElapsedInSeconds);
 		} else {
 			if (!body.isAtOrigin()) {
@@ -247,11 +248,11 @@ export function CatLines(params) {
 		}
 	}
 
-	/* key commands */
+	/* debug */
 	function keyDown(ev) {
 		if (ev.code === 'KeyW') {
 			// isWalking = !isWalking;
-			if (state == 'walking') state = 'idling';
+			if (state === 'walking') state = 'idling';
 			else state = 'walking';
 		}
 	}

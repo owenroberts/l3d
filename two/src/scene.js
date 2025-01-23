@@ -3,18 +3,16 @@
 */
 
 import * as THREE from 'three';
-
 import Stats from 'three/addons/libs/stats.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { PostProcessing } from './PostProcessing.js';
 import { Globe } from './Globe.js';
 import { NoiseEffect } from './NoiseEffect.js';
 import { CameraControls } from './CameraControls.js';
-// import { CatLines } from './CatLines.js';
 import { Follow } from './Follow.js';
 import { CatLines } from './CatLines.js';
+import { Pig } from './Pig.js';
 import { Breadcrumbs } from './Breadcrumbs.js';
 import { Scenery } from './Scenery.js';
 import { Particles } from './DumbParticles.js';
@@ -81,28 +79,6 @@ follow.setup(followStart, globe.getNext(followStart.position));
 
 const particles = new Particles({ scene: scene1, worldRadius });
 const flocks = [];
-for (let i = 0; i < 5; i++) {
-	if (Cool.chance(0.5)) {
-		let birdFlock = new Flock({ 
-			scene: scene1, 
-			globe, 
-			type: Bird, 
-			height: 10, 
-			boundaries: [worldRadius, worldRadius + 25],
-		});
-		// flocks.push(birdFlock);
-	} else {
-		let wormFlock = new Flock({
-			scene: scene1, 
-			globe, 
-			type: Worm, 
-			height: 0, 
-			boundaries: [worldRadius - 0.5, worldRadius + 0.5],
-		});
-		// flocks.push(wormFlock);
-	}
-	// flocks[i].globeSetup();
-}
 
 // set original camera position
 let followTarget = follow.getTarget(); // used in anim update
@@ -135,10 +111,7 @@ function ccUpdate() {
 }
 
 function sceneUpdate(timeElapsed) {
-	// renderer.clear();
-	if (debugRender) renderer.render(scene1, camera);
-	else post.process();
-
+	
 	follow.update(timeElapsed, tracks[0] === 'play');
 	if (follow.reachedNext()) {
 		follow.setTarget(globe.getNext(follow.getNextPosition()));
@@ -151,14 +124,20 @@ function sceneUpdate(timeElapsed) {
 		if (flocks[i].reachedNext()) {
 			flocks[i].setTarget(globe.getNext(flocks[i].getNextPosition()));
 		}
-		if (flocks[i].getNextCount() > 3) {
+		if (flocks[i].getNextCount() > 1) {
 			camera.updateMatrix();
 			camera.updateMatrixWorld();
 			frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
 			if (!frustum.containsPoint(flocks[i].getTarget().position)) {
-				scene1.remove(flocks[i].getTarget());
+				console.log('remove', flocks[i].getType());
+				if (flocks[i].getType() === 'flock') {
+					flocks[i].getFlock().getMembers().forEach(m => {
+						scene1.remove(m.getObject());
+					});
+				} else {
+					scene1.remove(flocks[i].getTarget());
+				}
 				flocks.splice(i, 1);
-				console.log('remove')
 			}
 		}
 	}
@@ -170,12 +149,6 @@ function sceneUpdate(timeElapsed) {
 	}
 }
 
-// circumstance to add bird flock, cat, worms, etc
-// number of plays? certain amount of variation?
-// find nearby vertex (one that can't be seen?)
-// point it at the follow (or follow at it)
-// let it go for a while (until out of screen)
-
 function addThing() {
 
 	let follower = Follow();
@@ -186,15 +159,56 @@ function addThing() {
 	// get start position for cat around next position for player'
 	const start = globe.getNext(next.position); 
 	// aim him toward next position of the player
-	follower.setup(start, next); 
+	follower.setup(start, next);
 	flocks.push(follower);
 
-	let cat = CatLines();
-	follower.addAnimation(cat);
-	follower.getTarget().add(cat.getModel());
-}
+	// scene1.add(getAxesHelper(next.position));
 
-addThing();
+	const type = Cool.random(['cat', 'birds', 'worms', 'pig']);
+	console.log('add', type);
+
+	if (type === 'cat') {
+		let cat = CatLines();
+		follower.addAnimation(cat); // add obj with update func
+		follower.getTarget().add(cat.getModel()); // parent model
+	}
+
+	if (type === 'pig') {
+		let pig = Pig();
+		follower.addAnimation(pig);
+		follower.getTarget().add(pig.getModel());
+	}
+
+	if (type === 'birds') {
+		let birdFlock = new Flock({ 
+			type: Bird,
+			height: 10,
+			boundaries: [worldRadius, worldRadius + 25],
+		});
+
+		birdFlock.getMembers().forEach(m => {
+			scene1.add(m.getObject());
+			m.setup(start, next);
+		});
+
+		follower.addFlock(birdFlock);
+	}
+
+	if (type === 'worms') {
+		let wormFlock = new Flock({
+			type: Worm, 
+			height: 1, 
+			boundaries: [worldRadius, worldRadius + 1],
+		});
+
+		wormFlock.getMembers().forEach(m => {
+			scene1.add(m.getObject());
+			m.setup(start, next);
+		});
+
+		follower.addFlock(wormFlock);
+	}
+}
 
 
 function onNote(params) {
@@ -209,7 +223,8 @@ function onNote(params) {
 }
 
 function onModulate(playCount, sequenceCount) {
-	// console.log('on mod', playCount, sequenceCount);
+	console.log('on mod', playCount, sequenceCount);
+	if (sequenceCount % 1 === 0 && sequenceCount > 0) addThing();
 }
 
 function animate(time) {
@@ -218,6 +233,10 @@ function animate(time) {
 	requestAnimationFrame(animate);
 	const timeElapsed = time - previousTime;
 	previousTime = time;
+
+	// renderer.clear();
+	if (debugRender) renderer.render(scene1, camera);
+	else post.process();
 
 	sceneUpdate(timeElapsed);
 

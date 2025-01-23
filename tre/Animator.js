@@ -1,7 +1,10 @@
 /*
 	this should be a Prop/Mod thing maybe?
 	animate a value over time ...
-	works with joint
+	works with joint'
+
+	should add some notes on different update results, sin, cos, etc
+	increment vs value, range
 */
 
 import * as Cool from '../cool/cool.js';

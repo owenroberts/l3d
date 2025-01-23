@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
-import './doodoo/ui/lib/cool/cool.js'; // fuck off
+import * as Cool from './cool/cool.js';
 
 let w = 960, h = 540;
 const scene = new THREE.Scene();

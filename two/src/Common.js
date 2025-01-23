@@ -11,9 +11,9 @@ const mat = new THREE.MeshStandardMaterial({
 	// wireframe: true,
 });
 
-function addLine(pos, pos2) {
+function addLine(pos, pos2, radius=.08) {
 	const line = new THREE.LineCurve3(pos, pos2);
-	const tube = new THREE.TubeGeometry(line, 1, .08, 3);
+	const tube = new THREE.TubeGeometry(line, 1, radius, 3);
 	const mesh = new THREE.Mesh(tube, mat);
 	mesh.castShadow = true;
 	// model.add(mesh);

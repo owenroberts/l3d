@@ -2,30 +2,19 @@
 	flock functions
 */
 import * as THREE from 'three';
+import * as Cool from '../../cool/cool.js';
 import { Bird } from './Bird.js';
 
 export function FlockMember(params) {
 
-	const { start, next, scene, type, boundaries } = params;
+	const { type, boundaries } = params;
 
 	const earthCenter = new THREE.Vector3(0, 0, 0);
 
 	const obj = new THREE.Object3D();
-	obj.position.copy(start.position);
-	obj.up.copy(start.normal);
-	obj.lookAt(next.position);
-	scene.add(obj);
+	const model = new type();
 
-	// obj.add(addHelper(new THREE.Vector3(0, 0, 0)));
-
-	const model = new type({ scene, parent: obj });
 	obj.add(model.get());
-	
-	function addHelper(position) {
-		const a = new THREE.AxesHelper(5);
-		a.position.copy(position);
-		return a;
-	}
 
 	let speed =  model.getSpeed();
 	let flocking = model.getFlocking();
@@ -35,6 +24,27 @@ export function FlockMember(params) {
 	const acceleration = new THREE.Vector3(0, 0, 0);
 	const maxSpeed = 8 * speed;
 	const maxForce = 0.2 * speed;
+
+	function setup(start, next) {
+		obj.position.copy(start.position);
+		obj.up.copy(start.normal);
+		obj.lookAt(next.position);
+
+		if (type.name === 'Bird') {
+			obj.position.add(new THREE.Vector3(
+				Cool.random(-5, 5),
+				Cool.random(0, 10),
+				Cool.random(-5, 5),
+			));
+		}
+
+		if (type.name === 'Worm') {
+			obj.translateX(Cool.random(-3, 3));
+			obj.translateZ(Cool.random(-2, 2));
+			model.get().up.copy(obj.up);
+			model.setup(obj.position);
+		}
+	}
 
 	function flock(others, target) {
 		const alignment = new THREE.Vector3(); // flock velocity
@@ -83,7 +93,7 @@ export function FlockMember(params) {
 	}
 
 	function seek(target) {
-		const desired = target.clone().sub(obj.position);
+		const desired = target.position.clone().sub(obj.position);
 		desired.multiplyScalar(maxSpeed);
 		const steer = desired.sub(velocity);
 		steer.clampScalar(-maxForce, maxForce);
@@ -119,6 +129,7 @@ export function FlockMember(params) {
 	}
 
 	function update(timeElapsed, others, target) {
+		// return;
 		// if (!isLoaded) return;
 		// mixer.update(timeElapsed / 1000);
 
@@ -134,13 +145,13 @@ export function FlockMember(params) {
 		acceleration.multiplyScalar(0);
 		obj.lookAt(obj.position.clone().add(velocity));
 
-		if (obj.position.distanceTo(target) < 1) { 
+		if (obj.position.distanceTo(target.position) < 1) { 
 			reachedTarget = true;
 		}
 	}
 
 	return { 
-		update,
+		setup, update,
 		getObject: () => { return obj; },
 		getID: () => { return obj.id; },
 		getPosition: () => { return obj.position; },
@@ -151,7 +162,7 @@ export function FlockMember(params) {
 				velocity
 			};
 		},
-		didReachTarget: () => {
+		reachedTarget: () => {
 			if (reachedTarget) {
 				reachedTarget = false;
 				return true;

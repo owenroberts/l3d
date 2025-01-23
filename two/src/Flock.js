@@ -2,68 +2,44 @@
 	can we flock ??
 */
 import * as THREE from 'three';
-// import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FlockMember } from './FlockMember.js';
-import { Bird } from './Bird.js';
-import { Worm } from './Worm.js';
 import * as Cool from '../../cool/cool.js';
+import { FlockMember } from './FlockMember.js';
 
 export function Flock(params) {
 
-	const { globe, scene, type, height, boundaries } = params;
+	const { type, height, boundaries } = params;
+
+	let reachedTarget = false;
 
 	const members = [];
-	let start, next, target = new THREE.Vector3;
-
-	function globeSetup() {
-		const vertIndex = globe.getRandomVertex();
-		start = globe.getGlobePos(vertIndex);
-		next = globe.getNext(start.position);
-		target = next.position.addScaledVector(next.normal, height);
-
-		// const a = addHelper(start.position);
-		// a.up.copy(start.normal);
-		// a.lookAt(next.position);
-
-		// const b = addHelper(next.position);
-		// b.up.copy(next.normal);
-		// console.log(start, next, target);
-	}
-	globeSetup();
-
-	function addHelper(position) {
-		const a = new THREE.AxesHelper(5);
-		a.position.copy(position);
-		scene.add(a);
-		return a;
-	}
 	
 	const count = Cool.random(3, 8);
 	for (let i = 0; i < count; i++) {
-		const member = new FlockMember({ start, next, scene, type, boundaries });
+		const member = new FlockMember({ type, boundaries });
 		members.push(member);
 	}
 
-	function getNewTarget() {
-		next = globe.getNext(next.position);
-		const v = next.position.addScaledVector(next.normal, height);
-		target.copy(v);
-		// addHelper(target);
-	}
-
-	function update(timeElapsed) {
-		if (isNaN(timeElapsed)) return;
+	function update(timeElapsed, target) {
+		let timeElapsedInSeconds = timeElapsed / 1000;
 		for (let i = 0; i < members.length; i++) {
-			members[i].update(timeElapsed, members, target);
-			if (members[i].didReachTarget()) getNewTarget();
+			members[i].update(timeElapsedInSeconds, members, target);
+			if (members[i].reachedTarget()) {
+				// getNewTarget();
+				reachedTarget = true;
+			}
 		}
 	}
 
 	return { 
-		update, getNewTarget, globeSetup,
-		setTarget: position => { target.copy(position); },
-		getTarget: () => { return target; },
-		getNext: () => { return next; },
-		getFlock: () => { return members; },
+		update,
+		getMembers: () => { return members; },
+		reachedTarget: () => {
+			if (reachedTarget) {
+				reachedTarget = false;
+				return true;
+			} else {
+				return false;
+			}
+		},
 	};
 }
