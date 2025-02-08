@@ -21,7 +21,7 @@ export function Worm() {
 
 	const model = new THREE.Object3D();
 	const coord = Cool.choice(['x', 'y']);
-	const s = Cool.random(0.1, 0.25);
+	const s = Cool.random(0.01, 0.05);
 	const jointCount = Cool.random(3, 6);
 	const joints = [];
 

@@ -9,7 +9,7 @@ import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import { getMidiDelta } from '../../doodoo/src/Midi.js';
 import { Controls } from '../../public/js/controls.js'; 
 import Stats from 'three/addons/libs/stats.module.js';
-import comp from '../compositions/longy_1.json';
+import comp from '../compositions/longy_1_counterpointtest.json';
 
 /* this is the game part */
 const gme = new Game({
@@ -24,7 +24,7 @@ const gme = new Game({
 	multiColor: true,
 	checkRetina: true,
 	// debug: true,
-	stats: true,
+	// stats: true,
 	suspend: true,
 	events: ['touch', 'keyboard', 'mouse'],
 	scenes: ['main'],
@@ -100,7 +100,6 @@ function onNote(params) {
 		if (note === 'rest') {
 			sprite.animation.stop();
 		} else if (note !== null) {
-
 			if (index < 2) {
 				sprite.animation.play();
 				sprite.isActive = true;
@@ -147,7 +146,9 @@ gme.start = function() {
 		} else {
 			sprites[i].animation.layers.forEach(l => l.isVisible = false);
 			sprites[i].currentAnimDir = 1;
-			animators[i] = new Animator(sprites[i].animation);
+			animators[i] = Animator(sprites[i].animation, {
+				jiggleRange: [0, 4],
+			});
 		}
 		gme.scenes.main.addToDisplay(sprites[i]);
 	}
@@ -156,6 +157,14 @@ gme.start = function() {
 	gme.scenes.current = 'main';
 };
 
+let doUpdate = true;
 gme.draw = function() {
 	gme.scenes.current.display();
+	// if (doUpdate) animators[2].update();
 };
+
+/* debugging & key commands*/
+function keyDown(ev) {
+	if (ev.code === 'KeyU') doUpdate = !doUpdate;
+}
+document.addEventListener('keydown', keyDown);

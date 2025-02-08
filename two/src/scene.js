@@ -85,8 +85,8 @@ let followTarget = follow.getTarget(); // used in anim update
 const cameraGoal = cc.getGoal();
 camera.position.copy(followStart.position).addScaledVector(followStart.normal, 150); // 1000 for final
 followTarget.add(cameraGoal); // parents camera goal to the cat
-const cameraGoalPosition = [0, 4, -8];
-cameraGoal.position.set(...cameraGoalPosition); // camera offset
+const cameraGoalOrigin = new THREE.Vector3(0, 4, -8);
+cameraGoal.position.copy(cameraGoalOrigin); // camera offset
 lights.setPosition(followTarget);
 
 const noiseEffect = new NoiseEffect();
@@ -102,11 +102,11 @@ function ccUpdate() {
 	camera.lookAt(followTarget.position.clone().addScaledVector(followTarget.up, 4));
 
 	// idk think about this more
-	if (Cool.chance(0.5)) {
+	if (Cool.chance(0.1) && doodoo.isPlaying()) {
 		// const coord = Cool.random(['x', 'y', 'z']);
 		const amount = Cool.random(-1, 1);
-		// console.log('cc', coord, amount);
-		// cameraGoal.position.x += amount;
+		cameraGoal.translateZ(amount);
+		cameraGoal.position.z = Math.min(cameraGoalOrigin.z, cameraGoal.position.z);
 	}
 }
 
@@ -129,7 +129,6 @@ function sceneUpdate(timeElapsed) {
 			camera.updateMatrixWorld();
 			frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
 			if (!frustum.containsPoint(flocks[i].getTarget().position)) {
-				console.log('remove', flocks[i].getType());
 				if (flocks[i].getType() === 'flock') {
 					flocks[i].getFlock().getMembers().forEach(m => {
 						scene1.remove(m.getObject());
@@ -165,7 +164,7 @@ function addThing() {
 	// scene1.add(getAxesHelper(next.position));
 
 	const type = Cool.random(['cat', 'birds', 'worms', 'pig']);
-	console.log('add', type);
+	// console.log('add', type);
 
 	if (type === 'cat') {
 		let cat = CatLines();
@@ -210,7 +209,6 @@ function addThing() {
 	}
 }
 
-
 function onNote(params) {
 	const index = params.loopIndex;
 	const note = params.note[0];
@@ -223,8 +221,10 @@ function onNote(params) {
 }
 
 function onModulate(playCount, sequenceCount) {
-	console.log('on mod', playCount, sequenceCount);
-	if (sequenceCount % 1 === 0 && sequenceCount > 0) addThing();
+	// console.log('on mod', playCount, sequenceCount);
+	if (sequenceCount % 1 === 0 && sequenceCount > 0) {
+		addThing();
+	}
 }
 
 function animate(time) {
@@ -263,6 +263,9 @@ function start() {
 function stop() {
 	if (doodoo) {
 		doodoo.stop();
+	}
+	for (let i = 0; i < tracks.length; i++) {
+		tracks[i] = 'rest';
 	}
 }
 
