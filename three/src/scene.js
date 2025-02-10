@@ -11,14 +11,14 @@ import { PostProcessing } from './PostProcessing.js';
 import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import { Singer } from './Singer.js';
 import { CameraControls } from './CameraControls.js';
+import { Controls } from '../../public/js/controls.js';
+import comp from '../compositions/drummys.json';
 
 const debug = false;
 let w = 960, h = 540;
 const stats = new Stats();
 const container = document.getElementById("longies");
 if (debug) container.appendChild(stats.dom);
-
-import comp from '../compositions/drummys.json';
 
 const renderer = new THREE.WebGLRenderer({ 
 	antialias: false,
@@ -57,26 +57,12 @@ skyScene.add(sky);
 const phi = THREE.MathUtils.degToRad(15);
 const theta = THREE.MathUtils.degToRad(15);
 sun.setFromSphericalCoords( 1, phi, theta );
-sky.material.uniforms[ 'sunPosition' ].value.copy(sun);
-sky.material.uniforms[ 'turbidity' ].value = 0.5;
-sky.material.uniforms[ 'rayleigh' ].value = 0.25;
+sky.material.uniforms['sunPosition'].value.copy(sun);
+sky.material.uniforms['turbidity'].value = 0.5;
+sky.material.uniforms['rayleigh'].value = 0.25;
 
 const post = new PostProcessing({ scene, skyScene, renderer, camera });
 
-function addTestCube(x, y, z, size=0.5) {
-	var box = new THREE.Mesh(
-		new THREE.BoxGeometry(size, size, size), 
-		new THREE.MeshBasicMaterial({ color: "red", wireframe: true })
-	);
-	box.position.set(x, y, z);
-	scene.add(box);
-	return box;
-}
-
-function addHelper(pos) {
-	scene1.add(new THREE.ArrowHelper(pos.normal, pos.position, 1, 0xff00ff));
-}
-// addTestCube(0, 0, 0, 1);
 
 /* load models */
 const loader = new GLTFLoader();
@@ -137,74 +123,9 @@ function animate(time) {
 }
 requestAnimationFrame(animate);
 
-function onWindowResize() {
-	if (w === 960) {
-		w = screen.width; // window.innerWidth;
-		h = screen.height; // window.innerHeight;
-		controlsDiv.style.display = 'none';
-		container.style.cursor = 'none';
-	} else {
-		w = 960;
-		h = 540;
-		controlsDiv.style.display = 'block';
-		container.style.cursor = 'inherit';
-	}
-	camera.aspect = w / h;
-	camera.updateProjectionMatrix();
-	renderer.setSize(w, h);
-	post.setSize(w, h);
-}
-
 let doodoo;
 let tracks = ['rest'];
 const modCount = 8;
-const controlsDiv = document.getElementById('controls');
-const startButton = document.getElementById('start');
-const stopButton = document.getElementById('stop');
-const backButton = document.getElementById('back');
-
-startButton.addEventListener('click', start);
-stopButton.addEventListener('click', stop);
-backButton.addEventListener('click', () => {
-	if (doodoo) {
-		doodoo.stop();
-		setTimeout(() => {
-			location.href = '../index.html';
-		}, 300);
-	} else {
-		location.href = '../index.html';
-	}
-});
-
-document.addEventListener('keydown', keyDown);
-function keyDown(ev) {
-
-	/* debugging */
-	if (ev.code === 'Comma') doodoo.stop();
-	else if (ev.code === 'KeyP') {
-		doodoo.printLoops();
-		doodoo.printParams();
-	}
-
-	/* key commands */
-	if (ev.code === 'Space') start();
-	if (ev.code === 'Enter') doodoo.stop();
-	if (ev.code === 'KeyF') toggleFullScreen();
-	if (ev.code === 'KeyC') useControls = !useControls;
-	if (ev.code === 'KeyD') debugRender = !debugRender;
-}
-
-const fullScreenButton = document.getElementById('fullscreen');
-fullScreenButton.addEventListener('click', toggleFullScreen);
-document.addEventListener("fullscreenchange", onWindowResize);
-
-function toggleFullScreen() {
-	if (!document.fullscreenElement) {
-		document.documentElement.requestFullscreen();
-	} else if (document.exitFullscreen) {
-		document.exitFullscreen();
-	}
-}
 
 function start() {
 	if (doodoo) {
@@ -212,7 +133,7 @@ function start() {
 		startDoodoo();
 	} else {
 		startDoodoo();
-		cc.set();
+		cc.addAnimation();
 	}		
 }
 
@@ -227,11 +148,11 @@ function startDoodoo() {
 		...comp,
 		withCount: modCount,
 		samplesURL: '../doodoo/samples/',
-		// onModulate: (playCount, sequenceCount) => {
-		// 	if (modCount === sequenceCount) {
-		// 		doodoo.stop();
-		// 	}
-		// },
+		onModulate: (playCount, sequenceCount) => {
+			if (modCount === sequenceCount) {
+				cc.endAnimations();
+			}
+		},
 		onLoop: totalPlays => {
 			for (let i = 0; i < tracks.length; i++) {
 				tracks[i] = 'rest';
@@ -251,4 +172,30 @@ function startDoodoo() {
 			}
 		}
 	});
+	debugControls.addDoodoo(doodoo);
+}
+
+function resize() {
+	if (w === 960) {
+		w = screen.width; // window.innerWidth;
+		h = screen.height; // window.innerHeight;
+		container.style.cursor = 'none';
+	} else {
+		w = 960;
+		h = 540;
+		container.style.cursor = 'inherit';
+	}
+	camera.aspect = w / h;
+	camera.updateProjectionMatrix();
+	renderer.setSize(w, h);
+	post.setSize(w, h);
+}
+
+const debugControls = Controls(start, stop, doodoo, resize);
+
+// three specfiic
+document.addEventListener('keydown', keyDown);
+function keyDown(ev) {
+	if (ev.code === 'KeyC') useControls = !useControls;
+	if (ev.code === 'KeyD') debugRender = !debugRender;
 }

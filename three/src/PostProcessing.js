@@ -23,8 +23,8 @@ export function PostProcessing(params) {
 		uniforms: {
 			lineColor: { type: 'vec3', value: new THREE.Color(0x000000) },
 			bgColor: { type: 'vec3', value: new THREE.Color(0xC7C7C7) },
-			lineWidth: 1,
-			numLines: 5,
+			// lineWidth: 1,
+			// numLines: 10,
 			diffuseCutoff: { type: 'float', value: 40 },
 			normalCutoff: { type: 'float', value: 50 },
 			noiseMultiplier: { type: 'float', value: 10 },
@@ -46,7 +46,6 @@ export function PostProcessing(params) {
 	const bandEffect = new ShaderPass(BandShader);
 	bandEffect.uniforms['bandSize'].value = 32;
 	// sometimes flickering sometimes not ... 
-
 
 	const outputPass = new OutputPass();
 	const skyComposer = new EffectComposer(renderer);

@@ -279,6 +279,7 @@ function startDoodoo() {
 			onModulate(playCount, sequenceCount);
 		},
 	});
+	controls.addDoodoo(doodoo);
 }
 
 function resize() {

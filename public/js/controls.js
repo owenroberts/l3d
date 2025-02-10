@@ -25,7 +25,6 @@ export function Controls(start, stop, doodoo, resize) {
 
 	/* debugging & key commands*/
 	function keyDown(ev) {
-		
 		if (doodoo) {
 			if (ev.code === 'Comma') doodoo.stop();
 			else if (ev.code === 'KeyP') {
