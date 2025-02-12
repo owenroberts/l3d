@@ -8,7 +8,7 @@ import { Doodoo } from '../../doodoo/src/Doodoo.js';
 import { Controls } from '../../public/js/controls.js';
 
 import Stats from 'three/addons/libs/stats.module.js';
-import comp from '../compositions/graphy.json';
+import comp from '../compositions/choices.json';
 
 /* this is the game part */
 const gme = new Game({
@@ -83,7 +83,12 @@ function startDoodoo() {
 }
 
 function onModulate(playCount, sequenceCount) {
-	for (let i = 0; i < sprites.length; i++) {
+	
+	if (playCount > 0) {
+		sprites[0].animation.currentFrame = (sprites[0].animation.currentFrame + 1) % 3;
+	}
+
+	for (let i = 1; i < sprites.length; i++) {
 		sprites[i].animation.stop();
 	}
 
@@ -96,17 +101,19 @@ function onModulate(playCount, sequenceCount) {
 
 function onNote(params) {
 	const index = params.loopIndex;
+	if (index === 0) return;
 	const note = params.note[0];
-	let i;
-	if (index === 0) i = index;
-	if (index > 0) i = spriteIndexes[(index + indexOffset - 1) % (spriteIndexes.length)];
-	// if (index > 0) console.log(i);
 	
-	const sprite = sprites[i];
+	// cyle through sprites
+	const spriteIndex = spriteIndexes[(index + indexOffset - 1) % (spriteIndexes.length)]; 
+	const sprite = sprites[spriteIndex];
+	
 	if (note === 'rest') {
 		sprite.animation.stop();
 	} else if (note !== null) {
-		sprite.animation.play();
+		// sprite.animation.play();
+		// sprite.animation.currentFrame = (sprite.animation.currentFrame + 1) % sprite.animation.endFrame;
+		sprite.animation.nextFrame();
 		sprite.isActive = true;
 	}
 }
@@ -121,15 +128,6 @@ gme.start = function() {
 	sprites[0].isActive = true;
 	gme.scenes.main.addToDisplay(sprites[0]);
 
-	sprites[0].animation.onPlayedState = function() {
-		// doodoo.moveTonic(Cool.random([1, -1, 2, -2]));
-		const rIndex = Cool.randomInt(6);
-		const rStep = Cool.random([1, -1, 2, -2]);
-		doodoo.moveScale(rIndex, rStep);
-		// console.log('played state', rIndex, rStep);
-		// doodoo.printComp();
-	};
-
 	for (let i = 1; i <= 16; i++) {
 		sprites[i] = new Sprite(0, 0, gme.anims.sprites[`gp_${i - 1}`]);
 		sprites[i].isActive = false;
@@ -140,7 +138,6 @@ gme.start = function() {
 		};
 		gme.scenes.main.addToDisplay(sprites[i]);
 	}
-	
 	
 	gme.scenes.current = 'main';
 };
