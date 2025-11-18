@@ -152,7 +152,7 @@ function load() {
 		if (fftCanvas.getContext('2d')) {
 			fftCtx = fftCanvas.getContext('2d');
 			fftCtx.fillStyle = 'black';
-			fftCtx.fillRect(0, 0, 64, 32);
+			fftCtx.fillRect(0, 0, fftWidth, 32);
 		} else {
 			return;
 		}
@@ -163,6 +163,7 @@ function load() {
 	let levels;
 	const fftInterval = 1000 / 24;
 	let fftTimer = 0;
+	let fftWidth = 96;
 
 	function updateFFT() {
 		requestAnimationFrame(updateFFT);
@@ -172,15 +173,26 @@ function load() {
 			fftTimer = time;
 
 			fftCtx.fillStyle = 'black';
-			fftCtx.fillRect(0, 0, 64, 32);
+			fftCtx.fillRect(0, 0, fftWidth, 32);
 
 			fftCtx.fillStyle = '#ad95df';
 			levels = fft.getValue();
 
+			// console.log(levels.length)
+
 			for (let i = 0; i < levels.length; i++) {
-				const v = map(levels[i], -120, 12, 0, 28, true);
-				const x = i * 4;
-				fftCtx.fillRect(x + 1, 30 - v, 2, v);
+				const v = map(levels[i], -120, 12, 0, 32, true);
+				const x = 2 + (fftWidth / levels.length) * i;
+				
+				// fftCtx.fillRect(x + 1, 30 - v, 1, v);
+				for (let y = 0; y < 32; y += 4) {
+					if (y <= v) {
+						fftCtx.beginPath();
+						fftCtx.arc(x, 30 - y, 1, 0, 2 * Math.PI);
+						fftCtx.fill();
+						// fftCtx.endPath();
+					}
+				}
 			}
 		}
 	}
