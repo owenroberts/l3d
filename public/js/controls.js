@@ -1,5 +1,6 @@
 /*
 	controls for playback
+	this needs to exist in boiler somwhere ... 
 */
 
 export function Controls(start, stop, doodoo, resize) {
