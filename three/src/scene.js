@@ -117,7 +117,7 @@ function animate(time) {
 	bird.update(timeElapsed / 100, tracks[2] === 'play');
 	cat.update(timeElapsed / 100, tracks[3] === 'play');
 
-	if (useControls) {
+	if (useControls && controls) {
 		controls.update();
 	}
 }

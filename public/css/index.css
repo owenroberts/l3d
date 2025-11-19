@@ -43,7 +43,7 @@ a {
 
 #container {
 	margin: auto;
-	width: 440px;
+	width: 460px;
 }
 
 #header {
@@ -58,5 +58,5 @@ a {
 #fft-canvas {
 	vertical-align: bottom;
 	mix-blend-mode: screen;
-	margin-left: 24px;
+	margin-left: 32px;
 }

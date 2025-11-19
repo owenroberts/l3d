@@ -31,7 +31,7 @@ export function CameraControls(params) {
 	}
 
 	function addAnimation() {
-		const counter = Cool.Counter(Cool.randomInt(6, 48));
+		const counter = new Cool.Counter(Cool.randomInt(6, 48));
 		const step = Cool.randomInt(3, 6);
 		if (Cool.coinFlip()) {
 			addTranslateAnimation(counter, step);
@@ -46,17 +46,17 @@ export function CameraControls(params) {
 
 	function addRotateAnimation(counter, step) {
 		let startRotation = cc.getRotation().y;
-		let increment = Cool.random(0.5, 2) / counter.getDuration() * Cool.random([-1, 1]);
+		let increment = Cool.random(0.5, 2) / counter.duration * Cool.random([-1, 1]);
 		camAnim.add(step, true, (timeElapsedInSeconds) => {
 			ccCam.rotateY(increment * timeElapsedInSeconds);
 			counter.update();
-			if (counter.isDone()) camAnim.next();
+			if (counter.isDone) camAnim.next();
 		});
 	}
 
 	function addTranslateAnimation(counter, step) {
 		
-		let increment = Cool.random(5, 40) / counter.getDuration() * Cool.random([-1, 1]);
+		let increment = Cool.random(5, 40) / counter.duration * Cool.random([-1, 1]);
 		const z = ccCam.getPosition().z;
 		if (Math.abs(z) >= 2 && Math.sign(increment) === Math.sign(z)) {
 			increment *= -1;
@@ -65,7 +65,7 @@ export function CameraControls(params) {
 		camAnim.add(step, true, (timeElapsedInSeconds) => {
 			ccCam.translateZ(increment * timeElapsedInSeconds);
 			counter.update();
-			if (counter.isDone()) camAnim.next();
+			if (counter.isDone) camAnim.next();
 			const pos = ccCam.getPosition();
 			if (Math.abs(pos.z) > 2) {
 				camAnim.next();

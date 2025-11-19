@@ -23,7 +23,7 @@ const gme = new Game({
 	multiColor: true,
 	checkRetina: true,
 	// debug: true,
-	stats: true,
+	// stats: true,
 	suspend: true,
 	events: ['touch', 'keyboard', 'mouse'],
 	scenes: ['main'],
