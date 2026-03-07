@@ -5,7 +5,7 @@ import vitePluginString from 'vite-plugin-string';
 import { resolve } from 'path';
 
 export default defineConfig({
-	base: "./",
+	// base: "./",
 	css: {
 		devSourcemap: true // this one
 	},

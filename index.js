@@ -127,8 +127,10 @@ function load() {
 	}
 
 	function stop() {
+		if (!doodoo) return;
 		doodoo.stop();
 		isPlaying = false;
+		if (current === "none") return;
 		compUis[current].track.classList.remove("active");
 		compUis[current].btn.innerText = '⏵︎';
 		current = "none";
@@ -140,7 +142,7 @@ function load() {
 		Array.from(anchors).forEach(a => {
 			a.addEventListener('click', ev => {
 				ev.preventDefault();
-				doodoo.stop();
+				if (doodoo) doodoo.stop();
 				setTimeout(() => {
 					location.href = a.href;
 				}, 300);
@@ -169,7 +171,7 @@ function load() {
 		requestAnimationFrame(updateFFT);
 		if (!fft) return;
 		const time = performance.now();
-		if (time > fftTimer + fftInterval ) {
+		if (time > fftTimer + fftInterval) {
 			fftTimer = time;
 
 			fftCtx.fillStyle = 'black';
