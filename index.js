@@ -52,8 +52,7 @@ function load() {
 		localStorage.setItem('doodoo-nums', JSON.stringify(numSettings));
 	}
 
-	for (const key in comps) {
-
+	function setupTrackPlayback(key) {
 		const btn = document.getElementById("play-" + key);
 		btn.addEventListener('click', () => {
 			if (current == key && doodoo.getStatusIsPlaying()) {
@@ -75,6 +74,10 @@ function load() {
 		const track = document.getElementById("track-" + key);
 
 		compUis[key] = { btn, num, track };
+	}
+
+	for (const key in comps) {
+		setupTrackPlayback(key);
 	}
 
 	function playAll() {
