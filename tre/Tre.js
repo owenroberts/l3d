@@ -1,4 +1,3 @@
-
 import { Animator } from './src/Animator.js';
 import { Joint } from './src/Joint.js';
 import { BandShader } from './src/BandShader.js';
