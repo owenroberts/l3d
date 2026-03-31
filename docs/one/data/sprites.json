@@ -1,7 +1,0 @@
-{
-	"bg": { "src": "./drawings/bg_2.json" },
-	"circles": { "src": "./drawings/circles_2.json" },
-	"faces_cat": { "src": "./drawings/faces_cat_4.json" },
-	"faces_pig": { "src": "./drawings/faces_pig_3.json" },
-	"faces_bird": { "src": "./drawings/faces_bird_3.json" }
-}
