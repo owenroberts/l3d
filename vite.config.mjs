@@ -42,7 +42,7 @@ export default defineConfig({
 	],
 	build: {
 		chunkSizeWarningLimit: 600,
-		outDir: './docs',
+		outDir: './dist',
 		rollupOptions: {
 			input: {
 				main: resolve(__dirname, 'index.html'),
