@@ -163,7 +163,8 @@ function addThing() {
 
 	// scene1.add(getAxesHelper(next.position));
 
-	const type = Cool.random(['cat', 'birds', 'worms', 'pig']);
+	// const type = Cool.random(['cat', 'birds', 'worms', 'pig']);
+	const type = "worms"; // Cool.random(['cat', 'birds', 'worms', 'pig']);
 	// console.log('add', type);
 
 	if (type === 'cat') {
@@ -206,6 +207,10 @@ function addThing() {
 		});
 
 		follower.addFlock(wormFlock);
+		// console.log(wormFlock.getMembers())
+		// console.log(wormFlock.getJoints())
+		// console.log(wormFlock.getAnimator())
+
 	}
 }
 
@@ -221,6 +226,7 @@ function onNote(params) {
 }
 
 function onModulate(playCount, sequenceCount) {
+	// if (playCount === 0) addThing();
 	// console.log('on mod', playCount, sequenceCount);
 	if (sequenceCount % 1 === 0 && sequenceCount > 0) {
 		addThing();

@@ -22,7 +22,7 @@ export function Worm() {
 	const model = new THREE.Object3D();
 	const coord = Cool.choice(['x', 'y']);
 	const s = Cool.random(0.01, 0.05);
-	const jointCount = Cool.random(3, 6);
+	const jointCount = Cool.randomInt(3, 6);
 	const joints = [];
 
 	function setup(position) {
@@ -67,6 +67,8 @@ export function Worm() {
 			model.add(joint.get());
 			joints.push(joint);
 		}
+
+		// console.log({ jointCount, joints });
 	}
 
 	const animator = new Animator({
@@ -84,8 +86,8 @@ export function Worm() {
 			const a = animator.update(timeElapsed, { i });
 			const t = {};
 			t[coord] = a;
-			joints[i].setTargetPosition(t);
-			joints[i].lerp(timeElapsed);
+			if (joints[i]) joints[i].setTargetPosition(t);
+			if (joints[i]) joints[i].lerp(timeElapsed);
 		}
 	}
 
