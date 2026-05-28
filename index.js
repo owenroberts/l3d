@@ -25,11 +25,16 @@ function load() {
 	const playBtn = document.getElementById("play-btn");
 	const stopBtn = document.getElementById("stop-btn");
 	const infoBtn = document.getElementById("info-btn");
+	const closeInfoBtn = document.getElementById("close-info-btn");
 	const info = document.getElementById("info");
 	const fftCanvas = document.getElementById("fft-canvas");
 
 	infoBtn.addEventListener('click', () => {
-		info.classList.toggle('visible');
+		info.classList.add('visible');
+	});
+
+	closeInfoBtn.addEventListener('click', () => {
+		info.classList.remove('visible');
 	});
 
 	const compUis = {};
