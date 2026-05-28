@@ -1,8 +1,10 @@
 .DS_Store
-blenders/
-doc/
-node_modules/
-blenders_2/
-live/
+blenders
+doc
+node_modules
+blenders_2
+live
 tre/.git
 dist
+miami
+archive

@@ -310,6 +310,6 @@ const debugControls = Controls(start, stop, doodoo, resize);
 // three specific controls
 document.addEventListener('keydown', keyDown);
 function keyDown(ev) {
-	if (ev.code === 'KeyC') useControls = !useControls;
-	if (ev.code === 'KeyD') debugRender = !debugRender;
+	if (ev.code === 'KeyC' && debug) useControls = !useControls;
+	if (ev.code === 'KeyD' && debug) debugRender = !debugRender;
 }
